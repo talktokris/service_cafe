@@ -4,14 +4,246 @@ namespace App\Http\Controllers;
 
 use App\Models\User;
 use App\Models\Role;
-use App\Models\Branch;
-use App\Models\Wallet;
+use App\Models\OfficeProfile;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Validator;
+use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Log;
 use Inertia\Inertia;
 
 class UserController extends Controller
 {
+    /**
+     * Display a listing of the resource.
+     */
+    public function index()
+    {
+        $users = User::where('deleteStatus', 0)
+            ->where('user_type', '!=', 'member')
+            ->with(['headOffice', 'branchOffice', 'creator', 'roles'])
+            ->orderBy('created_at', 'desc')
+            ->get();
+
+        $officeProfiles = OfficeProfile::where('deleteStatus', 0)
+            ->orderBy('created_at', 'desc')
+            ->get();
+
+        return Inertia::render('HeadOffice/Super/UsersTracking', [
+            'users' => $users,
+            'officeProfiles' => $officeProfiles,
+        ]);
+    }
+
+    /**
+     * Show the form for creating a new resource.
+     */
+    public function create()
+    {
+        //
+    }
+
+    /**
+     * Store a newly created resource in storage.
+     */
+    public function store(Request $request)
+    {
+        $validator = Validator::make($request->all(), [
+            'first_name' => 'required|string|max:255',
+            'last_name' => 'required|string|max:255',
+            'email' => 'required|string|email|max:255|unique:users',
+            'password' => 'required|string|min:8|confirmed',
+            'phone' => 'nullable|string|max:20',
+            'address' => 'nullable|string|max:500',
+            'gender' => 'nullable|in:male,female,other',
+            'country' => 'nullable|string|max:100',
+            'headOfficeId' => 'required|exists:office_profiles,id',
+            'branchId' => 'nullable|exists:office_profiles,id',
+            'role' => 'required|string',
+            'activeStatus' => 'boolean',
+        ]);
+
+        if ($validator->fails()) {
+            return back()->withErrors($validator)->withInput();
+        }
+
+        // Add the logged-in user's ID to the request data
+        $data = $request->all();
+        $data['createUserId'] = Auth::id();
+
+        // Hash the password
+        $data['password'] = Hash::make($data['password']);
+
+        // Create the user
+        $user = User::create($data);
+
+        // Assign role
+        $this->assignRole($user, $data['role']);
+
+        // Load the created user with relationships
+        $user = User::with(['headOffice', 'branchOffice', 'creator', 'roles'])
+            ->find($user->id);
+
+        return back()->with([
+            'success' => 'User created successfully!',
+            'user' => $user
+        ])->withInput();
+    }
+
+    /**
+     * Display the specified resource.
+     */
+    public function show(User $user)
+    {
+        $user = User::with(['headOffice', 'branchOffice', 'creator', 'roles'])
+            ->find($user->id);
+
+        return response()->json($user);
+    }
+
+    /**
+     * Show the form for editing the specified resource.
+     */
+    public function edit(User $user)
+    {
+        //
+    }
+
+    /**
+     * Update the specified resource in storage.
+     */
+    public function update(Request $request, User $user)
+    {
+        $validator = Validator::make($request->all(), [
+            'first_name' => 'required|string|max:255',
+            'last_name' => 'required|string|max:255',
+            'email' => 'required|string|email|max:255|unique:users,email,' . $user->id,
+            'phone' => 'nullable|string|max:20',
+            'address' => 'nullable|string|max:500',
+            'gender' => 'nullable|in:male,female,other',
+            'country' => 'nullable|string|max:100',
+            'headOfficeId' => 'required|exists:office_profiles,id',
+            'branchId' => 'nullable|exists:office_profiles,id',
+            'activeStatus' => 'boolean',
+        ]);
+
+        if ($validator->fails()) {
+            return back()->withErrors($validator)->withInput();
+        }
+
+        $user->update($request->all());
+
+        // Reload the updated user with relationships
+        $user = User::with(['headOffice', 'branchOffice', 'creator', 'roles'])
+            ->find($user->id);
+
+        return back()->with([
+            'success' => 'User updated successfully!',
+            'user' => $user
+        ])->withInput();
+    }
+
+    /**
+     * Remove the specified resource from storage.
+     */
+    public function destroy(User $user)
+    {
+        $user->update(['deleteStatus' => 1]);
+
+        return back()->with([
+            'success' => 'User deleted successfully!'
+        ])->withInput();
+    }
+
+    /**
+     * Reset user password
+     */
+    public function resetPassword(Request $request, User $user)
+    {
+        $validator = Validator::make($request->all(), [
+            'new_password' => 'required|string|min:8|confirmed',
+        ]);
+
+        if ($validator->fails()) {
+            return back()->withErrors($validator)->withInput();
+        }
+
+        // Update password
+        $user->update([
+            'password' => Hash::make($request->new_password)
+        ]);
+
+        return back()->with([
+            'success' => 'Password reset successfully!'
+        ])->withInput();
+    }
+
+    /**
+     * Change user role
+     */
+    public function changeRole(Request $request, User $user)
+    {
+        $validator = Validator::make($request->all(), [
+            'role' => 'required|string',
+        ]);
+
+        if ($validator->fails()) {
+            return back()->withErrors($validator)->withInput();
+        }
+
+        // Assign new role
+        $this->assignRole($user, $request->role);
+
+        // Reload the updated user with relationships
+        $user = User::with(['headOffice', 'branchOffice', 'creator', 'roles'])
+            ->find($user->id);
+
+        return back()->with([
+            'success' => 'Role changed successfully!',
+            'user' => $user
+        ])->withInput();
+    }
+
+    /**
+     * Get users for API
+     */
+    public function getUsers()
+    {
+        $users = User::where('deleteStatus', 0)
+            ->where('user_type', '!=', 'member')
+            ->with(['headOffice', 'branchOffice', 'creator', 'roles'])
+            ->orderBy('created_at', 'desc')
+            ->get();
+
+        return response()->json($users);
+    }
+
+    /**
+     * Assign role to user
+     */
+    private function assignRole(User $user, string $roleName)
+    {
+        // Map role names to role IDs
+        $roleMap = [
+            'Super User' => 'super_user',
+            'Admin User' => 'admin_user',
+            'Account User' => 'account_user',
+            'Billing User' => 'billing_user',
+            'Branch Admin User' => 'branch_admin_user',
+            'Branch Billing User' => 'branch_billing_user',
+        ];
+
+        $roleSlug = $roleMap[$roleName] ?? null;
+        
+        if ($roleSlug) {
+            $role = Role::where('name', $roleSlug)->first();
+            if ($role) {
+                $user->roles()->sync([$role->id]);
+            }
+        }
+    }
+
+    // Legacy methods for test users (keeping for backward compatibility)
     public function createTestUsers()
     {
         // Get roles and branches
@@ -23,20 +255,22 @@ class UserController extends Controller
         $branchBillingRole = Role::where('name', 'branch_billing_user')->first();
         $paidMemberRole = Role::where('name', 'paid_member')->first();
         $freeMemberRole = Role::where('name', 'free_member')->first();
-        
-        $mainBranch = Branch::where('code', 'BR001')->first();
 
         // Create HeadOffice Test Users
         $superUser = User::updateOrCreate(
             ['email' => 'super@servecafe.com'],
             [
                 'name' => 'Super Admin',
+                'first_name' => 'Super',
+                'last_name' => 'Admin',
                 'password' => Hash::make('password'),
                 'phone' => '+1-555-0001',
                 'address' => 'Corporate Headquarters',
                 'user_type' => 'headoffice',
                 'referral_code' => 'SUPER001',
                 'is_active' => true,
+                'activeStatus' => 1,
+                'deleteStatus' => 0,
             ]
         );
         $superUser->roles()->sync([$superUserRole->id]);
@@ -45,12 +279,16 @@ class UserController extends Controller
             ['email' => 'admin@servecafe.com'],
             [
                 'name' => 'System Admin',
+                'first_name' => 'System',
+                'last_name' => 'Admin',
                 'password' => Hash::make('password'),
                 'phone' => '+1-555-0002',
                 'address' => 'Corporate Headquarters',
                 'user_type' => 'headoffice',
                 'referral_code' => 'ADMIN001',
                 'is_active' => true,
+                'activeStatus' => 1,
+                'deleteStatus' => 0,
             ]
         );
         $adminUser->roles()->sync([$adminUserRole->id]);
@@ -59,12 +297,16 @@ class UserController extends Controller
             ['email' => 'account@servecafe.com'],
             [
                 'name' => 'Account Manager',
+                'first_name' => 'Account',
+                'last_name' => 'Manager',
                 'password' => Hash::make('password'),
                 'phone' => '+1-555-0003',
                 'address' => 'Corporate Headquarters',
                 'user_type' => 'headoffice',
                 'referral_code' => 'ACCT001',
                 'is_active' => true,
+                'activeStatus' => 1,
+                'deleteStatus' => 0,
             ]
         );
         $accountUser->roles()->sync([$accountUserRole->id]);
@@ -73,132 +315,19 @@ class UserController extends Controller
             ['email' => 'billing@servecafe.com'],
             [
                 'name' => 'Billing Manager',
+                'first_name' => 'Billing',
+                'last_name' => 'Manager',
                 'password' => Hash::make('password'),
                 'phone' => '+1-555-0004',
                 'address' => 'Corporate Headquarters',
                 'user_type' => 'headoffice',
                 'referral_code' => 'BILL001',
                 'is_active' => true,
+                'activeStatus' => 1,
+                'deleteStatus' => 0,
             ]
         );
         $billingUser->roles()->sync([$billingUserRole->id]);
-
-        // Create BrandOffice Test Users
-        $branchAdmin = User::updateOrCreate(
-            ['email' => 'branch.admin@servecafe.com'],
-            [
-                'name' => 'Branch Manager - Downtown',
-                'password' => Hash::make('password'),
-                'phone' => '+1-555-0101',
-                'address' => '123 Main Street, Downtown',
-                'user_type' => 'brandoffice',
-                'branch_id' => $mainBranch->id,
-                'referral_code' => 'BRADM001',
-                'is_active' => true,
-            ]
-        );
-        $branchAdmin->roles()->sync([$branchAdminRole->id]);
-
-        $branchBilling = User::updateOrCreate(
-            ['email' => 'branch.billing@servecafe.com'],
-            [
-                'name' => 'Branch Billing - Downtown',
-                'password' => Hash::make('password'),
-                'phone' => '+1-555-0102',
-                'address' => '123 Main Street, Downtown',
-                'user_type' => 'brandoffice',
-                'branch_id' => $mainBranch->id,
-                'referral_code' => 'BRBILL001',
-                'is_active' => true,
-            ]
-        );
-        $branchBilling->roles()->sync([$branchBillingRole->id]);
-
-        // Create Member Test Users
-        $paidMember1 = User::updateOrCreate(
-            ['email' => 'john@example.com'],
-            [
-                'name' => 'John Customer',
-                'password' => Hash::make('password'),
-                'phone' => '+1-555-1001',
-                'address' => '100 Customer Street',
-                'user_type' => 'member',
-                'member_type' => 'paid',
-                'referral_code' => 'PAID001',
-                'is_active' => true,
-            ]
-        );
-        $paidMember1->roles()->sync([$paidMemberRole->id]);
-        
-        // Create wallet for paid member
-        Wallet::updateOrCreate(
-            ['user_id' => $paidMember1->id],
-            [
-                'balance' => 100.00,
-                'total_deposited' => 100.00,
-                'total_spent' => 0.00,
-                'is_active' => true,
-            ]
-        );
-
-        $paidMember2 = User::updateOrCreate(
-            ['email' => 'jane@example.com'],
-            [
-                'name' => 'Jane Customer',
-                'password' => Hash::make('password'),
-                'phone' => '+1-555-1002',
-                'address' => '200 Customer Avenue',
-                'user_type' => 'member',
-                'member_type' => 'paid',
-                'referral_code' => 'PAID002',
-                'referred_by' => $paidMember1->id,
-                'is_active' => true,
-            ]
-        );
-        $paidMember2->roles()->sync([$paidMemberRole->id]);
-        
-        // Create wallet for paid member
-        Wallet::updateOrCreate(
-            ['user_id' => $paidMember2->id],
-            [
-                'balance' => 50.00,
-                'total_deposited' => 50.00,
-                'total_spent' => 0.00,
-                'is_active' => true,
-            ]
-        );
-
-        $freeMember1 = User::updateOrCreate(
-            ['email' => 'bob@example.com'],
-            [
-                'name' => 'Bob Walker',
-                'password' => Hash::make('password'),
-                'phone' => '+1-555-2001',
-                'address' => '300 Walker Lane',
-                'user_type' => 'member',
-                'member_type' => 'free',
-                'referral_code' => 'FREE001',
-                'referred_by' => $paidMember1->id,
-                'is_active' => true,
-            ]
-        );
-        $freeMember1->roles()->sync([$freeMemberRole->id]);
-
-        $freeMember2 = User::updateOrCreate(
-            ['email' => 'alice@example.com'],
-            [
-                'name' => 'Alice Walker',
-                'password' => Hash::make('password'),
-                'phone' => '+1-555-2002',
-                'address' => '400 Walker Street',
-                'user_type' => 'member',
-                'member_type' => 'free',
-                'referral_code' => 'FREE002',
-                'referred_by' => $paidMember2->id,
-                'is_active' => true,
-            ]
-        );
-        $freeMember2->roles()->sync([$freeMemberRole->id]);
 
         return response()->json([
             'message' => 'Test users created successfully!',
@@ -209,16 +338,6 @@ class UserController extends Controller
                     'Account User' => 'account@servecafe.com',
                     'Billing User' => 'billing@servecafe.com',
                 ],
-                'BrandOffice' => [
-                    'Branch Admin' => 'branch.admin@servecafe.com',
-                    'Branch Billing' => 'branch.billing@servecafe.com',
-                ],
-                'Members' => [
-                    'Paid Member 1' => 'john@example.com',
-                    'Paid Member 2' => 'jane@example.com',
-                    'Free Member 1' => 'bob@example.com',
-                    'Free Member 2' => 'alice@example.com',
-                ]
             ],
             'password' => 'password (for all users)'
         ]);
@@ -234,16 +353,6 @@ class UserController extends Controller
                     ['name' => 'Account User', 'email' => 'account@servecafe.com', 'role' => 'Account User'],
                     ['name' => 'Billing User', 'email' => 'billing@servecafe.com', 'role' => 'Billing User'],
                 ],
-                'BrandOffice' => [
-                    ['name' => 'Branch Admin', 'email' => 'branch.admin@servecafe.com', 'role' => 'Branch Admin'],
-                    ['name' => 'Branch Billing', 'email' => 'branch.billing@servecafe.com', 'role' => 'Branch Billing'],
-                ],
-                'Members' => [
-                    ['name' => 'John Customer', 'email' => 'john@example.com', 'role' => 'Paid Member'],
-                    ['name' => 'Jane Customer', 'email' => 'jane@example.com', 'role' => 'Paid Member'],
-                    ['name' => 'Bob Walker', 'email' => 'bob@example.com', 'role' => 'Free Member'],
-                    ['name' => 'Alice Walker', 'email' => 'alice@example.com', 'role' => 'Free Member'],
-                ]
             ]
         ]);
     }

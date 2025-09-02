@@ -71,9 +71,7 @@ Route::middleware(['auth', 'verified'])->group(function () {
     })->name('wallets');
     
     // Users Tracking
-    Route::get('/users-tracking', function () {
-        return Inertia::render('HeadOffice/Super/UsersTracking');
-    })->name('users-tracking');
+    Route::get('/users-tracking', [UserController::class, 'index'])->name('users-tracking');
     
     // Manage Payments
     Route::get('/manage-payments', function () {
@@ -165,6 +163,12 @@ Route::middleware(['auth', 'verified'])->group(function () {
     // Stock Records Management Routes
     Route::resource('stock-records', App\Http\Controllers\StockRecordController::class);
     Route::get('/stock-records-api', [App\Http\Controllers\StockRecordController::class, 'getStockRecords'])->name('stock-records.api');
+    
+    // User Management Routes
+    Route::resource('users', UserController::class);
+    Route::get('/users-api', [UserController::class, 'getUsers'])->name('users.api');
+    Route::post('/users/{user}/reset-password', [UserController::class, 'resetPassword'])->name('users.reset-password');
+    Route::post('/users/{user}/change-role', [UserController::class, 'changeRole'])->name('users.change-role');
 });
 
 Route::middleware('auth')->group(function () {

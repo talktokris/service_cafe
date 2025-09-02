@@ -4,7 +4,7 @@ import { Link } from "@inertiajs/react";
 export default function AdminHeader({ user = null, onMenuToggle }) {
     return (
         <div className="bg-white shadow-lg border-b border-gray-200">
-            <div className="container mx-auto px-4">
+            <div className="div mx-auto px-4 w-full">
                 <div className="navbar min-h-16">
                     {/* Left side - Logo and Menu Toggle */}
                     <div className="navbar-start">
@@ -39,7 +39,7 @@ export default function AdminHeader({ user = null, onMenuToggle }) {
                                     <img
                                         src="/assets/logo.png"
                                         alt="Serve Cafe Logo"
-                                        className="w-10 h-10 object-contain"
+                                        className="w-12 h-12 object-contain"
                                     />
                                     <div className="text-red-800">
                                         <h1 className="text-lg font-bold">
