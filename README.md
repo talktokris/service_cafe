@@ -7,6 +7,8 @@ npm run dev
 
 php artisan serve
 
+php artisan c
+
     ```
 
 A modern restaurant management system built with Laravel 11, React, Inertia.js, Tailwind CSS, and DaisyUI.

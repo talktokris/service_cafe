@@ -21,7 +21,7 @@ export default function Footer() {
                                 style={{ filter: "brightness(0) invert(1)" }}
                             />
                         </div>
-                        <p className="text-primary text-sm">
+                        <p className="text-slate-300 text-sm">
                             YOUR FLAVOR HAVEN
                         </p>
                     </div>

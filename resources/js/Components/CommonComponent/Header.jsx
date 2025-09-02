@@ -3,7 +3,7 @@ import { Link } from "@inertiajs/react";
 
 export default function Header({ user = null }) {
     return (
-        <div className="bg-white shadow-lg">
+        <div className="bg-white shadow shadow-slate-200 drop-shadow-lg">
             <div className="container mx-auto px-4">
                 <div className="navbar min-h-20">
                     <div className="navbar-start">

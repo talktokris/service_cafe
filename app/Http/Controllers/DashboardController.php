@@ -38,22 +38,22 @@ class DashboardController extends Controller
         switch ($role->name) {
             case 'super_user':
                 return Inertia::render('HeadOffice/Super/SuperUserDashboard', [
-                    'auth' => ['user' => $user],
+                    'user' => $user,
                     'stats' => $stats
                 ]);
             case 'admin_user':
                 return Inertia::render('HeadOffice/Admin/AdminUserDashboard', [
-                    'auth' => ['user' => $user],
+                    'user' => $user,
                     'stats' => $stats
                 ]);
             case 'account_user':
                 return Inertia::render('HeadOffice/Account/AccountUserDashboard', [
-                    'auth' => ['user' => $user],
+                    'user' => $user,
                     'stats' => $stats
                 ]);
             case 'billing_user':
                 return Inertia::render('HeadOffice/Billing/BillingUserDashboard', [
-                    'auth' => ['user' => $user],
+                    'user' => $user,
                     'stats' => $stats
                 ]);
             default:
@@ -115,11 +115,14 @@ class DashboardController extends Controller
             'totalBranches' => \App\Models\Branch::count(),
             'activeBranches' => \App\Models\Branch::where('is_active', true)->count(),
             'totalUsers' => \App\Models\User::count(),
-            'totalRevenue' => \App\Models\Order::sum('total_amount'),
-            'commissionsPaid' => \App\Models\CommissionTransaction::where('status', 'paid')->sum('commission_amount'),
-            'pendingCommissions' => \App\Models\CommissionTransaction::where('status', 'pending')->sum('commission_amount'),
-            'totalWalletBalance' => \App\Models\Wallet::sum('balance'),
-            'todayRevenue' => \App\Models\Order::whereDate('created_at', today())->sum('total_amount'),
+            'totalOrders' => \App\Models\Order::count(),
+            'totalRevenue' => \App\Models\Order::sum('total_amount') ?: 0,
+            'pendingOrders' => \App\Models\Order::where('status', 'pending')->count(),
+            'completedOrders' => \App\Models\Order::where('status', 'completed')->count(),
+            'commissionsPaid' => \App\Models\CommissionTransaction::where('status', 'paid')->sum('commission_amount') ?: 0,
+            'pendingCommissions' => \App\Models\CommissionTransaction::where('status', 'pending')->sum('commission_amount') ?: 0,
+            'totalWalletBalance' => \App\Models\Wallet::sum('balance') ?: 0,
+            'todayRevenue' => \App\Models\Order::whereDate('created_at', today())->sum('total_amount') ?: 0,
             'pendingPayments' => \App\Models\Order::where('status', 'pending')->count(),
             'invoicesGenerated' => \App\Models\Order::whereDate('created_at', today())->count(),
             'paymentSuccessRate' => 95, // Mock data

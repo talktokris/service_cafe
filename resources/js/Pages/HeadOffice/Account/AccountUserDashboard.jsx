@@ -1,16 +1,12 @@
 import React from "react";
-import AuthenticatedLayout from "@/Layouts/AuthenticatedLayout";
 import { Head } from "@inertiajs/react";
+import { AdminDashboardLayout } from "../AdminComponents";
 
-export default function AccountUserDashboard({ auth, stats }) {
+export default function AccountUserDashboard({ user, stats }) {
     return (
-        <AuthenticatedLayout
-            user={auth.user}
-            header={
-                <h2 className="font-semibold text-xl text-gray-800 leading-tight">
-                    Account Dashboard
-                </h2>
-            }
+        <AdminDashboardLayout
+            title="Account Dashboard - Serve Cafe"
+            user={user}
         >
             <Head title="Account Dashboard" />
 
@@ -306,6 +302,6 @@ export default function AccountUserDashboard({ auth, stats }) {
                     </div>
                 </div>
             </div>
-        </AuthenticatedLayout>
+        </AdminDashboardLayout>
     );
 }
