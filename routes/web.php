@@ -83,9 +83,30 @@ Route::middleware(['auth', 'verified'])->group(function () {
         return Inertia::render('HeadOffice/Super/Settings');
     })->name('settings');
     
+    // Manage Tables Settings
+    Route::get('/manage-tables', function () {
+        $restaurantTables = \App\Models\RestaurantTable::where('deleteStatus', 0)
+            ->with(['headOffice', 'branch'])
+            ->orderBy('created_at', 'desc')
+            ->get();
+        
+        $officeProfiles = \App\Models\OfficeProfile::where('deleteStatus', 0)
+            ->orderBy('created_at', 'desc')
+            ->get();
+        
+        return Inertia::render('HeadOffice/Super/ManageTablesSettings', [
+            'restaurantTables' => $restaurantTables,
+            'officeProfiles' => $officeProfiles
+        ]);
+    })->name('manage-tables');
+    
     // Office Profile Management Routes
     Route::resource('office-profiles', App\Http\Controllers\OfficeProfileController::class);
     Route::get('/office-profiles-api', [App\Http\Controllers\OfficeProfileController::class, 'getOfficeProfiles'])->name('office-profiles.api');
+    
+    // Restaurant Table Management Routes
+    Route::resource('restaurant-tables', App\Http\Controllers\RestaurantTableController::class);
+    Route::get('/restaurant-tables-api', [App\Http\Controllers\RestaurantTableController::class, 'getRestaurantTables'])->name('restaurant-tables.api');
 });
 
 Route::middleware('auth')->group(function () {

@@ -234,6 +234,28 @@ export default function AdminSidebar({ isOpen, onClose, user }) {
                     />
                 </svg>
             ),
+            submenu: [
+                {
+                    title: "Manage Tables",
+                    href: "/manage-tables",
+                    icon: (
+                        <svg
+                            xmlns="http://www.w3.org/2000/svg"
+                            className="h-4 w-4"
+                            fill="none"
+                            viewBox="0 0 24 24"
+                            stroke="currentColor"
+                        >
+                            <path
+                                strokeLinecap="round"
+                                strokeLinejoin="round"
+                                strokeWidth="2"
+                                d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"
+                            />
+                        </svg>
+                    ),
+                },
+            ],
         },
     ];
 
@@ -298,19 +320,41 @@ export default function AdminSidebar({ isOpen, onClose, user }) {
                             Main Menu
                         </div>
                         {menuItems.map((item, index) => (
-                            <Link
-                                key={index}
-                                href={item.href}
-                                className="flex items-center space-x-3 px-3 py-2 rounded-lg text-gray-700 hover:bg-gray-100 hover:text-red-600 transition-colors duration-200"
-                                onClick={onClose}
-                            >
-                                <span className="text-gray-500">
-                                    {item.icon}
-                                </span>
-                                <span className="font-medium">
-                                    {item.title}
-                                </span>
-                            </Link>
+                            <div key={index}>
+                                <Link
+                                    href={item.href}
+                                    className="flex items-center space-x-3 px-3 py-2 rounded-lg text-gray-700 hover:bg-gray-100 hover:text-red-600 transition-colors duration-200"
+                                    onClick={onClose}
+                                >
+                                    <span className="text-gray-500">
+                                        {item.icon}
+                                    </span>
+                                    <span className="font-medium">
+                                        {item.title}
+                                    </span>
+                                </Link>
+                                {item.submenu && (
+                                    <div className="ml-6 mt-1 space-y-1">
+                                        {item.submenu.map(
+                                            (subItem, subIndex) => (
+                                                <Link
+                                                    key={subIndex}
+                                                    href={subItem.href}
+                                                    className="flex items-center space-x-2 px-3 py-1 rounded-lg text-sm text-gray-600 hover:bg-gray-50 hover:text-red-600 transition-colors duration-200"
+                                                    onClick={onClose}
+                                                >
+                                                    <span className="text-gray-400">
+                                                        {subItem.icon}
+                                                    </span>
+                                                    <span className="font-medium">
+                                                        {subItem.title}
+                                                    </span>
+                                                </Link>
+                                            )
+                                        )}
+                                    </div>
+                                )}
+                            </div>
                         ))}
                     </div>
 
