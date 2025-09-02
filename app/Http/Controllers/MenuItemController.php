@@ -3,26 +3,26 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
-use App\Models\RestaurantTable;
+use App\Models\MenuItem;
 use App\Models\OfficeProfile;
 use Inertia\Inertia;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Facades\Auth;
 
-class RestaurantTableController extends Controller
+class MenuItemController extends Controller
 {
     /**
      * Display a listing of the resource.
      */
     public function index()
     {
-        $restaurantTables = RestaurantTable::where('deleteStatus', 0)
+        $menuItems = MenuItem::where('deleteStatus', 0)
             ->with(['headOffice', 'branch'])
             ->orderBy('created_at', 'desc')
             ->get();
 
         return response()->json([
-            'restaurantTables' => $restaurantTables
+            'menuItems' => $menuItems
         ]);
     }
 
@@ -34,8 +34,15 @@ class RestaurantTableController extends Controller
         $validator = Validator::make($request->all(), [
             'headOfficeId' => 'required|exists:office_profiles,id',
             'branchId' => 'nullable|exists:office_profiles,id',
-            'tableShortName' => 'required|string|max:20',
-            'tableShortFullName' => 'required|string|max:150',
+            'menuName' => 'required|string|max:255',
+            'menuType' => 'required|in:food,drink',
+            'drinkAmount' => 'nullable|numeric|min:0',
+            'buyingPrice' => 'required|numeric|min:0',
+            'adminProfitPercentage' => 'nullable|integer|min:0|max:100',
+            'adminProfitAmount' => 'nullable|numeric|min:0',
+            'userCommissionPercentage' => 'nullable|integer|min:0|max:100',
+            'userCommissionAmount' => 'nullable|numeric|min:0',
+            'sellingPrice' => 'required|numeric|min:0',
             'activeStatus' => 'required|integer|in:0,1'
         ]);
 
@@ -47,34 +54,41 @@ class RestaurantTableController extends Controller
         $data = $request->all();
         $data['createUserId'] = Auth::id();
 
-        $restaurantTable = RestaurantTable::create($data);
+        $menuItem = MenuItem::create($data);
 
         return back()->with([
-            'success' => 'Restaurant table created successfully!',
-            'restaurantTable' => $restaurantTable
+            'success' => 'Menu item created successfully!',
+            'menuItem' => $menuItem
         ])->withInput();
     }
 
     /**
      * Display the specified resource.
      */
-    public function show(RestaurantTable $restaurantTable)
+    public function show(MenuItem $menuItem)
     {
         return response()->json([
-            'restaurantTable' => $restaurantTable
+            'menuItem' => $menuItem
         ]);
     }
 
     /**
      * Update the specified resource in storage.
      */
-    public function update(Request $request, RestaurantTable $restaurantTable)
+    public function update(Request $request, MenuItem $menuItem)
     {
         $validator = Validator::make($request->all(), [
             'headOfficeId' => 'required|exists:office_profiles,id',
             'branchId' => 'nullable|exists:office_profiles,id',
-            'tableShortName' => 'required|string|max:20',
-            'tableShortFullName' => 'required|string|max:150',
+            'menuName' => 'required|string|max:255',
+            'menuType' => 'required|in:food,drink',
+            'drinkAmount' => 'nullable|numeric|min:0',
+            'buyingPrice' => 'required|numeric|min:0',
+            'adminProfitPercentage' => 'nullable|integer|min:0|max:100',
+            'adminProfitAmount' => 'nullable|numeric|min:0',
+            'userCommissionPercentage' => 'nullable|integer|min:0|max:100',
+            'userCommissionAmount' => 'nullable|numeric|min:0',
+            'sellingPrice' => 'required|numeric|min:0',
             'activeStatus' => 'required|integer|in:0,1'
         ]);
 
@@ -82,37 +96,37 @@ class RestaurantTableController extends Controller
             return back()->withErrors($validator)->withInput();
         }
 
-        $restaurantTable->update($request->all());
+        $menuItem->update($request->all());
 
         return back()->with([
-            'success' => 'Restaurant table updated successfully!',
-            'restaurantTable' => $restaurantTable
+            'success' => 'Menu item updated successfully!',
+            'menuItem' => $menuItem
         ])->withInput();
     }
 
     /**
      * Remove the specified resource from storage.
      */
-    public function destroy(RestaurantTable $restaurantTable)
+    public function destroy(MenuItem $menuItem)
     {
         // Soft delete by setting deleteStatus to 1
-        $restaurantTable->update(['deleteStatus' => 1]);
+        $menuItem->update(['deleteStatus' => 1]);
 
         return back()->with([
-            'success' => 'Restaurant table deleted successfully!'
+            'success' => 'Menu item deleted successfully!'
         ])->withInput();
     }
 
     /**
-     * Get restaurant tables for the manage tables page
+     * Get menu items for the manage menu items page
      */
-    public function getRestaurantTables()
+    public function getMenuItems()
     {
-        $restaurantTables = RestaurantTable::where('deleteStatus', 0)
+        $menuItems = MenuItem::where('deleteStatus', 0)
             ->with(['headOffice', 'branch'])
             ->orderBy('created_at', 'desc')
             ->get();
 
-        return response()->json($restaurantTables);
+        return response()->json($menuItems);
     }
 }

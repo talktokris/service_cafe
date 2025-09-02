@@ -6,6 +6,7 @@ use Illuminate\Http\Request;
 use App\Models\OfficeProfile;
 use Inertia\Inertia;
 use Illuminate\Support\Facades\Validator;
+use Illuminate\Support\Facades\Auth;
 
 class OfficeProfileController extends Controller
 {
@@ -45,7 +46,11 @@ class OfficeProfileController extends Controller
             return back()->withErrors($validator)->withInput();
         }
 
-        $officeProfile = OfficeProfile::create($request->all());
+        // Add the logged-in user's ID to the request data
+        $data = $request->all();
+        $data['createUserId'] = Auth::id();
+
+        $officeProfile = OfficeProfile::create($data);
 
         return back()->with([
             'success' => 'Office profile created successfully!',

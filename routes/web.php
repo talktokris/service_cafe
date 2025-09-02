@@ -29,7 +29,19 @@ Route::get('/dashboard', [DashboardController::class, 'index'])->middleware(['au
 Route::middleware(['auth', 'verified'])->group(function () {
     // Menu Management
     Route::get('/menu', function () {
-        return Inertia::render('HeadOffice/Super/MenuManagement');
+        $menuItems = \App\Models\MenuItem::where('deleteStatus', 0)
+            ->with(['headOffice', 'branch'])
+            ->orderBy('created_at', 'desc')
+            ->get();
+        
+        $officeProfiles = \App\Models\OfficeProfile::where('deleteStatus', 0)
+            ->orderBy('created_at', 'desc')
+            ->get();
+        
+        return Inertia::render('HeadOffice/Super/MenuManagement', [
+            'menuItems' => $menuItems,
+            'officeProfiles' => $officeProfiles
+        ]);
     })->name('menu');
     
     // Order Management
@@ -128,6 +140,10 @@ Route::middleware(['auth', 'verified'])->group(function () {
     // Stock Item Settings Management Routes
     Route::resource('stock-item-settings', App\Http\Controllers\StockItemSettingController::class);
     Route::get('/stock-item-settings-api', [App\Http\Controllers\StockItemSettingController::class, 'getStockItemSettings'])->name('stock-item-settings.api');
+    
+    // Menu Items Management Routes
+    Route::resource('menu-items', App\Http\Controllers\MenuItemController::class);
+    Route::get('/menu-items-api', [App\Http\Controllers\MenuItemController::class, 'getMenuItems'])->name('menu-items.api');
 });
 
 Route::middleware('auth')->group(function () {

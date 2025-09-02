@@ -7,6 +7,7 @@ use App\Models\StockItemSetting;
 use App\Models\OfficeProfile;
 use Inertia\Inertia;
 use Illuminate\Support\Facades\Validator;
+use Illuminate\Support\Facades\Auth;
 
 class StockItemSettingController extends Controller
 {
@@ -42,7 +43,11 @@ class StockItemSettingController extends Controller
             return back()->withErrors($validator)->withInput();
         }
 
-        $stockItemSetting = StockItemSetting::create($request->all());
+        // Add the logged-in user's ID to the request data
+        $data = $request->all();
+        $data['createUserId'] = Auth::id();
+
+        $stockItemSetting = StockItemSetting::create($data);
 
         return back()->with([
             'success' => 'Stock item setting created successfully!',
