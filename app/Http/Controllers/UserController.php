@@ -219,6 +219,77 @@ class UserController extends Controller
     }
 
     /**
+     * Display members management page
+     */
+    public function manageMembers()
+    {
+        $members = User::where('deleteStatus', 0)
+            ->where('user_type', 'member')
+            ->with(['roles'])
+            ->orderBy('created_at', 'desc')
+            ->get();
+
+        return Inertia::render('HeadOffice/Super/ManageMembers', [
+            'members' => $members,
+        ]);
+    }
+
+    /**
+     * Update member information
+     */
+    public function updateMember(Request $request, User $member)
+    {
+        $validator = Validator::make($request->all(), [
+            'first_name' => 'required|string|max:255',
+            'last_name' => 'required|string|max:255',
+            'email' => 'required|string|email|max:255|unique:users,email,' . $member->id,
+            'phone' => 'nullable|string|max:20',
+            'address' => 'nullable|string|max:500',
+            'gender' => 'nullable|in:male,female,other',
+            'country' => 'nullable|string|max:100',
+            'activeStatus' => 'boolean',
+        ]);
+
+        if ($validator->fails()) {
+            return back()->withErrors($validator)->withInput();
+        }
+
+        $member->update($request->all());
+
+        // Reload the updated member with relationships
+        $member = User::with(['roles'])
+            ->find($member->id);
+
+        return back()->with([
+            'success' => 'Member updated successfully!',
+            'member' => $member
+        ])->withInput();
+    }
+
+    /**
+     * Reset member password
+     */
+    public function resetMemberPassword(Request $request, User $member)
+    {
+        $validator = Validator::make($request->all(), [
+            'new_password' => 'required|string|min:8|confirmed',
+        ]);
+
+        if ($validator->fails()) {
+            return back()->withErrors($validator)->withInput();
+        }
+
+        // Update password
+        $member->update([
+            'password' => Hash::make($request->new_password)
+        ]);
+
+        return back()->with([
+            'success' => 'Member password reset successfully!'
+        ])->withInput();
+    }
+
+    /**
      * Assign role to user
      */
     private function assignRole(User $user, string $roleName)

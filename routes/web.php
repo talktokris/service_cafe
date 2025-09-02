@@ -169,6 +169,11 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::get('/users-api', [UserController::class, 'getUsers'])->name('users.api');
     Route::post('/users/{user}/reset-password', [UserController::class, 'resetPassword'])->name('users.reset-password');
     Route::post('/users/{user}/change-role', [UserController::class, 'changeRole'])->name('users.change-role');
+    
+    // Member Management Routes
+    Route::get('/manage-members', [UserController::class, 'manageMembers'])->name('manage-members');
+    Route::put('/members/{member}', [UserController::class, 'updateMember'])->name('members.update');
+    Route::post('/members/{member}/reset-password', [UserController::class, 'resetMemberPassword'])->name('members.reset-password');
 });
 
 Route::middleware('auth')->group(function () {
