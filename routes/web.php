@@ -100,6 +100,23 @@ Route::middleware(['auth', 'verified'])->group(function () {
         ]);
     })->name('manage-tables');
     
+    // Stock Item Settings
+    Route::get('/stock-item-settings-page', function () {
+        $stockItemSettings = \App\Models\StockItemSetting::where('deleteStatus', 0)
+            ->with(['headOffice', 'branch'])
+            ->orderBy('created_at', 'desc')
+            ->get();
+        
+        $officeProfiles = \App\Models\OfficeProfile::where('deleteStatus', 0)
+            ->orderBy('created_at', 'desc')
+            ->get();
+        
+        return Inertia::render('HeadOffice/Super/StockItemSettings', [
+            'stockItemSettings' => $stockItemSettings,
+            'officeProfiles' => $officeProfiles
+        ]);
+    })->name('stock-item-settings-page');
+    
     // Office Profile Management Routes
     Route::resource('office-profiles', App\Http\Controllers\OfficeProfileController::class);
     Route::get('/office-profiles-api', [App\Http\Controllers\OfficeProfileController::class, 'getOfficeProfiles'])->name('office-profiles.api');
@@ -107,6 +124,10 @@ Route::middleware(['auth', 'verified'])->group(function () {
     // Restaurant Table Management Routes
     Route::resource('restaurant-tables', App\Http\Controllers\RestaurantTableController::class);
     Route::get('/restaurant-tables-api', [App\Http\Controllers\RestaurantTableController::class, 'getRestaurantTables'])->name('restaurant-tables.api');
+    
+    // Stock Item Settings Management Routes
+    Route::resource('stock-item-settings', App\Http\Controllers\StockItemSettingController::class);
+    Route::get('/stock-item-settings-api', [App\Http\Controllers\StockItemSettingController::class, 'getStockItemSettings'])->name('stock-item-settings.api');
 });
 
 Route::middleware('auth')->group(function () {
