@@ -124,9 +124,9 @@ export default function ManageMenuComponents({
 
     // Format currency
     const formatCurrency = (amount) => {
-        return new Intl.NumberFormat("en-US", {
+        return new Intl.NumberFormat("en-IN", {
             style: "currency",
-            currency: "USD",
+            currency: "INR",
         }).format(amount || 0);
     };
 
@@ -135,7 +135,7 @@ export default function ManageMenuComponents({
             {/* Header Section */}
             <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
                 <div>
-                    <h1 className="text-2xl font-bold text-gray-900">
+                    <h1 className="text-xl font-bold text-gray-900">
                         Menu Items Management
                     </h1>
                     <p className="text-gray-600 mt-1">

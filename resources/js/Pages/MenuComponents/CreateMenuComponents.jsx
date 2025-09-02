@@ -36,10 +36,55 @@ export default function CreateMenuComponents({
 
     const handleInputChange = (e) => {
         const { name, value, type, checked } = e.target;
-        setFormData((prev) => ({
-            ...prev,
-            [name]: type === "checkbox" ? checked : value,
-        }));
+        const newValue = type === "checkbox" ? checked : value;
+
+        setFormData((prev) => {
+            const updatedData = {
+                ...prev,
+                [name]: newValue,
+            };
+
+            // Auto-calculate all fields when Buying Price, Admin Profit Percentage, or User Commission Percentage changes
+            if (
+                name === "buyingPrice" ||
+                name === "adminProfitPercentage" ||
+                name === "userCommissionPercentage"
+            ) {
+                const buyingPrice =
+                    name === "buyingPrice"
+                        ? parseFloat(newValue) || 0
+                        : parseFloat(prev.buyingPrice) || 0;
+                const adminProfitPercentage =
+                    name === "adminProfitPercentage"
+                        ? parseFloat(newValue) || 0
+                        : parseFloat(prev.adminProfitPercentage) || 0;
+                const userCommissionPercentage =
+                    name === "userCommissionPercentage"
+                        ? parseFloat(newValue) || 0
+                        : parseFloat(prev.userCommissionPercentage) || 0;
+
+                // Calculate Admin Profit Amount
+                const adminProfitAmount =
+                    Math.round(
+                        (adminProfitPercentage / 100) * buyingPrice * 100
+                    ) / 100;
+                updatedData.adminProfitAmount = adminProfitAmount;
+
+                // Calculate Selling Price
+                const sellingPrice =
+                    Math.round((buyingPrice + adminProfitAmount) * 100) / 100;
+                updatedData.sellingPrice = sellingPrice;
+
+                // Calculate User Commission Amount
+                const userCommissionAmount =
+                    Math.round(
+                        (userCommissionPercentage / 100) * buyingPrice * 100
+                    ) / 100;
+                updatedData.userCommissionAmount = userCommissionAmount;
+            }
+
+            return updatedData;
+        });
 
         // Clear error when user starts typing
         if (errors[name]) {
@@ -328,7 +373,7 @@ export default function CreateMenuComponents({
                             <div>
                                 <label className="label">
                                     <span className="label-text">
-                                        Buying Price ($)
+                                        Buying Price (₹)
                                     </span>
                                 </label>
                                 <input
@@ -353,17 +398,15 @@ export default function CreateMenuComponents({
                             <div>
                                 <label className="label">
                                     <span className="label-text">
-                                        Selling Price ($)
+                                        Selling Price (₹)
                                     </span>
                                 </label>
                                 <input
                                     type="number"
                                     name="sellingPrice"
                                     value={formData.sellingPrice}
-                                    onChange={handleInputChange}
-                                    className={`input input-bordered w-full ${
-                                        errors.sellingPrice ? "input-error" : ""
-                                    }`}
+                                    readOnly
+                                    className="input input-bordered w-full bg-gray-100"
                                     placeholder="0.00"
                                     step="0.01"
                                     min="0"
@@ -414,15 +457,15 @@ export default function CreateMenuComponents({
                             <div>
                                 <label className="label">
                                     <span className="label-text">
-                                        Admin Profit Amount ($)
+                                        Admin Profit Amount (₹)
                                     </span>
                                 </label>
                                 <input
                                     type="number"
                                     name="adminProfitAmount"
                                     value={formData.adminProfitAmount}
-                                    onChange={handleInputChange}
-                                    className="input input-bordered w-full"
+                                    readOnly
+                                    className="input input-bordered w-full bg-gray-100"
                                     placeholder="0.00"
                                     step="0.01"
                                     min="0"
@@ -461,15 +504,15 @@ export default function CreateMenuComponents({
                             <div>
                                 <label className="label">
                                     <span className="label-text">
-                                        User Commission Amount ($)
+                                        User Commission Amount (₹)
                                     </span>
                                 </label>
                                 <input
                                     type="number"
                                     name="userCommissionAmount"
                                     value={formData.userCommissionAmount}
-                                    onChange={handleInputChange}
-                                    className="input input-bordered w-full"
+                                    readOnly
+                                    className="input input-bordered w-full bg-gray-100"
                                     placeholder="0.00"
                                     step="0.01"
                                     min="0"
