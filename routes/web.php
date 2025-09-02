@@ -44,7 +44,13 @@ Route::middleware(['auth', 'verified'])->group(function () {
     
     // Branch Management
     Route::get('/branches', function () {
-        return Inertia::render('HeadOffice/Super/BranchManagement');
+        $officeProfiles = \App\Models\OfficeProfile::where('deleteStatus', 0)
+            ->orderBy('created_at', 'desc')
+            ->get();
+        
+        return Inertia::render('HeadOffice/Super/BranchManagement', [
+            'officeProfiles' => $officeProfiles
+        ]);
     })->name('branches');
     
     // Wallet Management
@@ -76,6 +82,10 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::get('/settings', function () {
         return Inertia::render('HeadOffice/Super/Settings');
     })->name('settings');
+    
+    // Office Profile Management Routes
+    Route::resource('office-profiles', App\Http\Controllers\OfficeProfileController::class);
+    Route::get('/office-profiles-api', [App\Http\Controllers\OfficeProfileController::class, 'getOfficeProfiles'])->name('office-profiles.api');
 });
 
 Route::middleware('auth')->group(function () {

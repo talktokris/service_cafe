@@ -254,7 +254,7 @@ export default function AdminSidebar({ isOpen, onClose, user }) {
                 }`}
             >
                 {/* Sidebar Header */}
-                <div className="p-4 border-b border-gray-200">
+                {/* <div className="p-4 border-b border-gray-200">
                     <div className="flex items-center justify-between">
                         <div className="flex items-center space-x-3">
                             <img
@@ -263,9 +263,7 @@ export default function AdminSidebar({ isOpen, onClose, user }) {
                                 className="w-8 h-8 object-contain"
                             />
                             <div>
-                                <h2 className="text-lg font-bold text-red-800">
-                                    SERVE CAFE
-                                </h2>
+                           
                                 <p className="text-xs text-gray-500">
                                     Admin Panel
                                 </p>
@@ -291,7 +289,7 @@ export default function AdminSidebar({ isOpen, onClose, user }) {
                             </svg>
                         </button>
                     </div>
-                </div>
+                </div> */}
 
                 {/* Navigation Menu */}
                 <div className="p-4">
@@ -317,7 +315,7 @@ export default function AdminSidebar({ isOpen, onClose, user }) {
                     </div>
 
                     {/* User Info Section */}
-                    <div className="mt-8 pt-4 border-t border-gray-200">
+                    {/* <div className="mt-8 pt-4 border-t border-gray-200">
                         <div className="flex items-center space-x-3 p-3 bg-gray-50 rounded-lg">
                             <div className="w-10 h-10 rounded-full bg-red-600 text-white flex items-center justify-center">
                                 <span className="text-sm font-semibold">
@@ -334,7 +332,7 @@ export default function AdminSidebar({ isOpen, onClose, user }) {
                                 </p>
                             </div>
                         </div>
-                    </div>
+                    </div> */}
                 </div>
             </div>
         </>

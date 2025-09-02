@@ -29,6 +29,11 @@ class User extends Authenticatable
         'referred_by',
         'branch_id',
         'is_active',
+        'headOfficeId',
+        'branchId',
+        'createUserId',
+        'activeStatus',
+        'deleteStatus',
     ];
 
     /**
@@ -51,6 +56,8 @@ class User extends Authenticatable
         return [
             'email_verified_at' => 'datetime',
             'password' => 'hashed',
+            'activeStatus' => 'integer',
+            'deleteStatus' => 'integer',
         ];
     }
 
@@ -140,5 +147,61 @@ class User extends Authenticatable
     public function getPrimaryRoleAttribute()
     {
         return $this->roles()->first();
+    }
+
+    /**
+     * Get the head office that the user belongs to.
+     */
+    public function headOffice()
+    {
+        return $this->belongsTo(OfficeProfile::class, 'headOfficeId');
+    }
+
+    /**
+     * Get the branch office that the user belongs to.
+     */
+    public function branchOffice()
+    {
+        return $this->belongsTo(OfficeProfile::class, 'branchId');
+    }
+
+    /**
+     * Get the user who created this user.
+     */
+    public function creator()
+    {
+        return $this->belongsTo(User::class, 'createUserId');
+    }
+
+    /**
+     * Get the users created by this user.
+     */
+    public function createdUsers()
+    {
+        return $this->hasMany(User::class, 'createUserId');
+    }
+
+    /**
+     * Get the menu items created by this user.
+     */
+    public function createdMenuItems()
+    {
+        return $this->hasMany(MenuItem::class, 'createUserId');
+    }
+
+    /**
+     * Scope for active users.
+     */
+    public function scopeActive($query)
+    {
+        return $query->where('activeStatus', 1);
+    }
+
+    /**
+     * Scope for non-deleted users.
+     */
+    public function scopeNotDeleted($query)
+    {
+        return $query->where('deleteStatus', 0);
     }
 }
