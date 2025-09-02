@@ -51,7 +51,31 @@ Route::middleware(['auth', 'verified'])->group(function () {
     
     // Bill Payment
     Route::get('/bill-payment', function () {
-        return Inertia::render('HeadOffice/Super/BillPayment');
+        try {
+            $restaurantTables = \App\Models\RestaurantTable::where('deleteStatus', 0)
+                ->with(['headOffice', 'branch'])
+                ->orderBy('created_at', 'desc')
+                ->get();
+            
+            $menuItems = \App\Models\MenuItem::where('deleteStatus', 0)
+                ->with(['headOffice', 'branch'])
+                ->orderBy('created_at', 'desc')
+                ->get();
+            
+            \Log::info('Bill Payment Route - RestaurantTables count: ' . $restaurantTables->count());
+            \Log::info('Bill Payment Route - MenuItems count: ' . $menuItems->count());
+            
+            return Inertia::render('HeadOffice/Super/BillPayment', [
+                'restaurantTables' => $restaurantTables,
+                'menuItems' => $menuItems
+            ]);
+        } catch (\Exception $e) {
+            \Log::error('Bill Payment Route Error: ' . $e->getMessage());
+            return Inertia::render('HeadOffice/Super/BillPayment', [
+                'restaurantTables' => [],
+                'menuItems' => []
+            ]);
+        }
     })->name('bill-payment');
     
     // Branch Management
