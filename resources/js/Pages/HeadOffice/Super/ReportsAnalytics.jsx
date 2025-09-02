@@ -11,43 +11,53 @@ export default function ReportsAnalytics({ user }) {
             <Head title="Reports & Analytics" />
 
             {/* Page Header */}
-            <div className="mb-6">
-                <div className="flex items-center justify-between">
-                    <div>
-                        <h1 className="text-2xl font-bold text-gray-900">
-                            Reports & Analytics
-                        </h1>
-                        <nav className="flex" aria-label="Breadcrumb">
-                            <ol className="inline-flex items-center space-x-1 md:space-x-3">
-                                <li className="inline-flex items-center">
+            <div className="mb-4">
+                <div className="bg-white rounded-lg p-4 border border-gray-200 shadow-sm">
+                    <div className="flex items-center justify-between">
+                        <div className="flex items-center space-x-3">
+                            <div className="w-10 h-10 bg-gray-100 rounded-lg flex items-center justify-center">
+                                <svg
+                                    className="w-6 h-6 text-gray-600"
+                                    fill="none"
+                                    stroke="currentColor"
+                                    viewBox="0 0 24 24"
+                                >
+                                    <path
+                                        strokeLinecap="round"
+                                        strokeLinejoin="round"
+                                        strokeWidth="2"
+                                        d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"
+                                    />
+                                </svg>
+                            </div>
+                            <div>
+                                <h1 className="text-2xl font-bold text-gray-900">
+                                    Reports & Analytics
+                                </h1>
+                                <nav className="flex items-center space-x-2 text-sm">
                                     <Link
                                         href="/dashboard"
-                                        className="text-gray-700 hover:text-red-600"
+                                        className="text-gray-600 hover:text-gray-900 font-medium"
                                     >
                                         Home
                                     </Link>
-                                </li>
-                                <li>
-                                    <div className="flex items-center">
-                                        <svg
-                                            className="w-6 h-6 text-gray-400"
-                                            fill="currentColor"
-                                            viewBox="0 0 20 20"
-                                        >
-                                            <path
-                                                fillRule="evenodd"
-                                                d="M7.293 14.707a1 1 0 010-1.414L10.586 10 7.293 6.707a1 1 0 011.414-1.414l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414 0z"
-                                                clipRule="evenodd"
-                                            ></path>
-                                        </svg>
-                                        <span className="ml-1 text-gray-500 md:ml-2">
-                                            Reports & Analytics
-                                        </span>
-                                    </div>
-                                </li>
-                            </ol>
-                        </nav>
-                    </div>
+                                    <svg
+                                        className="w-4 h-4 text-gray-400"
+                                        fill="currentColor"
+                                        viewBox="0 0 20 20"
+                                    >
+                                        <path
+                                            fillRule="evenodd"
+                                            d="M7.293 14.707a1 1 0 010-1.414L10.586 10 7.293 6.707a1 1 0 011.414-1.414l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414 0z"
+                                            clipRule="evenodd"
+                                        ></path>
+                                    </svg>
+                                    <span className="text-gray-700 font-medium">
+                                        Reports & Analytics
+                                    </span>
+                                </nav>
+                            </div>
+                        </div>
                     <div className="flex space-x-2">
                         <select className="select select-bordered select-sm">
                             <option>Last 7 days</option>
