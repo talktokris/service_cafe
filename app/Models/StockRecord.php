@@ -83,4 +83,23 @@ class StockRecord extends Model
     {
         return $query->where('itemType', 'drink');
     }
+
+    // Mutator to automatically calculate totals when saving
+    protected static function boot()
+    {
+        parent::boot();
+
+        static::saving(function ($stockRecord) {
+            // Calculate totals if not already set
+            if ($stockRecord->itemAmount && $stockRecord->quantity) {
+                $stockRecord->itemAmountTotal = $stockRecord->itemAmount * $stockRecord->quantity;
+            }
+            if ($stockRecord->itemMassWeightKG && $stockRecord->quantity) {
+                $stockRecord->itemMassWeightKGTotal = $stockRecord->itemMassWeightKG * $stockRecord->quantity;
+            }
+            if ($stockRecord->itemLiquidWeightML && $stockRecord->quantity) {
+                $stockRecord->itemLiquidWeightMLTotal = $stockRecord->itemLiquidWeightML * $stockRecord->quantity;
+            }
+        });
+    }
 }
