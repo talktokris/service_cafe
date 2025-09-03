@@ -10,6 +10,8 @@ export default function PayBillComponents({ table, onClose, onSuccess }) {
     const [selectedMember, setSelectedMember] = useState(null);
     const [showFindMember, setShowFindMember] = useState(false);
     const [isSubmitting, setIsSubmitting] = useState(false);
+    const [showSuccessModal, setShowSuccessModal] = useState(false);
+    const [paymentResult, setPaymentResult] = useState(null);
 
     // Mock order data
     const orderTotal = 580; // This should come from actual order data
@@ -29,11 +31,14 @@ export default function PayBillComponents({ table, onClose, onSuccess }) {
         setIsSubmitting(true);
 
         try {
-            // Mock API call - replace with actual API
-            await new Promise((resolve) => setTimeout(resolve, 1000));
+            // Get CSRF token
+            const csrfToken =
+                document
+                    .querySelector('meta[name="csrf-token"]')
+                    ?.getAttribute("content") || "";
 
-            // Call success callback
-            onSuccess({
+            // Prepare payment data
+            const paymentData = {
                 tableId: table.id,
                 paymentMethod: paymentMethod,
                 billingType: billingType,
@@ -43,12 +48,58 @@ export default function PayBillComponents({ table, onClose, onSuccess }) {
                 paymentReference: paymentReference,
                 notes: notes,
                 selectedMember: selectedMember,
+            };
+
+            // Call the payment processing API
+            const response = await fetch("/process-payment", {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json",
+                    "X-CSRF-TOKEN": csrfToken,
+                    Accept: "application/json",
+                },
+                credentials: "same-origin",
+                body: JSON.stringify(paymentData),
             });
+
+            const result = await response.json();
+
+            if (result.success) {
+                // Store payment result and show success modal
+                setPaymentResult(result);
+                setShowSuccessModal(true);
+            } else {
+                // Show error message
+                alert(
+                    result.message ||
+                        "Payment processing failed. Please try again."
+                );
+            }
         } catch (error) {
             console.error("Error processing payment:", error);
+            alert("Payment processing failed. Please try again.");
         } finally {
             setIsSubmitting(false);
         }
+    };
+
+    const handleSuccessModalClose = () => {
+        setShowSuccessModal(false);
+        setPaymentResult(null);
+
+        // Call the original success callback to close all modals and refresh
+        onSuccess({
+            tableId: table.id,
+            paymentMethod: paymentMethod,
+            billingType: billingType,
+            orderTotal: orderTotal,
+            discountAmount: discountAmount,
+            finalTotal: finalTotal,
+            paymentReference: paymentReference,
+            notes: notes,
+            selectedMember: selectedMember,
+            paymentProcessed: true,
+        });
     };
 
     const handleMemberSelect = (member) => {
@@ -583,6 +634,83 @@ export default function PayBillComponents({ table, onClose, onSuccess }) {
                     onClose={() => setShowFindMember(false)}
                     onSelectMember={handleMemberSelect}
                 />
+            )}
+
+            {/* Success Modal */}
+            {showSuccessModal && (
+                <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-[60] p-4">
+                    <div className="bg-white rounded-lg shadow-xl max-w-md w-full">
+                        <div className="p-6 text-center">
+                            {/* Success Icon */}
+                            <div className="mx-auto flex items-center justify-center h-16 w-16 rounded-full bg-green-100 mb-4">
+                                <svg
+                                    className="h-8 w-8 text-green-600"
+                                    fill="none"
+                                    stroke="currentColor"
+                                    viewBox="0 0 24 24"
+                                >
+                                    <path
+                                        strokeLinecap="round"
+                                        strokeLinejoin="round"
+                                        strokeWidth="2"
+                                        d="M5 13l4 4L19 7"
+                                    />
+                                </svg>
+                            </div>
+
+                            {/* Success Message */}
+                            <h3 className="text-lg font-medium text-gray-900 mb-2">
+                                Payment Successful!
+                            </h3>
+                            <p className="text-sm text-gray-600 mb-4">
+                                {paymentResult?.message ||
+                                    "Your payment has been processed successfully."}
+                            </p>
+
+                            {/* Payment Details */}
+                            {paymentResult && (
+                                <div className="bg-gray-50 rounded-lg p-4 mb-4 text-left">
+                                    <div className="space-y-2 text-sm">
+                                        <div className="flex justify-between">
+                                            <span className="text-gray-600">
+                                                Order ID:
+                                            </span>
+                                            <span className="font-medium">
+                                                #{paymentResult.orderId}
+                                            </span>
+                                        </div>
+                                        <div className="flex justify-between">
+                                            <span className="text-gray-600">
+                                                Payment Method:
+                                            </span>
+                                            <span className="font-medium capitalize">
+                                                {paymentResult.paymentMethod}
+                                            </span>
+                                        </div>
+                                        <div className="flex justify-between">
+                                            <span className="text-gray-600">
+                                                Amount Paid:
+                                            </span>
+                                            <span className="font-medium text-green-600">
+                                                {formatCurrency(
+                                                    paymentResult.finalTotal
+                                                )}
+                                            </span>
+                                        </div>
+                                    </div>
+                                </div>
+                            )}
+
+                            {/* OK Button */}
+                            <button
+                                onClick={handleSuccessModalClose}
+                                className="w-full bg-green-600 hover:bg-green-700 text-white font-medium py-2 px-4 rounded-lg transition-colors"
+                            >
+                                OK
+                            </button>
+                        </div>
+                    </div>
+                </div>
             )}
         </div>
     );

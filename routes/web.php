@@ -310,6 +310,122 @@ Route::middleware(['auth', 'verified'])->group(function () {
         }
     })->name('order-items.delete');
     
+    // Process Payment
+    Route::post('/process-payment', function (\Illuminate\Http\Request $request) {
+        try {
+            $validated = $request->validate([
+                'tableId' => 'required|integer|exists:restaurant_tables,id',
+                'paymentMethod' => 'required|in:cash,online,wallet',
+                'billingType' => 'required|in:walking,member',
+                'orderTotal' => 'required|numeric|min:0',
+                'discountAmount' => 'required|numeric|min:0',
+                'finalTotal' => 'required|numeric|min:0',
+                'paymentReference' => 'nullable|string|max:30',
+                'notes' => 'nullable|string|max:250',
+                'selectedMember' => 'nullable|array',
+                'selectedMember.id' => 'nullable|integer|exists:users,id'
+            ]);
+
+            $user = auth()->user();
+            
+            // Find the active order for this table
+            $order = \App\Models\Order::where('tableId', $validated['tableId'])
+                ->where('headOfficeId', $user->headOfficeId)
+                ->where('branchId', $user->branchId)
+                ->where('tableOccupiedStatus', 1)
+                ->where('paymentStatus', 0)
+                ->where('deleteStatus', 0)
+                ->first();
+
+            if (!$order) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'No active order found for this table'
+                ], 404);
+            }
+
+            // Calculate sums from order_items table
+            $orderItems = \App\Models\OrderItem::where('orderId', $order->id)
+                ->where('deleteStatus', 0)
+                ->get();
+
+            $buyingPrice = $orderItems->sum('buyingPrice');
+            $sellingPrice = $orderItems->sum('sellingPrice');
+            $taxAmount = $orderItems->sum('taxAmount');
+            $adminProfitAmount = $orderItems->sum('adminProfitAmount');
+            $adminNetProfitAmount = $orderItems->sum('adminNetProfitAmount');
+            $userCommissionAmount = $orderItems->sum('userCommissionAmount');
+
+            // Update the order with payment information
+            $order->update([
+                'paymentMethod' => $validated['paymentMethod'],
+                'billingType' => $validated['billingType'],
+                'buyingPrice' => $buyingPrice,
+                'sellingPrice' => $sellingPrice,
+                'discountAmount' => $validated['discountAmount'],
+                'taxAmount' => $taxAmount,
+                'adminProfitAmount' => $adminProfitAmount,
+                'adminNetProfitAmount' => $adminNetProfitAmount,
+                'userCommissionAmount' => $userCommissionAmount,
+                'customerType' => $validated['billingType'],
+                'memberUserId' => $validated['selectedMember']['id'] ?? null,
+                'orderEndDateTime' => now(),
+                'paymentType' => $validated['paymentMethod'],
+                'paymentReference' => $validated['paymentReference'] ?? null,
+                'notes' => $validated['notes'] ?? null,
+                'paymentStatus' => 1, // Mark as paid
+                'tableOccupiedStatus' => 0, // Free the table
+            ]);
+
+            \Log::info('Payment processed successfully', [
+                'orderId' => $order->id,
+                'tableId' => $validated['tableId'],
+                'paymentMethod' => $validated['paymentMethod'],
+                'buyingPrice' => $buyingPrice,
+                'sellingPrice' => $sellingPrice,
+                'discountAmount' => $validated['discountAmount'],
+                'taxAmount' => $taxAmount,
+                'adminProfitAmount' => $adminProfitAmount,
+                'adminNetProfitAmount' => $adminNetProfitAmount,
+                'userCommissionAmount' => $userCommissionAmount,
+                'finalTotal' => $sellingPrice - $validated['discountAmount']
+            ]);
+
+            return response()->json([
+                'success' => true,
+                'message' => 'Payment processed successfully!',
+                'orderId' => $order->id,
+                'finalTotal' => $sellingPrice - $validated['discountAmount'],
+                'paymentMethod' => $validated['paymentMethod'],
+                'calculatedValues' => [
+                    'buyingPrice' => $buyingPrice,
+                    'sellingPrice' => $sellingPrice,
+                    'taxAmount' => $taxAmount,
+                    'adminProfitAmount' => $adminProfitAmount,
+                    'adminNetProfitAmount' => $adminNetProfitAmount,
+                    'userCommissionAmount' => $userCommissionAmount,
+                ]
+            ]);
+
+        } catch (\Illuminate\Validation\ValidationException $e) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Validation failed',
+                'errors' => $e->errors()
+            ], 422);
+        } catch (\Exception $e) {
+            \Log::error('Payment processing failed', [
+                'error' => $e->getMessage(),
+                'request' => $request->all()
+            ]);
+
+            return response()->json([
+                'success' => false,
+                'message' => 'Payment processing failed. Please try again.'
+            ], 500);
+        }
+    })->name('process-payment');
+    
     // Branch Management
     Route::get('/branches', function () {
         $officeProfiles = \App\Models\OfficeProfile::where('deleteStatus', 0)

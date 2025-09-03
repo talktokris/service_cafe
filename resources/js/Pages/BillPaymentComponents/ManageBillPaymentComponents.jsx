@@ -552,9 +552,15 @@ export default function ManageBillPaymentComponents({
                         setShowPayModal(false);
                         setSelectedTable(null);
                     }}
-                    onSuccess={() => {
+                    onSuccess={(paymentData) => {
                         setShowPayModal(false);
                         setSelectedTable(null);
+
+                        // If payment was processed, refresh the data
+                        if (paymentData.paymentProcessed) {
+                            // Reload the page to refresh all data
+                            window.location.reload();
+                        }
                     }}
                 />
             )}
