@@ -227,6 +227,41 @@ export default function ViewMenuComponents({
                         </div>
                     </div>
 
+                    {/* Government Tax */}
+                    <div className="bg-gray-50 rounded-lg p-6">
+                        <h3 className="text-lg font-semibold text-gray-900 mb-4">
+                            Government Tax
+                        </h3>
+                        <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                            <div>
+                                <label className="text-sm font-medium text-gray-500">
+                                    Government Tax Percentage
+                                </label>
+                                <p className="text-lg font-semibold text-gray-900">
+                                    {menuItem.govTaxPercentage || 0}%
+                                </p>
+                            </div>
+                            <div>
+                                <label className="text-sm font-medium text-gray-500">
+                                    Government Tax Amount
+                                </label>
+                                <p className="text-lg font-semibold text-orange-600">
+                                    {formatCurrency(menuItem.govTaxAmount)}
+                                </p>
+                            </div>
+                            <div>
+                                <label className="text-sm font-medium text-gray-500">
+                                    Selling Price with Tax
+                                </label>
+                                <p className="text-lg font-semibold text-green-600">
+                                    {formatCurrency(
+                                        menuItem.sellingWithTaxPrice
+                                    )}
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+
                     {/* Timestamps */}
                     <div className="bg-gray-50 rounded-lg p-6">
                         <h3 className="text-lg font-semibold text-gray-900 mb-4">

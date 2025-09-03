@@ -383,6 +383,9 @@ export default function ManageMenuComponents({
                                     <th>Branch Office</th>
                                     <th>Buying Price</th>
                                     <th>Selling Price</th>
+                                    <th>Gov Tax %</th>
+                                    <th>Gov Tax Amount</th>
+                                    <th>Price with Tax</th>
                                     <th>Status</th>
                                     <th>Actions</th>
                                 </tr>
@@ -391,7 +394,7 @@ export default function ManageMenuComponents({
                                 {filteredMenuItems.length === 0 ? (
                                     <tr>
                                         <td
-                                            colSpan="8"
+                                            colSpan="11"
                                             className="text-center py-8 text-gray-500"
                                         >
                                             No menu items found
@@ -439,6 +442,26 @@ export default function ManageMenuComponents({
                                                 <span className="font-medium text-blue-600">
                                                     {formatCurrency(
                                                         item.sellingPrice
+                                                    )}
+                                                </span>
+                                            </td>
+                                            <td>
+                                                <span className="font-medium text-orange-600">
+                                                    {item.govTaxPercentage || 0}
+                                                    %
+                                                </span>
+                                            </td>
+                                            <td>
+                                                <span className="font-medium text-purple-600">
+                                                    {formatCurrency(
+                                                        item.govTaxAmount
+                                                    )}
+                                                </span>
+                                            </td>
+                                            <td>
+                                                <span className="font-medium text-green-600">
+                                                    {formatCurrency(
+                                                        item.sellingWithTaxPrice
                                                     )}
                                                 </span>
                                             </td>

@@ -20,6 +20,9 @@ class MenuItem extends Model
         'userCommissionPercentage',
         'userCommissionAmount',
         'sellingPrice',
+        'govTaxPercentage',
+        'govTaxAmount',
+        'sellingWithTaxPrice',
         'activeStatus',
         'deleteStatus'
     ];
@@ -32,6 +35,9 @@ class MenuItem extends Model
         'userCommissionPercentage' => 'integer',
         'userCommissionAmount' => 'decimal:2',
         'sellingPrice' => 'decimal:2',
+        'govTaxPercentage' => 'decimal:2',
+        'govTaxAmount' => 'decimal:2',
+        'sellingWithTaxPrice' => 'decimal:2',
         'activeStatus' => 'integer',
         'deleteStatus' => 'integer'
     ];

@@ -18,6 +18,9 @@ export default function CreateMenuComponents({
         userCommissionPercentage: 0,
         userCommissionAmount: 0,
         sellingPrice: 0,
+        govTaxPercentage: 0,
+        govTaxAmount: 0,
+        sellingWithTaxPrice: 0,
         activeStatus: 1,
     });
 
@@ -44,11 +47,12 @@ export default function CreateMenuComponents({
                 [name]: newValue,
             };
 
-            // Auto-calculate all fields when Buying Price, Admin Profit Percentage, or User Commission Percentage changes
+            // Auto-calculate all fields when Buying Price, Admin Profit Percentage, User Commission Percentage, or Gov Tax Percentage changes
             if (
                 name === "buyingPrice" ||
                 name === "adminProfitPercentage" ||
-                name === "userCommissionPercentage"
+                name === "userCommissionPercentage" ||
+                name === "govTaxPercentage"
             ) {
                 const buyingPrice =
                     name === "buyingPrice"
@@ -62,6 +66,10 @@ export default function CreateMenuComponents({
                     name === "userCommissionPercentage"
                         ? parseFloat(newValue) || 0
                         : parseFloat(prev.userCommissionPercentage) || 0;
+                const govTaxPercentage =
+                    name === "govTaxPercentage"
+                        ? parseFloat(newValue) || 0
+                        : parseFloat(prev.govTaxPercentage) || 0;
 
                 // Calculate Admin Profit Amount
                 const adminProfitAmount =
@@ -81,6 +89,17 @@ export default function CreateMenuComponents({
                         (userCommissionPercentage / 100) * buyingPrice * 100
                     ) / 100;
                 updatedData.userCommissionAmount = userCommissionAmount;
+
+                // Calculate Government Tax Amount
+                const govTaxAmount =
+                    Math.round((govTaxPercentage / 100) * sellingPrice * 100) /
+                    100;
+                updatedData.govTaxAmount = govTaxAmount;
+
+                // Calculate Selling Price with Tax
+                const sellingWithTaxPrice =
+                    Math.round((sellingPrice + govTaxAmount) * 100) / 100;
+                updatedData.sellingWithTaxPrice = sellingWithTaxPrice;
             }
 
             return updatedData;
@@ -511,6 +530,70 @@ export default function CreateMenuComponents({
                                     type="number"
                                     name="userCommissionAmount"
                                     value={formData.userCommissionAmount}
+                                    readOnly
+                                    className="input input-bordered w-full bg-gray-100"
+                                    placeholder="0.00"
+                                    step="0.01"
+                                    min="0"
+                                />
+                            </div>
+                        </div>
+                    </div>
+
+                    {/* Government Tax */}
+                    <div className="space-y-4">
+                        <h3 className="text-lg font-medium text-gray-900">
+                            Government Tax
+                        </h3>
+
+                        <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                            <div>
+                                <label className="label">
+                                    <span className="label-text">
+                                        Government Tax Percentage (%)
+                                    </span>
+                                </label>
+                                <input
+                                    type="number"
+                                    name="govTaxPercentage"
+                                    value={formData.govTaxPercentage}
+                                    onChange={handleInputChange}
+                                    className="input input-bordered w-full"
+                                    placeholder="0"
+                                    min="0"
+                                    max="100"
+                                    step="0.01"
+                                />
+                            </div>
+
+                            <div>
+                                <label className="label">
+                                    <span className="label-text">
+                                        Government Tax Amount (₹)
+                                    </span>
+                                </label>
+                                <input
+                                    type="number"
+                                    name="govTaxAmount"
+                                    value={formData.govTaxAmount}
+                                    readOnly
+                                    className="input input-bordered w-full bg-gray-100"
+                                    placeholder="0.00"
+                                    step="0.01"
+                                    min="0"
+                                />
+                            </div>
+
+                            <div>
+                                <label className="label">
+                                    <span className="label-text">
+                                        Selling Price with Tax (₹)
+                                    </span>
+                                </label>
+                                <input
+                                    type="number"
+                                    name="sellingWithTaxPrice"
+                                    value={formData.sellingWithTaxPrice}
                                     readOnly
                                     className="input input-bordered w-full bg-gray-100"
                                     placeholder="0.00"
