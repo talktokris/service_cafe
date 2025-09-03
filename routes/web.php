@@ -441,8 +441,6 @@ Route::middleware('auth')->group(function () {
     // API route to fetch members for bill payment
     Route::get('/api/members', function (\Illuminate\Http\Request $request) {
         try {
-            \Log::info('API Members route called by user: ' . auth()->id());
-            
             $members = \App\Models\User::where('user_type', 'member')
                 ->where('member_type', 'paid')
                 ->where('deleteStatus', 0)
@@ -453,8 +451,6 @@ Route::middleware('auth')->group(function () {
                 ])
                 ->orderBy('first_name', 'asc')
                 ->get();
-
-            \Log::info('Found members count: ' . $members->count());
 
             return response()->json([
                 'success' => true,
