@@ -138,6 +138,56 @@ Route::middleware(['auth', 'verified'])->group(function () {
         }
     })->name('orders.create');
     
+    // Add Menu Item to Order
+    Route::post('/order-items', function (\Illuminate\Http\Request $request) {
+        try {
+            // Get tax percentage from environment
+            $taxPercentage = env('BILLING_TAX_PERCENTAGE', 0);
+            
+            // Calculate tax amount
+            $sellingPrice = floatval($request->sellingPrice);
+            $taxAmount = ($sellingPrice * $taxPercentage) / 100;
+            $subTotalAmount = $sellingPrice + $taxAmount;
+            
+            $orderItem = \App\Models\OrderItem::create([
+                'headOfficeId' => $request->headOfficeId,
+                'branchId' => $request->branchId,
+                'createUserId' => $request->createUserId,
+                'tableId' => $request->tableId,
+                'orderId' => $request->orderId,
+                'menuId' => $request->menuId,
+                'buyingPrice' => $request->buyingPrice,
+                'sellingPrice' => $request->sellingPrice,
+                'taxAmount' => round($taxAmount, 2),
+                'adminProfitAmount' => $request->adminProfitAmount,
+                'adminNetProfitAmount' => $request->adminNetProfitAmount,
+                'userCommissionAmount' => $request->userCommissionAmount,
+                'subTotalAmount' => round($subTotalAmount, 2),
+                'deleteStatus' => 0,
+            ]);
+            
+            \Log::info('Order item created successfully:', [
+                'order_item_id' => $orderItem->id,
+                'order_id' => $orderItem->orderId,
+                'menu_id' => $orderItem->menuId,
+                'sub_total' => $orderItem->subTotalAmount
+            ]);
+            
+            return response()->json([
+                'success' => true,
+                'orderItem' => $orderItem,
+                'message' => 'Menu item added to order successfully'
+            ]);
+        } catch (\Exception $e) {
+            \Log::error('Error creating order item:', ['error' => $e->getMessage()]);
+            
+            return response()->json([
+                'success' => false,
+                'message' => 'Failed to add menu item to order: ' . $e->getMessage()
+            ], 500);
+        }
+    })->name('order-items.create');
+    
     // Branch Management
     Route::get('/branches', function () {
         $officeProfiles = \App\Models\OfficeProfile::where('deleteStatus', 0)

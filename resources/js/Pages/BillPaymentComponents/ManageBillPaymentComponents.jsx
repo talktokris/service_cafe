@@ -487,6 +487,8 @@ export default function ManageBillPaymentComponents({
             {showAddModal && selectedTable && (
                 <AddMenuItemComponents
                     table={selectedTable}
+                    user={user}
+                    order={getTableOrderData(selectedTable.id).order}
                     onClose={() => {
                         setShowAddModal(false);
                         setSelectedTable(null);
@@ -494,6 +496,8 @@ export default function ManageBillPaymentComponents({
                     onSuccess={() => {
                         setShowAddModal(false);
                         setSelectedTable(null);
+                        // Refresh the page to get updated data
+                        router.reload();
                     }}
                     menuItems={menuItems}
                 />

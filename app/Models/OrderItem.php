@@ -21,6 +21,7 @@ class OrderItem extends Model
         'adminProfitAmount',
         'adminNetProfitAmount',
         'userCommissionAmount',
+        'subTotalAmount',
         'deleteStatus'
     ];
 
@@ -31,6 +32,7 @@ class OrderItem extends Model
         'adminProfitAmount' => 'decimal:2',
         'adminNetProfitAmount' => 'decimal:2',
         'userCommissionAmount' => 'decimal:2',
+        'subTotalAmount' => 'decimal:2',
     ];
 
     protected static function boot()
