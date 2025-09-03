@@ -1,8 +1,9 @@
-import React from "react";
+import React, { useState } from "react";
 import { Link, usePage } from "@inertiajs/react";
 
 export default function AdminSidebar({ isOpen, onClose, user }) {
     const { url } = usePage();
+    const [isSettingsOpen, setIsSettingsOpen] = useState(false);
     const menuItems = [
         {
             title: "Dashboard",
@@ -125,7 +126,7 @@ export default function AdminSidebar({ isOpen, onClose, user }) {
                         strokeLinecap="round"
                         strokeLinejoin="round"
                         strokeWidth="2"
-                        d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1"
+                        d="M3 10h18M7 15h1m4 0h1m-7 4h12a3 3 0 003-3V8a3 3 0 00-3-3H6a3 3 0 00-3 3v8a3 3 0 003 3z"
                     />
                 </svg>
             ),
@@ -321,102 +322,69 @@ export default function AdminSidebar({ isOpen, onClose, user }) {
                 }}
             >
                 {/* Sidebar Header */}
-                {/* <div className="p-4 border-b border-gray-200">
-                    <div className="flex items-center justify-between">
-                        <div className="flex items-center space-x-3">
-                            <img
-                                src="/assets/logo.png"
-                                alt="Serve Cafe Logo"
-                                className="w-8 h-8 object-contain"
-                            />
-                            <div>
-                           
-                                <p className="text-xs text-gray-500">
-                                    Admin Panel
-                                </p>
-                            </div>
-                        </div>
-                        <button
-                            onClick={onClose}
-                            className="btn btn-ghost btn-sm lg:hidden"
-                        >
-                            <svg
-                                xmlns="http://www.w3.org/2000/svg"
-                                className="h-5 w-5"
-                                fill="none"
-                                viewBox="0 0 24 24"
-                                stroke="currentColor"
-                            >
-                                <path
-                                    strokeLinecap="round"
-                                    strokeLinejoin="round"
-                                    strokeWidth="2"
-                                    d="M6 18L18 6M6 6l12 12"
-                                />
-                            </svg>
-                        </button>
-                    </div>
-                </div> */}
-
-                {/* Sidebar Header */}
                 <div
-                    className="p-6 border-b bg-white"
-                    style={{ borderColor: "#e9ecef" }}
+                    className="p-4 border-b"
+                    style={{
+                        borderColor: "#e9ecef",
+                        background: "linear-gradient(135deg, #f8f9fa, #ffffff)",
+                    }}
                 >
                     <div className="flex items-center justify-between">
                         <div className="flex items-center space-x-3">
                             <div
-                                className="w-10 h-10 rounded-xl flex items-center justify-center shadow-lg"
+                                className="w-10 h-10 rounded-xl flex items-center justify-center"
                                 style={{
-                                    background:
-                                        "linear-gradient(135deg, #531414, #DE3032)",
+                                    backgroundColor: "#f8f9fa",
+                                    border: "2px solid #e9ecef",
+                                    boxShadow: "0 2px 4px rgba(0, 0, 0, 0.05)",
                                 }}
                             >
                                 <svg
-                                    className="w-6 h-6 text-white"
+                                    className="w-6 h-6"
                                     fill="none"
                                     stroke="currentColor"
                                     viewBox="0 0 24 24"
+                                    style={{ color: "#DE3032" }}
                                 >
                                     <path
                                         strokeLinecap="round"
                                         strokeLinejoin="round"
                                         strokeWidth="2"
-                                        d="M13 10V3L4 14h7v7l9-11h-7z"
+                                        d="M9 5H7a2 2 0 00-2 2v10a2 2 0 002 2h8a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-3 7h3m-3 4h3m-6-4h.01M9 16h.01"
                                     />
                                 </svg>
                             </div>
                             <div>
-                                <h2
+                                <h3
                                     className="text-lg font-bold"
                                     style={{ color: "#531414" }}
                                 >
-                                    Serve Cafe
-                                </h2>
+                                    Menu
+                                </h3>
                                 <p
                                     className="text-xs font-medium"
                                     style={{ color: "#DE3032" }}
                                 >
-                                    Admin Panel
+                                    Quick Access
                                 </p>
                             </div>
                         </div>
                         <button
                             onClick={onClose}
-                            className="lg:hidden p-2 rounded-lg transition-colors duration-200"
+                            className="lg:hidden p-1.5 rounded-md transition-colors duration-200"
                             style={{
                                 backgroundColor: "transparent",
                                 color: "#531414",
                             }}
                             onMouseEnter={(e) =>
-                                (e.target.style.backgroundColor = "#f8f9fa")
+                                (e.target.style.backgroundColor = "#e9ecef")
                             }
                             onMouseLeave={(e) =>
                                 (e.target.style.backgroundColor = "transparent")
                             }
                         >
                             <svg
-                                className="w-5 h-5"
+                                className="w-4 h-4"
                                 fill="none"
                                 stroke="currentColor"
                                 viewBox="0 0 24 24"
@@ -435,143 +403,237 @@ export default function AdminSidebar({ isOpen, onClose, user }) {
                 {/* Navigation Menu */}
                 <div className="p-6 flex-1 overflow-y-auto">
                     <div className="space-y-1">
-                        <div
+                        {/* <div
                             className="text-xs font-bold uppercase tracking-wider mb-4 px-3"
                             style={{ color: "#531414" }}
                         >
                             Main Menu
-                        </div>
+                        </div> */}
                         {menuItems.map((item, index) => {
                             const isActive = url === item.href;
+                            const isSettings = item.title === "Settings";
+
                             return (
                                 <div key={index} className="mb-1">
-                                    <Link
-                                        href={item.href}
-                                        className={`group flex items-center space-x-3 px-4 py-3 rounded-xl text-sm font-medium transition-all duration-200 ${
-                                            isActive
-                                                ? "text-white shadow-lg"
-                                                : "hover:shadow-sm"
-                                        }`}
-                                        style={
-                                            isActive
-                                                ? {
-                                                      background:
-                                                          "linear-gradient(135deg, #531414, #DE3032)",
-                                                      boxShadow:
-                                                          "0 10px 15px -3px rgba(83, 20, 20, 0.3)",
-                                                  }
-                                                : {
-                                                      color: "#531414",
-                                                      backgroundColor:
-                                                          "transparent",
-                                                  }
-                                        }
-                                        onMouseEnter={(e) => {
-                                            if (!isActive) {
-                                                e.target.style.backgroundColor =
-                                                    "#f8f9fa";
-                                                e.target.style.color =
-                                                    "#531414";
+                                    {isSettings ? (
+                                        <button
+                                            onClick={() =>
+                                                setIsSettingsOpen(
+                                                    !isSettingsOpen
+                                                )
                                             }
-                                        }}
-                                        onMouseLeave={(e) => {
-                                            if (!isActive) {
-                                                e.target.style.backgroundColor =
-                                                    "transparent";
-                                                e.target.style.color =
-                                                    "#531414";
+                                            className={`group flex items-center space-x-3 px-4 py-3 rounded-xl text-sm font-medium transition-all duration-200 w-full text-left ${
+                                                isActive
+                                                    ? "text-white shadow-lg"
+                                                    : "hover:shadow-sm"
+                                            }`}
+                                            style={
+                                                isActive
+                                                    ? {
+                                                          background:
+                                                              "linear-gradient(135deg, #531414, #DE3032)",
+                                                          boxShadow:
+                                                              "0 10px 15px -3px rgba(83, 20, 20, 0.3)",
+                                                      }
+                                                    : {
+                                                          color: "#531414",
+                                                          backgroundColor:
+                                                              "transparent",
+                                                      }
                                             }
-                                        }}
-                                        onClick={onClose}
-                                    >
-                                        <span
-                                            className="transition-colors duration-200"
-                                            style={{
-                                                color: isActive
-                                                    ? "white"
-                                                    : "#DE3032",
+                                            onMouseEnter={(e) => {
+                                                if (!isActive) {
+                                                    e.target.style.backgroundColor =
+                                                        "#f8f9fa";
+                                                    e.target.style.color =
+                                                        "#531414";
+                                                }
+                                            }}
+                                            onMouseLeave={(e) => {
+                                                if (!isActive) {
+                                                    e.target.style.backgroundColor =
+                                                        "transparent";
+                                                    e.target.style.color =
+                                                        "#531414";
+                                                }
                                             }}
                                         >
-                                            {item.icon}
-                                        </span>
-                                        <span className="flex-1">
-                                            {item.title}
-                                        </span>
-                                        {isActive && (
-                                            <div className="w-2 h-2 bg-white rounded-full"></div>
-                                        )}
-                                    </Link>
-                                    {item.submenu && (
-                                        <div className="ml-8 mt-2 space-y-1">
-                                            {item.submenu.map(
-                                                (subItem, subIndex) => {
-                                                    const isSubActive =
-                                                        url === subItem.href;
-                                                    return (
-                                                        <Link
-                                                            key={subIndex}
-                                                            href={subItem.href}
-                                                            className="group flex items-center space-x-3 px-4 py-2 rounded-lg text-sm transition-all duration-200"
-                                                            style={
-                                                                isSubActive
-                                                                    ? {
-                                                                          backgroundColor:
-                                                                              "#f8f9fa",
-                                                                          color: "#531414",
-                                                                          borderLeft:
-                                                                              "2px solid #DE3032",
-                                                                      }
-                                                                    : {
-                                                                          color: "#531414",
-                                                                          backgroundColor:
-                                                                              "transparent",
-                                                                      }
-                                                            }
-                                                            onMouseEnter={(
-                                                                e
-                                                            ) => {
-                                                                if (
-                                                                    !isSubActive
-                                                                ) {
-                                                                    e.target.style.backgroundColor =
-                                                                        "#f8f9fa";
-                                                                    e.target.style.color =
-                                                                        "#531414";
-                                                                }
-                                                            }}
-                                                            onMouseLeave={(
-                                                                e
-                                                            ) => {
-                                                                if (
-                                                                    !isSubActive
-                                                                ) {
-                                                                    e.target.style.backgroundColor =
-                                                                        "transparent";
-                                                                    e.target.style.color =
-                                                                        "#531414";
-                                                                }
-                                                            }}
-                                                            onClick={onClose}
-                                                        >
-                                                            <span
-                                                                className="transition-colors duration-200"
-                                                                style={{
-                                                                    color: isSubActive
-                                                                        ? "#DE3032"
-                                                                        : "#DE3032",
-                                                                }}
-                                                            >
-                                                                {subItem.icon}
-                                                            </span>
-                                                            <span className="font-medium">
-                                                                {subItem.title}
-                                                            </span>
-                                                        </Link>
-                                                    );
+                                            <span
+                                                className="transition-colors duration-200"
+                                                style={{
+                                                    color: isActive
+                                                        ? "white"
+                                                        : "#DE3032",
+                                                }}
+                                            >
+                                                {item.icon}
+                                            </span>
+                                            <span className="flex-1">
+                                                {item.title}
+                                            </span>
+                                            <svg
+                                                className={`w-4 h-4 transition-transform duration-200 ${
+                                                    isSettingsOpen
+                                                        ? "rotate-180"
+                                                        : ""
+                                                }`}
+                                                fill="none"
+                                                stroke="currentColor"
+                                                viewBox="0 0 24 24"
+                                                style={{
+                                                    color: isActive
+                                                        ? "white"
+                                                        : "#DE3032",
+                                                }}
+                                            >
+                                                <path
+                                                    strokeLinecap="round"
+                                                    strokeLinejoin="round"
+                                                    strokeWidth="2"
+                                                    d="M19 9l-7 7-7-7"
+                                                />
+                                            </svg>
+                                        </button>
+                                    ) : (
+                                        <Link
+                                            href={item.href}
+                                            className={`group flex items-center space-x-3 px-4 py-3 rounded-xl text-sm font-medium transition-all duration-200 ${
+                                                isActive
+                                                    ? "text-white shadow-lg"
+                                                    : "hover:shadow-sm"
+                                            }`}
+                                            style={
+                                                isActive
+                                                    ? {
+                                                          background:
+                                                              "linear-gradient(135deg, #531414, #DE3032)",
+                                                          boxShadow:
+                                                              "0 10px 15px -3px rgba(83, 20, 20, 0.3)",
+                                                      }
+                                                    : {
+                                                          color: "#531414",
+                                                          backgroundColor:
+                                                              "transparent",
+                                                      }
+                                            }
+                                            onMouseEnter={(e) => {
+                                                if (!isActive) {
+                                                    e.target.style.backgroundColor =
+                                                        "#f8f9fa";
+                                                    e.target.style.color =
+                                                        "#531414";
                                                 }
+                                            }}
+                                            onMouseLeave={(e) => {
+                                                if (!isActive) {
+                                                    e.target.style.backgroundColor =
+                                                        "transparent";
+                                                    e.target.style.color =
+                                                        "#531414";
+                                                }
+                                            }}
+                                            onClick={onClose}
+                                        >
+                                            <span
+                                                className="transition-colors duration-200"
+                                                style={{
+                                                    color: isActive
+                                                        ? "white"
+                                                        : "#DE3032",
+                                                }}
+                                            >
+                                                {item.icon}
+                                            </span>
+                                            <span className="flex-1">
+                                                {item.title}
+                                            </span>
+                                            {isActive && (
+                                                <div className="w-2 h-2 bg-white rounded-full"></div>
                                             )}
-                                        </div>
+                                        </Link>
                                     )}
+                                    {item.submenu &&
+                                        isSettings &&
+                                        isSettingsOpen && (
+                                            <div className="ml-8 mt-2 space-y-1">
+                                                {item.submenu.map(
+                                                    (subItem, subIndex) => {
+                                                        const isSubActive =
+                                                            url ===
+                                                            subItem.href;
+                                                        return (
+                                                            <Link
+                                                                key={subIndex}
+                                                                href={
+                                                                    subItem.href
+                                                                }
+                                                                className="group flex items-center space-x-3 px-4 py-2 rounded-lg text-sm transition-all duration-200"
+                                                                style={
+                                                                    isSubActive
+                                                                        ? {
+                                                                              backgroundColor:
+                                                                                  "#f8f9fa",
+                                                                              color: "#531414",
+                                                                              borderLeft:
+                                                                                  "2px solid #DE3032",
+                                                                          }
+                                                                        : {
+                                                                              color: "#531414",
+                                                                              backgroundColor:
+                                                                                  "transparent",
+                                                                          }
+                                                                }
+                                                                onMouseEnter={(
+                                                                    e
+                                                                ) => {
+                                                                    if (
+                                                                        !isSubActive
+                                                                    ) {
+                                                                        e.target.style.backgroundColor =
+                                                                            "#f8f9fa";
+                                                                        e.target.style.color =
+                                                                            "#531414";
+                                                                    }
+                                                                }}
+                                                                onMouseLeave={(
+                                                                    e
+                                                                ) => {
+                                                                    if (
+                                                                        !isSubActive
+                                                                    ) {
+                                                                        e.target.style.backgroundColor =
+                                                                            "transparent";
+                                                                        e.target.style.color =
+                                                                            "#531414";
+                                                                    }
+                                                                }}
+                                                                onClick={
+                                                                    onClose
+                                                                }
+                                                            >
+                                                                <span
+                                                                    className="transition-colors duration-200"
+                                                                    style={{
+                                                                        color: isSubActive
+                                                                            ? "#DE3032"
+                                                                            : "#DE3032",
+                                                                    }}
+                                                                >
+                                                                    {
+                                                                        subItem.icon
+                                                                    }
+                                                                </span>
+                                                                <span className="font-medium">
+                                                                    {
+                                                                        subItem.title
+                                                                    }
+                                                                </span>
+                                                            </Link>
+                                                        );
+                                                    }
+                                                )}
+                                            </div>
+                                        )}
                                 </div>
                             );
                         })}

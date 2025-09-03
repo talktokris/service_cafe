@@ -112,41 +112,45 @@ class DashboardController extends Controller
     private function getHeadOfficeStats()
     {
         return [
-            'totalBranches' => \App\Models\Branch::count(),
-            'activeBranches' => \App\Models\Branch::where('is_active', true)->count(),
-            'totalUsers' => \App\Models\User::count(),
-            'totalOrders' => \App\Models\Order::count(),
-            'totalRevenue' => \App\Models\Order::sum('total_amount') ?: 0,
-            'pendingOrders' => \App\Models\Order::where('status', 'pending')->count(),
-            'completedOrders' => \App\Models\Order::where('status', 'completed')->count(),
-            'commissionsPaid' => \App\Models\CommissionTransaction::where('status', 'paid')->sum('commission_amount') ?: 0,
-            'pendingCommissions' => \App\Models\CommissionTransaction::where('status', 'pending')->sum('commission_amount') ?: 0,
+            'totalBranches' => \App\Models\OfficeProfile::where('profileType', 'BranchOffice')->where('deleteStatus', 0)->count(),
+            'activeBranches' => \App\Models\OfficeProfile::where('profileType', 'BranchOffice')->where('activeStatus', 1)->where('deleteStatus', 0)->count(),
+            'totalUsers' => \App\Models\User::where('deleteStatus', 0)->count(),
+            'totalOrders' => \App\Models\Order::where('deleteStatus', 0)->count(),
+            'totalRevenue' => \App\Models\Order::where('deleteStatus', 0)->sum('sellingPrice') ?: 0,
+            'pendingOrders' => \App\Models\Order::where('paymentStatus', 0)->where('deleteStatus', 0)->count(),
+            'completedOrders' => \App\Models\Order::where('paymentStatus', 1)->where('deleteStatus', 0)->count(),
+            'commissionsPaid' => \App\Models\Order::where('deleteStatus', 0)->sum('userCommissionAmount') ?: 0,
+            'pendingCommissions' => \App\Models\Order::where('paymentStatus', 0)->where('deleteStatus', 0)->sum('userCommissionAmount') ?: 0,
             'totalWalletBalance' => \App\Models\Wallet::sum('balance') ?: 0,
-            'todayRevenue' => \App\Models\Order::whereDate('created_at', today())->sum('total_amount') ?: 0,
-            'pendingPayments' => \App\Models\Order::where('status', 'pending')->count(),
-            'invoicesGenerated' => \App\Models\Order::whereDate('created_at', today())->count(),
+            'todayRevenue' => \App\Models\Order::whereDate('created_at', today())->where('deleteStatus', 0)->sum('sellingPrice') ?: 0,
+            'pendingPayments' => \App\Models\Order::where('paymentStatus', 0)->where('deleteStatus', 0)->count(),
+            'invoicesGenerated' => \App\Models\Order::whereDate('created_at', today())->where('deleteStatus', 0)->count(),
             'paymentSuccessRate' => 95, // Mock data
         ];
     }
 
     private function getBrandOfficeStats($user)
     {
-        $branchId = $user->branch_id;
+        $branchId = $user->branchId;
         
         return [
-            'todayRevenue' => \App\Models\Order::where('branch_id', $branchId)
+            'todayRevenue' => \App\Models\Order::where('branchId', $branchId)
                 ->whereDate('created_at', today())
-                ->sum('total_amount'),
-            'pendingOrders' => \App\Models\Order::where('branch_id', $branchId)
-                ->where('status', 'pending')
+                ->where('deleteStatus', 0)
+                ->sum('sellingPrice'),
+            'pendingOrders' => \App\Models\Order::where('branchId', $branchId)
+                ->where('paymentStatus', 0)
+                ->where('deleteStatus', 0)
                 ->count(),
-            'walletPayments' => \App\Models\Order::where('branch_id', $branchId)
-                ->where('payment_method', 'wallet')
+            'walletPayments' => \App\Models\Order::where('branchId', $branchId)
+                ->where('paymentType', 'online')
                 ->whereDate('created_at', today())
+                ->where('deleteStatus', 0)
                 ->count(),
-            'cashPayments' => \App\Models\Order::where('branch_id', $branchId)
-                ->where('payment_method', 'cash')
+            'cashPayments' => \App\Models\Order::where('branchId', $branchId)
+                ->where('paymentType', 'cash')
                 ->whereDate('created_at', today())
+                ->where('deleteStatus', 0)
                 ->count(),
         ];
     }
@@ -155,11 +159,13 @@ class DashboardController extends Controller
     {
         return [
             'totalReferrals' => $user->referrals()->count(),
-            'totalCommissions' => \App\Models\CommissionTransaction::where('upline_user_id', $user->id)
-                ->where('status', 'paid')
-                ->sum('commission_amount'),
-            'monthlyOrders' => $user->orders()
+            'totalCommissions' => \App\Models\Order::where('memberUserId', $user->id)
+                ->where('paymentStatus', 1)
+                ->where('deleteStatus', 0)
+                ->sum('userCommissionAmount'),
+            'monthlyOrders' => \App\Models\Order::where('memberUserId', $user->id)
                 ->whereMonth('created_at', now()->month)
+                ->where('deleteStatus', 0)
                 ->count(),
         ];
     }

@@ -3,16 +3,20 @@ import { Link } from "@inertiajs/react";
 
 export default function AdminHeader({ user = null, onMenuToggle }) {
     return (
-        <div className="bg-white shadow-lg border-b border-gray-200">
-            <div className="div mx-auto px-4 w-full">
-                <div className="navbar min-h-16">
+        <div
+            className="bg-white shadow-lg border-b"
+            style={{ borderColor: "#e9ecef" }}
+        >
+            <div className="max-w-full mx-auto px-6">
+                <div className="navbar min-h-20">
                     {/* Left side - Logo and Menu Toggle */}
                     <div className="navbar-start">
                         <div className="flex items-center space-x-4">
                             {/* Menu Toggle Button for Mobile */}
                             <button
                                 onClick={onMenuToggle}
-                                className="btn btn-ghost btn-square lg:hidden"
+                                className="btn btn-ghost btn-square lg:hidden hover:bg-gray-100 transition-colors duration-200"
+                                style={{ color: "#531414" }}
                             >
                                 <svg
                                     xmlns="http://www.w3.org/2000/svg"
@@ -31,20 +35,28 @@ export default function AdminHeader({ user = null, onMenuToggle }) {
                             </button>
 
                             {/* Logo */}
-                            <Link
-                                href="/dashboard"
-                                className="btn btn-ghost hover:bg-gray-50"
-                            >
+                            <Link href="/dashboard" className="cursor-pointer">
                                 <div className="flex items-center space-x-3">
-                                    <img
-                                        src="/assets/logo.png"
-                                        alt="Serve Cafe Logo"
-                                        className="w-12 h-12 object-contain"
-                                    />
-                                    <div className="text-red-800">
-                                        <h1 className="text-lg font-bold">
+                                    <div className="w-12 h-12 rounded-xl flex items-center justify-center  overflow-hidden">
+                                        <img
+                                            src="/assets/art-logo.png"
+                                            alt="Serve Cafe Logo"
+                                            className="w-full h-full object-contain"
+                                        />
+                                    </div>
+                                    <div>
+                                        <h1
+                                            className="text-xl font-bold"
+                                            style={{ color: "#531414" }}
+                                        >
                                             SERVE CAFE
                                         </h1>
+                                        <p
+                                            className="text-xs font-medium"
+                                            style={{ color: "#DE3032" }}
+                                        >
+                                            Admin Panel
+                                        </p>
                                     </div>
                                 </div>
                             </Link>
@@ -52,21 +64,26 @@ export default function AdminHeader({ user = null, onMenuToggle }) {
                     </div>
 
                     {/* Center - Search Bar */}
-                    <div className="navbar-center hidden md:flex">
+                    <div className="navbar-center hidden lg:flex">
                         <div className="form-control">
-                            <div className="input-group">
+                            <div className="relative">
                                 <input
                                     type="text"
                                     placeholder="Search orders, customers, products..."
-                                    className="input input-bordered w-96"
+                                    className="input input-bordered w-96 pl-12 pr-4 py-3 rounded-xl border-gray-200 focus:border-red-300 focus:ring-2 focus:ring-red-100 transition-all duration-200"
+                                    style={{
+                                        backgroundColor: "#f8f9fa",
+                                        borderColor: "#e9ecef",
+                                    }}
                                 />
-                                <button className="btn btn-square">
+                                <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
                                     <svg
                                         xmlns="http://www.w3.org/2000/svg"
                                         className="h-5 w-5"
                                         fill="none"
                                         viewBox="0 0 24 24"
                                         stroke="currentColor"
+                                        style={{ color: "#DE3032" }}
                                     >
                                         <path
                                             strokeLinecap="round"
@@ -75,7 +92,7 @@ export default function AdminHeader({ user = null, onMenuToggle }) {
                                             d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"
                                         />
                                     </svg>
-                                </button>
+                                </div>
                             </div>
                         </div>
                     </div>
@@ -88,33 +105,54 @@ export default function AdminHeader({ user = null, onMenuToggle }) {
                                 <div
                                     tabIndex={0}
                                     role="button"
-                                    className="btn btn-ghost hover:bg-gray-50"
+                                    className="btn btn-ghost hover:bg-gray-50 transition-colors duration-200 rounded-xl px-4 py-2"
                                 >
                                     <div className="flex items-center space-x-2">
-                                        <svg
-                                            xmlns="http://www.w3.org/2000/svg"
-                                            className="h-5 w-5 text-green-600"
-                                            fill="none"
-                                            viewBox="0 0 24 24"
-                                            stroke="currentColor"
+                                        <div
+                                            className="w-8 h-8 rounded-lg flex items-center justify-center"
+                                            style={{
+                                                backgroundColor: "#f8f9fa",
+                                            }}
                                         >
-                                            <path
-                                                strokeLinecap="round"
-                                                strokeLinejoin="round"
-                                                strokeWidth="2"
-                                                d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1"
-                                            />
-                                        </svg>
-                                        <span className="text-sm font-medium">
-                                            Wallet: ₹
-                                            {user?.wallet?.balance || "0.00"}
-                                        </span>
+                                            <svg
+                                                xmlns="http://www.w3.org/2000/svg"
+                                                className="h-5 w-5"
+                                                fill="none"
+                                                viewBox="0 0 24 24"
+                                                stroke="currentColor"
+                                                style={{ color: "#DE3032" }}
+                                            >
+                                                <path
+                                                    strokeLinecap="round"
+                                                    strokeLinejoin="round"
+                                                    strokeWidth="2"
+                                                    d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1"
+                                                />
+                                            </svg>
+                                        </div>
+                                        <div className="text-left">
+                                            <div
+                                                className="text-xs font-medium"
+                                                style={{ color: "#531414" }}
+                                            >
+                                                Wallet
+                                            </div>
+                                            <div
+                                                className="text-sm font-bold"
+                                                style={{ color: "#DE3032" }}
+                                            >
+                                                ₹
+                                                {user?.wallet?.balance ||
+                                                    "0.00"}
+                                            </div>
+                                        </div>
                                         <svg
                                             xmlns="http://www.w3.org/2000/svg"
                                             className="h-4 w-4"
                                             fill="none"
                                             viewBox="0 0 24 24"
                                             stroke="currentColor"
+                                            style={{ color: "#531414" }}
                                         >
                                             <path
                                                 strokeLinecap="round"
@@ -127,12 +165,14 @@ export default function AdminHeader({ user = null, onMenuToggle }) {
                                 </div>
                                 <ul
                                     tabIndex={0}
-                                    className="dropdown-content z-[1] menu p-2 shadow-lg bg-white rounded-box w-52"
+                                    className="dropdown-content z-[1] menu p-2 shadow-xl bg-white rounded-xl w-56 border"
+                                    style={{ borderColor: "#e9ecef" }}
                                 >
                                     <li>
                                         <Link
                                             href="/wallet"
-                                            className="text-sm"
+                                            className="text-sm hover:bg-gray-50 rounded-lg transition-colors duration-200"
+                                            style={{ color: "#531414" }}
                                         >
                                             View Wallet Details
                                         </Link>
@@ -140,7 +180,8 @@ export default function AdminHeader({ user = null, onMenuToggle }) {
                                     <li>
                                         <Link
                                             href="/wallet/transactions"
-                                            className="text-sm"
+                                            className="text-sm hover:bg-gray-50 rounded-lg transition-colors duration-200"
+                                            style={{ color: "#531414" }}
                                         >
                                             Transaction History
                                         </Link>
@@ -153,22 +194,35 @@ export default function AdminHeader({ user = null, onMenuToggle }) {
                                 <div
                                     tabIndex={0}
                                     role="button"
-                                    className="btn btn-ghost hover:bg-gray-50"
+                                    className="btn btn-ghost hover:bg-gray-50 transition-colors duration-200 rounded-xl px-4 py-2"
                                 >
                                     <div className="flex items-center space-x-3">
-                                        <div className="w-8 h-8 rounded-full bg-red-600 text-white flex items-center justify-center">
-                                            <span className="text-sm font-semibold">
+                                        <div
+                                            className="w-10 h-10 rounded-full text-white flex items-center justify-center shadow-lg"
+                                            style={{
+                                                background:
+                                                    "linear-gradient(135deg, #531414, #DE3032)",
+                                            }}
+                                        >
+                                            <span className="text-sm font-bold">
                                                 {user?.name
                                                     ?.charAt(0)
                                                     ?.toUpperCase() || "U"}
                                             </span>
                                         </div>
                                         <div className="text-left hidden sm:block">
-                                            <div className="text-sm font-medium text-gray-900">
+                                            <div
+                                                className="text-sm font-semibold"
+                                                style={{ color: "#531414" }}
+                                            >
                                                 {user?.name || "User"}
                                             </div>
-                                            <div className="text-xs text-gray-500">
-                                                {user?.primary_role || "Admin"}
+                                            <div
+                                                className="text-xs font-medium"
+                                                style={{ color: "#DE3032" }}
+                                            >
+                                                {user?.primary_role?.name ||
+                                                    "Admin"}
                                             </div>
                                         </div>
                                         <svg
@@ -177,6 +231,7 @@ export default function AdminHeader({ user = null, onMenuToggle }) {
                                             fill="none"
                                             viewBox="0 0 24 24"
                                             stroke="currentColor"
+                                            style={{ color: "#531414" }}
                                         >
                                             <path
                                                 strokeLinecap="round"
@@ -189,12 +244,14 @@ export default function AdminHeader({ user = null, onMenuToggle }) {
                                 </div>
                                 <ul
                                     tabIndex={0}
-                                    className="dropdown-content z-[1] menu p-2 shadow-lg bg-white rounded-box w-52"
+                                    className="dropdown-content z-[1] menu p-2 shadow-xl bg-white rounded-xl w-56 border"
+                                    style={{ borderColor: "#e9ecef" }}
                                 >
                                     <li>
                                         <Link
                                             href="/profile"
-                                            className="text-sm"
+                                            className="text-sm hover:bg-gray-50 rounded-lg transition-colors duration-200"
+                                            style={{ color: "#531414" }}
                                         >
                                             Profile Settings
                                         </Link>
@@ -202,7 +259,8 @@ export default function AdminHeader({ user = null, onMenuToggle }) {
                                     <li>
                                         <Link
                                             href="/settings"
-                                            className="text-sm"
+                                            className="text-sm hover:bg-gray-50 rounded-lg transition-colors duration-200"
+                                            style={{ color: "#531414" }}
                                         >
                                             Account Settings
                                         </Link>
@@ -210,18 +268,23 @@ export default function AdminHeader({ user = null, onMenuToggle }) {
                                     <li>
                                         <Link
                                             href="/notifications"
-                                            className="text-sm"
+                                            className="text-sm hover:bg-gray-50 rounded-lg transition-colors duration-200"
+                                            style={{ color: "#531414" }}
                                         >
                                             Notifications
                                         </Link>
                                     </li>
-                                    <div className="divider my-1"></div>
+                                    <div
+                                        className="divider my-1"
+                                        style={{ borderColor: "#e9ecef" }}
+                                    ></div>
                                     <li>
                                         <Link
                                             href="/logout"
                                             method="post"
                                             as="button"
-                                            className="text-error text-sm"
+                                            className="text-sm hover:bg-red-50 rounded-lg transition-colors duration-200"
+                                            style={{ color: "#DE3032" }}
                                         >
                                             Logout
                                         </Link>
