@@ -46,7 +46,62 @@ Route::middleware(['auth', 'verified'])->group(function () {
     
     // Order Management
     Route::get('/orders', function () {
-        return Inertia::render('HeadOffice/Super/OrderManagement');
+        $orders = \App\Models\Order::where('deleteStatus', 0)
+            ->with([
+                'headOffice', 
+                'branch', 
+                'table', 
+                'memberUser:id,first_name,last_name,email,phone,referral_code,user_type,member_type',
+                'creator'
+            ])
+            ->orderBy('created_at', 'desc')
+            ->get();
+        
+        $officeProfiles = \App\Models\OfficeProfile::where('deleteStatus', 0)
+            ->orderBy('created_at', 'desc')
+            ->get();
+        
+        // Debug: Check order 6 data before sending to frontend
+        $order6 = $orders->find(6);
+        if ($order6) {
+            \Log::info('Order 6 Frontend Data Debug:', [
+                'id' => $order6->id,
+                'customerType' => $order6->customerType,
+                'memberUserId' => $order6->memberUserId,
+                'memberUser' => $order6->memberUser ? [
+                    'id' => $order6->memberUser->id,
+                    'first_name' => $order6->memberUser->first_name,
+                    'last_name' => $order6->memberUser->last_name,
+                    'email' => $order6->memberUser->email,
+                    'user_type' => $order6->memberUser->user_type,
+                    'member_type' => $order6->memberUser->member_type
+                ] : null,
+                'memberUserRaw' => $order6->memberUser
+            ]);
+        }
+        
+        // Manually build the orders data to ensure memberUser is properly included
+        $ordersData = $orders->map(function ($order) {
+            $orderData = $order->toArray();
+            if ($order->memberUser) {
+                $orderData['memberUser'] = [
+                    'id' => $order->memberUser->id,
+                    'first_name' => $order->memberUser->first_name,
+                    'last_name' => $order->memberUser->last_name,
+                    'email' => $order->memberUser->email,
+                    'phone' => $order->memberUser->phone,
+                    'referral_code' => $order->memberUser->referral_code,
+                    'user_type' => $order->memberUser->user_type,
+                    'member_type' => $order->memberUser->member_type,
+                ];
+            }
+            return $orderData;
+        });
+        
+        return Inertia::render('HeadOffice/Super/OrderManagement', [
+            'orders' => $ordersData,
+            'officeProfiles' => $officeProfiles
+        ]);
     })->name('orders');
     
     // Bill Payment
