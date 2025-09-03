@@ -430,12 +430,45 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::get('/manage-members', [UserController::class, 'manageMembers'])->name('manage-members');
     Route::put('/members/{member}', [UserController::class, 'updateMember'])->name('members.update');
     Route::post('/members/{member}/reset-password', [UserController::class, 'resetMemberPassword'])->name('members.reset-password');
+    
 });
 
 Route::middleware('auth')->group(function () {
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
     Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
+    
+    // API route to fetch members for bill payment
+    Route::get('/api/members', function (\Illuminate\Http\Request $request) {
+        try {
+            \Log::info('API Members route called by user: ' . auth()->id());
+            
+            $members = \App\Models\User::where('user_type', 'member')
+                ->where('member_type', 'paid')
+                ->where('deleteStatus', 0)
+                ->where('activeStatus', 1)
+                ->select([
+                    'id', 'first_name', 'last_name', 'email', 'phone', 
+                    'country', 'referral_code', 'member_type'
+                ])
+                ->orderBy('first_name', 'asc')
+                ->get();
+
+            \Log::info('Found members count: ' . $members->count());
+
+            return response()->json([
+                'success' => true,
+                'members' => $members,
+            ]);
+        } catch (\Exception $e) {
+            \Log::error('Error fetching members: ' . $e->getMessage());
+            return response()->json([
+                'success' => false,
+                'message' => 'Failed to fetch members',
+                'members' => []
+            ], 500);
+        }
+    })->name('api.members');
 });
 
 require __DIR__.'/auth.php';
