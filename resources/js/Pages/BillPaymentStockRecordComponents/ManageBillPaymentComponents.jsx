@@ -115,7 +115,7 @@ export default function ManageBillPaymentComponents({
     return (
         <div className="space-y-6">
             {/* Header Section */}
-            <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
+            {/* <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
                 <div>
                     <h1 className="text-2xl font-bold text-gray-900">
                         Bill Payment Management
@@ -124,7 +124,7 @@ export default function ManageBillPaymentComponents({
                         Manage orders and payments for restaurant tables
                     </p>
                 </div>
-            </div>
+            </div> */}
 
             {/* Stats Cards */}
             <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
