@@ -25,7 +25,7 @@ export default function AdminFooter() {
 
                     <div className="flex items-center space-x-6 text-sm text-gray-400">
                         <span>© 2024 Serve Cafe. All rights reserved.</span>
-                        <div className="flex items-center space-x-4">
+                        {/* <div className="flex items-center space-x-4">
                             <span className="flex items-center">
                                 <svg
                                     xmlns="http://www.w3.org/2000/svg"
@@ -43,7 +43,7 @@ export default function AdminFooter() {
                                 </svg>
                                 Last updated: {new Date().toLocaleDateString()}
                             </span>
-                        </div>
+                        </div> */}
                     </div>
                 </div>
             </div>
