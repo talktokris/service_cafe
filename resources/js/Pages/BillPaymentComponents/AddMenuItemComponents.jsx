@@ -46,6 +46,20 @@ export default function AddMenuItemComponents({
         setIsSubmitting(true);
 
         try {
+            // Calculate tax amount using govTaxPercentage from menu item
+            const govTaxPercentage = selectedMenuItem.govTaxPercentage || 0;
+            const taxAmount =
+                Math.round(
+                    (govTaxPercentage / 100) *
+                        selectedMenuItem.sellingPrice *
+                        quantity *
+                        100
+                ) / 100;
+            const subTotalAmount =
+                Math.round(
+                    (selectedMenuItem.sellingPrice * quantity + taxAmount) * 100
+                ) / 100;
+
             // Prepare order item data
             const orderItemData = {
                 headOfficeId: user.headOfficeId,
@@ -60,6 +74,8 @@ export default function AddMenuItemComponents({
                 adminNetProfitAmount: selectedMenuItem.adminProfitAmount,
                 userCommissionAmount: selectedMenuItem.userCommissionAmount,
                 quantity: quantity,
+                taxAmount: taxAmount,
+                subTotalAmount: subTotalAmount,
             };
 
             console.log("Submitting order item:", orderItemData);
@@ -93,7 +109,8 @@ export default function AddMenuItemComponents({
                     tableId: table.id,
                     menuItemId: selectedMenuItem.id,
                     quantity: quantity,
-                    total: selectedMenuItem.sellingPrice * quantity,
+                    total: subTotalAmount,
+                    taxAmount: taxAmount,
                     orderItem: result.orderItem,
                 });
 

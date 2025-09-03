@@ -141,15 +141,10 @@ Route::middleware(['auth', 'verified'])->group(function () {
     // Add Menu Item to Order
     Route::post('/order-items', function (\Illuminate\Http\Request $request) {
         try {
-            // Get tax percentage from environment
-            $taxPercentage = env('BILLING_TAX_PERCENTAGE', 0);
-            
-            // Calculate tax amount
-            $sellingPrice = floatval($request->sellingPrice);
-            $quantity = intval($request->quantity ?? 1);
-            $totalSellingPrice = $sellingPrice * $quantity;
-            $taxAmount = ($totalSellingPrice * $taxPercentage) / 100;
-            $subTotalAmount = $totalSellingPrice + $taxAmount;
+            // Use tax amount and subTotalAmount calculated in frontend
+            // Frontend now calculates tax using govTaxPercentage from menu item
+            $taxAmount = floatval($request->taxAmount ?? 0);
+            $subTotalAmount = floatval($request->subTotalAmount ?? 0);
             
             $orderItem = \App\Models\OrderItem::create([
                 'headOfficeId' => $request->headOfficeId,
@@ -173,6 +168,7 @@ Route::middleware(['auth', 'verified'])->group(function () {
                 'order_item_id' => $orderItem->id,
                 'order_id' => $orderItem->orderId,
                 'menu_id' => $orderItem->menuId,
+                'tax_amount' => $orderItem->taxAmount,
                 'sub_total' => $orderItem->subTotalAmount
             ]);
             
@@ -221,7 +217,43 @@ Route::middleware(['auth', 'verified'])->group(function () {
 
             return response()->json([
                 'success' => true,
-                'orderItems' => $orderItems,
+                'orderItems' => $orderItems->map(function($item) {
+                    return [
+                        'id' => $item->id,
+                        'headOfficeId' => $item->headOfficeId,
+                        'branchId' => $item->branchId,
+                        'createUserId' => $item->createUserId,
+                        'tableId' => $item->tableId,
+                        'orderId' => $item->orderId,
+                        'menuId' => $item->menuId,
+                        'quantity' => $item->quantity,
+                        'buyingPrice' => $item->buyingPrice,
+                        'sellingPrice' => $item->sellingPrice,
+                        'taxAmount' => $item->taxAmount,
+                        'adminProfitAmount' => $item->adminProfitAmount,
+                        'adminNetProfitAmount' => $item->adminNetProfitAmount,
+                        'userCommissionAmount' => $item->userCommissionAmount,
+                        'subTotalAmount' => $item->subTotalAmount,
+                        'deleteStatus' => $item->deleteStatus,
+                        'menuItem' => $item->menuItem ? [
+                            'id' => $item->menuItem->id,
+                            'menuName' => $item->menuItem->menuName,
+                            'menuType' => $item->menuItem->menuType,
+                            'drinkAmount' => $item->menuItem->drinkAmount,
+                            'buyingPrice' => $item->menuItem->buyingPrice,
+                            'sellingPrice' => $item->menuItem->sellingPrice,
+                            'adminProfitPercentage' => $item->menuItem->adminProfitPercentage,
+                            'adminProfitAmount' => $item->menuItem->adminProfitAmount,
+                            'userCommissionPercentage' => $item->menuItem->userCommissionPercentage,
+                            'userCommissionAmount' => $item->menuItem->userCommissionAmount,
+                            'govTaxPercentage' => $item->menuItem->govTaxPercentage,
+                            'govTaxAmount' => $item->menuItem->govTaxAmount,
+                            'sellingWithTaxPrice' => $item->menuItem->sellingWithTaxPrice,
+                            'activeStatus' => $item->menuItem->activeStatus,
+                            'deleteStatus' => $item->menuItem->deleteStatus,
+                        ] : null
+                    ];
+                }),
             ]);
         } catch (\Exception $e) {
             \Log::error('Error fetching order items: ' . $e->getMessage());

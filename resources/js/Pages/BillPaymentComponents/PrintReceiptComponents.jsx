@@ -108,9 +108,9 @@ export default function PrintReceiptComponents({ table, order, onClose }) {
     };
 
     return (
-        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
-            <div className="bg-white rounded-lg shadow-xl max-w-2xl w-full">
-                <div className="p-6 border-b border-gray-200">
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4 print:hidden overflow-y-auto">
+            <div className="bg-white rounded-lg shadow-xl max-w-2xl w-full max-h-[90vh] flex flex-col print:shadow-none print:rounded-none print:max-w-none print:w-full print:max-h-none">
+                <div className="p-6 border-b border-gray-200 print:hidden">
                     <div className="flex items-center justify-between">
                         <h2 className="text-xl font-semibold text-gray-900">
                             Print Receipt - Table {table.tableShortName}
@@ -136,23 +136,23 @@ export default function PrintReceiptComponents({ table, order, onClose }) {
                     </div>
                 </div>
 
-                <div className="p-6">
+                <div className="p-6 print:p-0 flex-1 overflow-y-auto">
                     {isLoading ? (
-                        <div className="text-center py-8">
+                        <div className="text-center py-8 print:hidden">
                             <span className="loading loading-spinner loading-lg"></span>
                             <p className="text-gray-500 mt-2">
                                 Loading receipt data...
                             </p>
                         </div>
                     ) : orderItems.length === 0 ? (
-                        <div className="text-center py-8">
+                        <div className="text-center py-8 print:hidden">
                             <p className="text-gray-500">
                                 No items found for this order
                             </p>
                         </div>
                     ) : (
                         /* Receipt Preview */
-                        <div className="bg-white border-2 border-dashed border-gray-300 rounded-lg p-6 mb-6 print:border-none print:shadow-none">
+                        <div className="bg-white border-2 border-dashed border-gray-300 rounded-lg p-6 mb-6 print:border-none print:shadow-none print:rounded-none print:p-4 print:mb-0">
                             {/* Receipt Header */}
                             <div className="text-center mb-6">
                                 <h1 className="text-2xl font-bold text-gray-900 mb-2">
@@ -296,7 +296,7 @@ export default function PrintReceiptComponents({ table, order, onClose }) {
                     )}
 
                     {/* Action Buttons */}
-                    <div className="flex justify-end space-x-3">
+                    <div className="flex justify-end space-x-3 print:hidden flex-shrink-0 p-6 border-t border-gray-200">
                         <button
                             onClick={onClose}
                             className="btn btn-ghost"

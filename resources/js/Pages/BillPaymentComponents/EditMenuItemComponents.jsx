@@ -36,10 +36,24 @@ export default function EditMenuItemComponents({
                     .querySelector('meta[name="csrf-token"]')
                     ?.getAttribute("content") || "";
 
+            // Calculate tax amount using govTaxPercentage from menu item
+            const govTaxPercentage = menuItem.menuItem?.govTaxPercentage || 0;
+            const taxAmount =
+                Math.round(
+                    (govTaxPercentage / 100) *
+                        menuItem.sellingPrice *
+                        quantity *
+                        100
+                ) / 100;
+            const subTotalAmount =
+                Math.round(
+                    (menuItem.sellingPrice * quantity + taxAmount) * 100
+                ) / 100;
+
             const updateData = {
                 quantity: quantity,
-                subTotalAmount: menuItem.sellingPrice * quantity,
-                taxAmount: menuItem.sellingPrice * quantity * 0.1, // 10% tax
+                subTotalAmount: subTotalAmount,
+                taxAmount: taxAmount,
             };
 
             const response = await fetch(`/order-items/${menuItem.id}`, {
@@ -57,8 +71,8 @@ export default function EditMenuItemComponents({
                 onSuccess({
                     ...menuItem,
                     quantity: quantity,
-                    subTotalAmount: updateData.subTotalAmount,
-                    taxAmount: updateData.taxAmount,
+                    subTotalAmount: subTotalAmount,
+                    taxAmount: taxAmount,
                 });
             } else {
                 const errorData = await response.json();
@@ -188,15 +202,48 @@ export default function EditMenuItemComponents({
 
                     {/* New Total */}
                     <div className="bg-blue-50 rounded-lg p-4 mb-6">
-                        <div className="flex justify-between items-center">
-                            <span className="text-lg font-medium text-gray-700">
-                                New Total:
-                            </span>
-                            <span className="text-2xl font-bold text-blue-600">
-                                {formatCurrency(
-                                    menuItem.sellingPrice * quantity
-                                )}
-                            </span>
+                        <div className="space-y-2">
+                            <div className="flex justify-between items-center">
+                                <span className="text-sm font-medium text-gray-600">
+                                    Subtotal:
+                                </span>
+                                <span className="text-lg font-semibold text-gray-700">
+                                    {formatCurrency(
+                                        menuItem.sellingPrice * quantity
+                                    )}
+                                </span>
+                            </div>
+                            <div className="flex justify-between items-center">
+                                <span className="text-sm font-medium text-gray-600">
+                                    Tax (
+                                    {menuItem.menuItem?.govTaxPercentage || 0}
+                                    %):
+                                </span>
+                                <span className="text-lg font-semibold text-orange-600">
+                                    {formatCurrency(
+                                        ((menuItem.menuItem?.govTaxPercentage ||
+                                            0) /
+                                            100) *
+                                            menuItem.sellingPrice *
+                                            quantity
+                                    )}
+                                </span>
+                            </div>
+                            <div className="flex justify-between items-center border-t border-gray-200 pt-2">
+                                <span className="text-lg font-medium text-gray-700">
+                                    New Total:
+                                </span>
+                                <span className="text-2xl font-bold text-blue-600">
+                                    {formatCurrency(
+                                        menuItem.sellingPrice * quantity +
+                                            ((menuItem.menuItem
+                                                ?.govTaxPercentage || 0) /
+                                                100) *
+                                                menuItem.sellingPrice *
+                                                quantity
+                                    )}
+                                </span>
+                            </div>
                         </div>
                     </div>
 
