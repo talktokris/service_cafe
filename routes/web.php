@@ -146,8 +146,10 @@ Route::middleware(['auth', 'verified'])->group(function () {
             
             // Calculate tax amount
             $sellingPrice = floatval($request->sellingPrice);
-            $taxAmount = ($sellingPrice * $taxPercentage) / 100;
-            $subTotalAmount = $sellingPrice + $taxAmount;
+            $quantity = intval($request->quantity ?? 1);
+            $totalSellingPrice = $sellingPrice * $quantity;
+            $taxAmount = ($totalSellingPrice * $taxPercentage) / 100;
+            $subTotalAmount = $totalSellingPrice + $taxAmount;
             
             $orderItem = \App\Models\OrderItem::create([
                 'headOfficeId' => $request->headOfficeId,
@@ -162,6 +164,7 @@ Route::middleware(['auth', 'verified'])->group(function () {
                 'adminProfitAmount' => $request->adminProfitAmount,
                 'adminNetProfitAmount' => $request->adminNetProfitAmount,
                 'userCommissionAmount' => $request->userCommissionAmount,
+                'quantity' => $request->quantity ?? 1,
                 'subTotalAmount' => round($subTotalAmount, 2),
                 'deleteStatus' => 0,
             ]);
@@ -187,6 +190,93 @@ Route::middleware(['auth', 'verified'])->group(function () {
             ], 500);
         }
     })->name('order-items.create');
+    
+    // Get order items for a specific order
+    Route::get('/order-items', function (\Illuminate\Http\Request $request) {
+        try {
+            // Debug logging
+            \Log::info('Fetching order items with params:', [
+                'orderId' => $request->orderId,
+                'headOfficeId' => $request->headOfficeId,
+                'branchId' => $request->branchId,
+                'tableId' => $request->tableId
+            ]);
+            
+            $query = \App\Models\OrderItem::with('menuItem')
+                ->where('orderId', $request->orderId)
+                ->where('headOfficeId', $request->headOfficeId)
+                ->where('tableId', $request->tableId)
+                ->where('deleteStatus', 0);
+            
+            // Handle branchId - it can be null or empty
+            if ($request->branchId && $request->branchId !== 'null') {
+                $query->where('branchId', $request->branchId);
+            } else {
+                $query->whereNull('branchId');
+            }
+            
+            $orderItems = $query->get();
+
+            \Log::info('Found order items:', ['count' => $orderItems->count()]);
+
+            return response()->json([
+                'success' => true,
+                'orderItems' => $orderItems,
+            ]);
+        } catch (\Exception $e) {
+            \Log::error('Error fetching order items: ' . $e->getMessage());
+            return response()->json([
+                'success' => false,
+                'message' => 'Failed to fetch order items',
+            ], 500);
+        }
+    })->name('order-items.index');
+
+    // Update order item
+    Route::put('/order-items/{id}', function (\Illuminate\Http\Request $request, $id) {
+        try {
+            $orderItem = \App\Models\OrderItem::findOrFail($id);
+            
+            $orderItem->update([
+                'quantity' => $request->quantity,
+                'subTotalAmount' => $request->subTotalAmount,
+                'taxAmount' => $request->taxAmount,
+            ]);
+
+            return response()->json([
+                'success' => true,
+                'orderItem' => $orderItem,
+            ]);
+        } catch (\Exception $e) {
+            \Log::error('Error updating order item: ' . $e->getMessage());
+            return response()->json([
+                'success' => false,
+                'message' => 'Failed to update order item',
+            ], 500);
+        }
+    })->name('order-items.update');
+
+    // Delete order item (soft delete)
+    Route::delete('/order-items/{id}', function (\Illuminate\Http\Request $request, $id) {
+        try {
+            $orderItem = \App\Models\OrderItem::findOrFail($id);
+            
+            $orderItem->update([
+                'deleteStatus' => 1,
+            ]);
+
+            return response()->json([
+                'success' => true,
+                'message' => 'Order item deleted successfully',
+            ]);
+        } catch (\Exception $e) {
+            \Log::error('Error deleting order item: ' . $e->getMessage());
+            return response()->json([
+                'success' => false,
+                'message' => 'Failed to delete order item',
+            ], 500);
+        }
+    })->name('order-items.delete');
     
     // Branch Management
     Route::get('/branches', function () {

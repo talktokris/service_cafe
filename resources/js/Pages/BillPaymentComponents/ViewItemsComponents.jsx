@@ -1,44 +1,121 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
+import { usePage } from "@inertiajs/react";
 
 export default function ViewItemsComponents({
     table,
+    order,
     onClose,
     onAddItem,
     onEditItem,
     onDeleteItem,
     onMakePayment,
     onPrintReceipt,
+    onRefresh,
     menuItems = [],
 }) {
-    // Mock order data for the table
-    const [orderItems] = useState([
-        {
-            id: 1,
-            menuItemId: 1,
-            menuName: "Chicken Burger",
-            price: 250,
-            quantity: 2,
-            total: 500,
-        },
-        {
-            id: 2,
-            menuItemId: 2,
-            menuName: "Coffee",
-            price: 80,
-            quantity: 1,
-            total: 80,
-        },
-    ]);
+    const { auth } = usePage().props;
+    const user = auth?.user;
 
-    // Calculate subtotal
-    const subtotal = orderItems.reduce((sum, item) => sum + item.total, 0);
+    const [orderItems, setOrderItems] = useState([]);
+    const [isLoading, setIsLoading] = useState(true);
+
+    // Fetch order items from the database
+    useEffect(() => {
+        console.log("ViewItemsComponents useEffect triggered:", {
+            order: order,
+            user: user,
+            table: table,
+        });
+
+        if (order && order.id && user) {
+            fetchOrderItems();
+        } else {
+            console.log("Missing required data:", {
+                hasOrder: !!order,
+                hasOrderId: !!(order && order.id),
+                hasUser: !!user,
+            });
+        }
+    }, [order, user]);
+
+    const fetchOrderItems = async () => {
+        try {
+            setIsLoading(true);
+
+            // Debug logging
+            console.log("Fetching order items with params:", {
+                orderId: order.id,
+                headOfficeId: user.headOfficeId,
+                branchId: user.branchId,
+                tableId: table.id,
+            });
+
+            const response = await fetch(
+                `/order-items?orderId=${order.id}&headOfficeId=${user.headOfficeId}&branchId=${user.branchId}&tableId=${table.id}`,
+                {
+                    method: "GET",
+                    headers: {
+                        Accept: "application/json",
+                        "X-CSRF-TOKEN":
+                            document
+                                .querySelector('meta[name="csrf-token"]')
+                                ?.getAttribute("content") || "",
+                    },
+                }
+            );
+
+            console.log("Response status:", response.status);
+
+            if (response.ok) {
+                const data = await response.json();
+                console.log("Fetched data:", data);
+                setOrderItems(data.orderItems || []);
+            } else {
+                const errorText = await response.text();
+                console.error(
+                    "Failed to fetch order items:",
+                    response.status,
+                    errorText
+                );
+                setOrderItems([]);
+            }
+        } catch (error) {
+            console.error("Error fetching order items:", error);
+            setOrderItems([]);
+        } finally {
+            setIsLoading(false);
+        }
+    };
+
+    // Calculate totals
+    const subtotal = orderItems.reduce((sum, item) => {
+        const itemPrice = parseFloat(item.sellingPrice) || 0;
+        const itemQty = parseInt(item.quantity) || 0;
+        return sum + itemPrice * itemQty;
+    }, 0);
+
+    const totalTax = orderItems.reduce((sum, item) => {
+        const taxAmount = parseFloat(item.taxAmount) || 0;
+        return sum + taxAmount;
+    }, 0);
+
+    const finalTotal = subtotal + totalTax;
+
+    // Debug logging
+    console.log("Calculation Debug:", {
+        orderItems: orderItems,
+        subtotal: subtotal,
+        totalTax: totalTax,
+        finalTotal: finalTotal,
+    });
 
     // Format currency
     const formatCurrency = (amount) => {
+        const numAmount = parseFloat(amount) || 0;
         return new Intl.NumberFormat("en-IN", {
             style: "currency",
             currency: "INR",
-        }).format(amount || 0);
+        }).format(numAmount);
     };
 
     return (
@@ -73,94 +150,169 @@ export default function ViewItemsComponents({
                 <div className="p-6">
                     {/* Order Items Table */}
                     <div className="mb-6">
-                        <div className="overflow-x-auto">
-                            <table className="table table-zebra w-full">
-                                <thead>
-                                    <tr>
-                                        <th>S.N</th>
-                                        <th>Menu Items</th>
-                                        <th>Price</th>
-                                        <th>Qty</th>
-                                        <th>Total</th>
-                                        <th>Actions</th>
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                    {orderItems.length === 0 ? (
+                        {isLoading ? (
+                            <div className="text-center py-8">
+                                <span className="loading loading-spinner loading-lg"></span>
+                                <p className="text-gray-500 mt-2">
+                                    Loading order items...
+                                </p>
+                            </div>
+                        ) : (
+                            <div className="overflow-x-auto">
+                                <table className="table table-zebra w-full">
+                                    <thead>
                                         <tr>
-                                            <td
-                                                colSpan="6"
-                                                className="text-center py-8 text-gray-500"
-                                            >
-                                                No items in this order
-                                            </td>
+                                            <th>S.N</th>
+                                            <th>Menu Items</th>
+                                            <th>Price</th>
+                                            <th>Qty</th>
+                                            <th>Tax</th>
+                                            <th>Sub Total</th>
+                                            <th>Actions</th>
                                         </tr>
-                                    ) : (
-                                        orderItems.map((item, index) => (
-                                            <tr key={item.id}>
-                                                <td>{index + 1}</td>
-                                                <td>
-                                                    <div className="font-medium">
-                                                        {item.menuName}
-                                                    </div>
-                                                </td>
-                                                <td>
-                                                    <span className="font-medium text-green-600">
-                                                        {formatCurrency(
-                                                            item.price
-                                                        )}
-                                                    </span>
-                                                </td>
-                                                <td>
-                                                    <span className="font-medium">
-                                                        {item.quantity}
-                                                    </span>
-                                                </td>
-                                                <td>
-                                                    <span className="font-medium text-blue-600">
-                                                        {formatCurrency(
-                                                            item.total
-                                                        )}
-                                                    </span>
-                                                </td>
-                                                <td>
-                                                    <div className="flex space-x-2">
-                                                        <button
-                                                            onClick={() =>
-                                                                onEditItem(item)
-                                                            }
-                                                            className="btn btn-ghost btn-xs text-blue-600 hover:bg-blue-50"
-                                                        >
-                                                            Edit
-                                                        </button>
-                                                        <button
-                                                            onClick={() =>
-                                                                onDeleteItem(
-                                                                    item
-                                                                )
-                                                            }
-                                                            className="btn btn-ghost btn-xs text-red-600 hover:bg-red-50"
-                                                        >
-                                                            Delete
-                                                        </button>
-                                                    </div>
+                                    </thead>
+                                    <tbody>
+                                        {orderItems.length === 0 ? (
+                                            <tr>
+                                                <td
+                                                    colSpan="7"
+                                                    className="text-center py-8 text-gray-500"
+                                                >
+                                                    No items in this order
                                                 </td>
                                             </tr>
-                                        ))
-                                    )}
-                                </tbody>
-                            </table>
-                        </div>
+                                        ) : (
+                                            orderItems.map((item, index) => (
+                                                <tr key={item.id}>
+                                                    <td>{index + 1}</td>
+                                                    <td>
+                                                        <div className="font-medium">
+                                                            {item.menu_item
+                                                                ?.menuName ||
+                                                                item.menuItem
+                                                                    ?.menuName ||
+                                                                "Unknown Item"}
+                                                        </div>
+                                                    </td>
+                                                    <td>
+                                                        <span className="font-medium text-green-600">
+                                                            {formatCurrency(
+                                                                item.sellingPrice
+                                                            )}
+                                                        </span>
+                                                    </td>
+                                                    <td>
+                                                        <span className="font-medium">
+                                                            {item.quantity}
+                                                        </span>
+                                                    </td>
+                                                    <td>
+                                                        <span className="font-medium text-orange-600">
+                                                            {formatCurrency(
+                                                                item.taxAmount ||
+                                                                    0
+                                                            )}
+                                                        </span>
+                                                    </td>
+                                                    <td>
+                                                        <span className="font-medium text-blue-600">
+                                                            {formatCurrency(
+                                                                item.sellingPrice *
+                                                                    item.quantity
+                                                            )}
+                                                        </span>
+                                                    </td>
+                                                    <td>
+                                                        <div className="flex space-x-2">
+                                                            <button
+                                                                onClick={() =>
+                                                                    onEditItem(
+                                                                        item,
+                                                                        () =>
+                                                                            fetchOrderItems()
+                                                                    )
+                                                                }
+                                                                className="btn btn-ghost btn-xs text-blue-600 hover:bg-blue-50"
+                                                                title="Edit Item"
+                                                            >
+                                                                <svg
+                                                                    className="w-4 h-4"
+                                                                    fill="none"
+                                                                    stroke="currentColor"
+                                                                    viewBox="0 0 24 24"
+                                                                >
+                                                                    <path
+                                                                        strokeLinecap="round"
+                                                                        strokeLinejoin="round"
+                                                                        strokeWidth="2"
+                                                                        d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"
+                                                                    />
+                                                                </svg>
+                                                            </button>
+                                                            <button
+                                                                onClick={() =>
+                                                                    onDeleteItem(
+                                                                        item,
+                                                                        () =>
+                                                                            fetchOrderItems()
+                                                                    )
+                                                                }
+                                                                className="btn btn-ghost btn-xs text-red-600 hover:bg-red-50"
+                                                                title="Delete Item"
+                                                            >
+                                                                <svg
+                                                                    className="w-4 h-4"
+                                                                    fill="none"
+                                                                    stroke="currentColor"
+                                                                    viewBox="0 0 24 24"
+                                                                >
+                                                                    <path
+                                                                        strokeLinecap="round"
+                                                                        strokeLinejoin="round"
+                                                                        strokeWidth="2"
+                                                                        d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"
+                                                                    />
+                                                                </svg>
+                                                            </button>
+                                                        </div>
+                                                    </td>
+                                                </tr>
+                                            ))
+                                        )}
+                                    </tbody>
+                                </table>
+                            </div>
+                        )}
 
-                        {/* Subtotal Row */}
+                        {/* Totals Section */}
                         {orderItems.length > 0 && (
                             <div className="mt-4 flex justify-end">
-                                <div className="bg-gray-50 rounded-lg p-4 min-w-[300px]">
-                                    <div className="flex justify-between items-center text-lg font-semibold">
-                                        <span>Sub Total:</span>
-                                        <span className="text-green-600">
-                                            {formatCurrency(subtotal)}
-                                        </span>
+                                <div className="bg-gray-50 rounded-lg p-4 min-w-[350px]">
+                                    <div className="space-y-2">
+                                        <div className="flex justify-between items-center">
+                                            <span className="text-gray-600">
+                                                Sub Total:
+                                            </span>
+                                            <span className="font-medium">
+                                                {formatCurrency(subtotal)}
+                                            </span>
+                                        </div>
+                                        <div className="flex justify-between items-center">
+                                            <span className="text-gray-600">
+                                                Tax:
+                                            </span>
+                                            <span className="font-medium text-orange-600">
+                                                {formatCurrency(totalTax)}
+                                            </span>
+                                        </div>
+                                        <div className="border-t border-gray-300 pt-2">
+                                            <div className="flex justify-between items-center text-lg font-semibold">
+                                                <span>Total:</span>
+                                                <span className="text-green-600">
+                                                    {formatCurrency(finalTotal)}
+                                                </span>
+                                            </div>
+                                        </div>
                                     </div>
                                 </div>
                             </div>

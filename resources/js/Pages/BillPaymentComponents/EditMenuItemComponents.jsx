@@ -1,10 +1,14 @@
 import React, { useState } from "react";
+import { usePage } from "@inertiajs/react";
 
 export default function EditMenuItemComponents({
     menuItem,
     onClose,
     onSuccess,
 }) {
+    const { auth } = usePage().props;
+    const user = auth?.user;
+
     const [quantity, setQuantity] = useState(menuItem.quantity || 1);
     const [isSubmitting, setIsSubmitting] = useState(false);
 
@@ -19,20 +23,50 @@ export default function EditMenuItemComponents({
     const handleSubmit = async (e) => {
         e.preventDefault();
 
+        if (!user || !menuItem.id) {
+            alert("User session or menu item not found");
+            return;
+        }
+
         setIsSubmitting(true);
 
         try {
-            // Mock API call - replace with actual API
-            await new Promise((resolve) => setTimeout(resolve, 1000));
+            const csrfToken =
+                document
+                    .querySelector('meta[name="csrf-token"]')
+                    ?.getAttribute("content") || "";
 
-            // Call success callback
-            onSuccess({
-                ...menuItem,
+            const updateData = {
                 quantity: quantity,
-                total: menuItem.price * quantity,
+                subTotalAmount: menuItem.sellingPrice * quantity,
+                taxAmount: menuItem.sellingPrice * quantity * 0.1, // 10% tax
+            };
+
+            const response = await fetch(`/order-items/${menuItem.id}`, {
+                method: "PUT",
+                headers: {
+                    "Content-Type": "application/json",
+                    "X-CSRF-TOKEN": csrfToken,
+                    Accept: "application/json",
+                },
+                body: JSON.stringify(updateData),
             });
+
+            if (response.ok) {
+                const result = await response.json();
+                onSuccess({
+                    ...menuItem,
+                    quantity: quantity,
+                    subTotalAmount: updateData.subTotalAmount,
+                    taxAmount: updateData.taxAmount,
+                });
+            } else {
+                const errorData = await response.json();
+                alert(errorData.message || "Failed to update menu item");
+            }
         } catch (error) {
             console.error("Error updating menu item:", error);
+            alert("An error occurred while updating the menu item");
         } finally {
             setIsSubmitting(false);
         }
@@ -79,7 +113,8 @@ export default function EditMenuItemComponents({
                                     Menu Item
                                 </label>
                                 <p className="text-lg font-semibold text-gray-900">
-                                    {menuItem.menuName}
+                                    {menuItem.menuItem?.menuName ||
+                                        "Unknown Item"}
                                 </p>
                             </div>
                             <div>
@@ -87,7 +122,7 @@ export default function EditMenuItemComponents({
                                     Price
                                 </label>
                                 <p className="text-lg font-semibold text-green-600">
-                                    {formatCurrency(menuItem.price)}
+                                    {formatCurrency(menuItem.sellingPrice)}
                                 </p>
                             </div>
                             <div>
@@ -103,7 +138,11 @@ export default function EditMenuItemComponents({
                                     Current Total
                                 </label>
                                 <p className="text-lg font-semibold text-blue-600">
-                                    {formatCurrency(menuItem.total)}
+                                    {formatCurrency(
+                                        menuItem.subTotalAmount ||
+                                            menuItem.sellingPrice *
+                                                menuItem.quantity
+                                    )}
                                 </p>
                             </div>
                         </div>
@@ -154,7 +193,9 @@ export default function EditMenuItemComponents({
                                 New Total:
                             </span>
                             <span className="text-2xl font-bold text-blue-600">
-                                {formatCurrency(menuItem.price * quantity)}
+                                {formatCurrency(
+                                    menuItem.sellingPrice * quantity
+                                )}
                             </span>
                         </div>
                     </div>

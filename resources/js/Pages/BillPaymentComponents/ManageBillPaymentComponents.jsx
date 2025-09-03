@@ -22,6 +22,7 @@ export default function ManageBillPaymentComponents({
     const [showDeleteModal, setShowDeleteModal] = useState(false);
     const [showPayModal, setShowPayModal] = useState(false);
     const [showPrintModal, setShowPrintModal] = useState(false);
+    const [refreshCallback, setRefreshCallback] = useState(null);
     const [selectedTable, setSelectedTable] = useState(null);
     const [selectedMenuItem, setSelectedMenuItem] = useState(null);
     const [tableOrders, setTableOrders] = useState({});
@@ -172,15 +173,17 @@ export default function ManageBillPaymentComponents({
     };
 
     // Handle edit menu item
-    const handleEditMenuItem = (menuItem) => {
+    const handleEditMenuItem = (menuItem, onRefresh) => {
         setSelectedMenuItem(menuItem);
         setShowEditModal(true);
+        setRefreshCallback(() => onRefresh);
     };
 
     // Handle delete menu item
-    const handleDeleteMenuItem = (menuItem) => {
+    const handleDeleteMenuItem = (menuItem, onRefresh) => {
         setSelectedMenuItem(menuItem);
         setShowDeleteModal(true);
+        setRefreshCallback(() => onRefresh);
     };
 
     // Handle make payment
@@ -471,6 +474,7 @@ export default function ManageBillPaymentComponents({
             {showViewModal && selectedTable && (
                 <ViewItemsComponents
                     table={selectedTable}
+                    order={getTableOrderData(selectedTable.id).order}
                     onClose={() => {
                         setShowViewModal(false);
                         setSelectedTable(null);
@@ -509,10 +513,15 @@ export default function ManageBillPaymentComponents({
                     onClose={() => {
                         setShowEditModal(false);
                         setSelectedMenuItem(null);
+                        setRefreshCallback(null);
                     }}
                     onSuccess={() => {
                         setShowEditModal(false);
                         setSelectedMenuItem(null);
+                        if (refreshCallback) {
+                            refreshCallback();
+                        }
+                        setRefreshCallback(null);
                     }}
                 />
             )}
@@ -523,10 +532,15 @@ export default function ManageBillPaymentComponents({
                     onClose={() => {
                         setShowDeleteModal(false);
                         setSelectedMenuItem(null);
+                        setRefreshCallback(null);
                     }}
                     onSuccess={() => {
                         setShowDeleteModal(false);
                         setSelectedMenuItem(null);
+                        if (refreshCallback) {
+                            refreshCallback();
+                        }
+                        setRefreshCallback(null);
                     }}
                 />
             )}
@@ -548,6 +562,7 @@ export default function ManageBillPaymentComponents({
             {showPrintModal && selectedTable && (
                 <PrintReceiptComponents
                     table={selectedTable}
+                    order={getTableOrderData(selectedTable.id).order}
                     onClose={() => {
                         setShowPrintModal(false);
                         setSelectedTable(null);

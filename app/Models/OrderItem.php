@@ -15,6 +15,7 @@ class OrderItem extends Model
         'tableId',
         'orderId',
         'menuId',
+        'quantity',
         'buyingPrice',
         'sellingPrice',
         'taxAmount',

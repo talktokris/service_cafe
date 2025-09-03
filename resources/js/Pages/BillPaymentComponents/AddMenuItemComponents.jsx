@@ -59,6 +59,7 @@ export default function AddMenuItemComponents({
                 adminProfitAmount: selectedMenuItem.adminProfitAmount,
                 adminNetProfitAmount: selectedMenuItem.adminProfitAmount,
                 userCommissionAmount: selectedMenuItem.userCommissionAmount,
+                quantity: quantity,
             };
 
             console.log("Submitting order item:", orderItemData);

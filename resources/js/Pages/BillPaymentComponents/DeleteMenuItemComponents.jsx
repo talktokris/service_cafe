@@ -1,10 +1,14 @@
 import React, { useState } from "react";
+import { usePage } from "@inertiajs/react";
 
 export default function DeleteMenuItemComponents({
     menuItem,
     onClose,
     onSuccess,
 }) {
+    const { auth } = usePage().props;
+    const user = auth?.user;
+
     const [isSubmitting, setIsSubmitting] = useState(false);
 
     // Format currency
@@ -16,16 +20,37 @@ export default function DeleteMenuItemComponents({
     };
 
     const handleDelete = async () => {
+        if (!user || !menuItem.id) {
+            alert("User session or menu item not found");
+            return;
+        }
+
         setIsSubmitting(true);
 
         try {
-            // Mock API call - replace with actual API
-            await new Promise((resolve) => setTimeout(resolve, 1000));
+            const csrfToken =
+                document
+                    .querySelector('meta[name="csrf-token"]')
+                    ?.getAttribute("content") || "";
 
-            // Call success callback
-            onSuccess(menuItem.id);
+            const response = await fetch(`/order-items/${menuItem.id}`, {
+                method: "DELETE",
+                headers: {
+                    "Content-Type": "application/json",
+                    "X-CSRF-TOKEN": csrfToken,
+                    Accept: "application/json",
+                },
+            });
+
+            if (response.ok) {
+                onSuccess(menuItem.id);
+            } else {
+                const errorData = await response.json();
+                alert(errorData.message || "Failed to delete menu item");
+            }
         } catch (error) {
             console.error("Error deleting menu item:", error);
+            alert("An error occurred while deleting the menu item");
         } finally {
             setIsSubmitting(false);
         }
@@ -99,7 +124,8 @@ export default function DeleteMenuItemComponents({
                                     Menu Item
                                 </label>
                                 <p className="text-lg font-semibold text-gray-900">
-                                    {menuItem.menuName}
+                                    {menuItem.menuItem?.menuName ||
+                                        "Unknown Item"}
                                 </p>
                             </div>
                             <div>
@@ -107,7 +133,7 @@ export default function DeleteMenuItemComponents({
                                     Price
                                 </label>
                                 <p className="text-lg font-semibold text-green-600">
-                                    {formatCurrency(menuItem.price)}
+                                    {formatCurrency(menuItem.sellingPrice)}
                                 </p>
                             </div>
                             <div>
@@ -123,7 +149,11 @@ export default function DeleteMenuItemComponents({
                                     Total Amount
                                 </label>
                                 <p className="text-lg font-semibold text-blue-600">
-                                    {formatCurrency(menuItem.total)}
+                                    {formatCurrency(
+                                        menuItem.subTotalAmount ||
+                                            menuItem.sellingPrice *
+                                                menuItem.quantity
+                                    )}
                                 </p>
                             </div>
                         </div>
