@@ -115,62 +115,14 @@ export default function ManageOrderComponents({
     };
 
     const getCustomerInfo = (order) => {
-        // Debug logging for order 6
-        if (order.id === 6) {
-            console.log("Order 6 Debug in getCustomerInfo:", {
-                order: order,
-                customerType: order.customerType,
-                memberUserId: order.memberUserId,
-                memberUser: order.memberUser,
-                hasMemberUser: !!order.memberUser,
-                memberUserKeys: order.memberUser
-                    ? Object.keys(order.memberUser)
-                    : "No memberUser",
-            });
-        }
-
         // Simplified check for member customer
         const isMemberCustomer =
             order.customerType === "member" && order.memberUser;
 
-        // Debug: Log the check result for order 6
-        if (order.id === 6) {
-            console.log("Order 6 isMemberCustomer check:", {
-                customerType: order.customerType,
-                customerTypeCheck: order.customerType === "member",
-                memberUser: order.memberUser,
-                memberUserCheck: !!order.memberUser,
-                finalResult: isMemberCustomer,
-            });
-        }
-
         if (isMemberCustomer) {
-            // Debug: Check if memberUser exists before accessing properties
-            if (order.id === 6) {
-                console.log(
-                    "Order 6 - About to access memberUser properties:",
-                    {
-                        memberUser: order.memberUser,
-                        memberUserType: typeof order.memberUser,
-                        memberUserNull: order.memberUser === null,
-                        memberUserUndefined: order.memberUser === undefined,
-                    }
-                );
-            }
-
             const firstName = order.memberUser?.first_name || "";
             const lastName = order.memberUser?.last_name || "";
             const fullName = `${firstName} ${lastName}`.trim() || "Member User";
-
-            // Debug: Log member customer info for order 6
-            if (order.id === 6) {
-                console.log("Order 6 - Member customer info:", {
-                    firstName,
-                    lastName,
-                    fullName,
-                    email: order.memberUser?.email,
-                });
-            }
 
             return {
                 name: fullName,
@@ -180,12 +132,6 @@ export default function ManageOrderComponents({
                 color: "bg-purple-600",
             };
         } else {
-            // Debug: Log why it's not a member customer for order 6
-            if (order.id === 6) {
-                console.log(
-                    "Order 6 - Not a member customer, showing Walking Customer"
-                );
-            }
             return {
                 name: "Walking Customer",
                 email: "N/A",

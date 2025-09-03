@@ -61,25 +61,6 @@ Route::middleware(['auth', 'verified'])->group(function () {
             ->orderBy('created_at', 'desc')
             ->get();
         
-        // Debug: Check order 6 data before sending to frontend
-        $order6 = $orders->find(6);
-        if ($order6) {
-            \Log::info('Order 6 Frontend Data Debug:', [
-                'id' => $order6->id,
-                'customerType' => $order6->customerType,
-                'memberUserId' => $order6->memberUserId,
-                'memberUser' => $order6->memberUser ? [
-                    'id' => $order6->memberUser->id,
-                    'first_name' => $order6->memberUser->first_name,
-                    'last_name' => $order6->memberUser->last_name,
-                    'email' => $order6->memberUser->email,
-                    'user_type' => $order6->memberUser->user_type,
-                    'member_type' => $order6->memberUser->member_type
-                ] : null,
-                'memberUserRaw' => $order6->memberUser
-            ]);
-        }
-        
         // Manually build the orders data to ensure memberUser is properly included
         $ordersData = $orders->map(function ($order) {
             $orderData = $order->toArray();

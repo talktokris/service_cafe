@@ -4,20 +4,6 @@ import ViewOrderItemComponents from "./ViewOrderItemComponents";
 export default function ViewOrderComponents({ order, onClose }) {
     const [showOrderItems, setShowOrderItems] = useState(false);
 
-    // Debug logging for order 6
-    if (order.id === 6) {
-        console.log("ViewOrderComponents - Order 6 Debug:", {
-            order: order,
-            customerType: order.customerType,
-            memberUserId: order.memberUserId,
-            memberUser: order.memberUser,
-            hasMemberUser: !!order.memberUser,
-            memberUserKeys: order.memberUser
-                ? Object.keys(order.memberUser)
-                : "No memberUser",
-        });
-    }
-
     const formatCurrency = (amount) => {
         return new Intl.NumberFormat("en-IN", {
             style: "currency",
