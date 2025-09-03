@@ -6,11 +6,14 @@ import EditMenuItemComponents from "./EditMenuItemComponents";
 import DeleteMenuItemComponents from "./DeleteMenuItemComponents";
 import PayBillComponents from "./PayBillComponents";
 import PrintReceiptComponents from "./PrintReceiptComponents";
+import TableUserConfirmComponent from "./TableUserConfirmComponent";
 
 export default function ManageBillPaymentComponents({
     user,
     restaurantTables = [],
     menuItems = [],
+    orders = [],
+    orderItems = [],
 }) {
     const [tables, setTables] = useState(restaurantTables);
     const [showViewModal, setShowViewModal] = useState(false);
@@ -22,14 +25,74 @@ export default function ManageBillPaymentComponents({
     const [selectedTable, setSelectedTable] = useState(null);
     const [selectedMenuItem, setSelectedMenuItem] = useState(null);
     const [tableOrders, setTableOrders] = useState({});
+    const [tableOccupancy, setTableOccupancy] = useState({});
+    const [showConfirmModal, setShowConfirmModal] = useState(false);
 
     // Update tables when restaurantTables prop changes
     useEffect(() => {
         console.log("RestaurantTables received:", restaurantTables);
         console.log("MenuItems received:", menuItems);
+        console.log("Orders received:", orders);
+        console.log("OrderItems received:", orderItems);
         console.log("User received:", user);
         setTables(restaurantTables);
-    }, [restaurantTables, menuItems, user]);
+
+        // Calculate table occupancy and totals
+        calculateTableOccupancy();
+    }, [restaurantTables, menuItems, orders, orderItems, user]);
+
+    // Calculate table occupancy status and totals
+    const calculateTableOccupancy = () => {
+        const occupancy = {};
+
+        // Filter orders based on user's headOfficeId and branchId
+        const userOrders = orders.filter((order) => {
+            if (user.branchId) {
+                return (
+                    order.headOfficeId == user.headOfficeId &&
+                    order.branchId == user.branchId &&
+                    order.tableOccupiedStatus === 1 &&
+                    order.deleteStatus === 0
+                );
+            } else {
+                return (
+                    order.headOfficeId == user.headOfficeId &&
+                    order.tableOccupiedStatus === 1 &&
+                    order.deleteStatus === 0
+                );
+            }
+        });
+
+        // Process each order to get table occupancy and totals
+        userOrders.forEach((order) => {
+            if (order.tableId) {
+                const tableId = order.tableId;
+
+                // Get order items for this order
+                const items = orderItems.filter(
+                    (item) =>
+                        item.orderId === order.id && item.deleteStatus === 0
+                );
+
+                // Calculate total amount and item count
+                const totalAmount = items.reduce(
+                    (sum, item) => sum + (parseFloat(item.sellingPrice) || 0),
+                    0
+                );
+                const itemCount = items.length;
+
+                occupancy[tableId] = {
+                    isOccupied: true,
+                    orderId: order.id,
+                    totalAmount: totalAmount,
+                    itemCount: itemCount,
+                    order: order,
+                };
+            }
+        });
+
+        setTableOccupancy(occupancy);
+    };
 
     // Filter tables based on user's headOfficeId and branchId
     const filteredTables = tables.filter((table) => {
@@ -65,21 +128,41 @@ export default function ManageBillPaymentComponents({
         }
     });
 
-    // Get table order data (mock data for now)
+    // Get table order data from occupancy status
     const getTableOrderData = (tableId) => {
-        return (
-            tableOrders[tableId] || {
-                items: [],
-                totalAmount: 0,
-                itemCount: 0,
-            }
-        );
+        const occupancy = tableOccupancy[tableId];
+        if (occupancy && occupancy.isOccupied) {
+            return {
+                isOccupied: true,
+                totalAmount: occupancy.totalAmount,
+                itemCount: occupancy.itemCount,
+                orderId: occupancy.orderId,
+                order: occupancy.order,
+            };
+        }
+        return {
+            isOccupied: false,
+            totalAmount: 0,
+            itemCount: 0,
+            orderId: null,
+            order: null,
+        };
     };
 
     // Handle table card click
     const handleTableClick = (table) => {
+        const orderData = getTableOrderData(table.id);
+        const isOccupied = orderData.isOccupied;
+
         setSelectedTable(table);
-        setShowViewModal(true);
+
+        if (isOccupied) {
+            // If table is occupied, directly open ViewItemsComponents
+            setShowViewModal(true);
+        } else {
+            // If table is not occupied, show confirmation modal
+            setShowConfirmModal(true);
+        }
     };
 
     // Handle add menu item
@@ -278,43 +361,85 @@ export default function ManageBillPaymentComponents({
                 ) : (
                     filteredTables.map((table) => {
                         const orderData = getTableOrderData(table.id);
+                        const isOccupied = orderData.isOccupied;
+
                         return (
                             <div
                                 key={table.id}
                                 onClick={() => handleTableClick(table)}
-                                className="bg-white rounded-lg shadow-sm border border-gray-200 p-6 cursor-pointer hover:shadow-md transition-shadow duration-200"
+                                className={`rounded-lg shadow-sm border p-6 cursor-pointer hover:shadow-md transition-all duration-200 ${
+                                    isOccupied
+                                        ? "bg-gray-800 border-gray-700"
+                                        : "bg-white border-gray-200"
+                                }`}
                             >
                                 <div className="text-center">
-                                    <div className="w-16 h-16 bg-blue-100 rounded-full flex items-center justify-center mx-auto mb-4">
-                                        <span className="text-2xl font-bold text-blue-600">
+                                    <div
+                                        className={`w-16 h-16 rounded-full flex items-center justify-center mx-auto mb-4 ${
+                                            isOccupied
+                                                ? "bg-gray-700"
+                                                : "bg-blue-100"
+                                        }`}
+                                    >
+                                        <span
+                                            className={`text-2xl font-bold ${
+                                                isOccupied
+                                                    ? "text-white"
+                                                    : "text-blue-600"
+                                            }`}
+                                        >
                                             {table.tableShortName || "T"}
                                         </span>
                                     </div>
-                                    <h3 className="text-xl font-bold text-gray-900 mb-2">
+                                    <h3
+                                        className={`text-xl font-bold mb-2 ${
+                                            isOccupied
+                                                ? "text-white"
+                                                : "text-gray-900"
+                                        }`}
+                                    >
                                         {table.tableShortName || "Table"}
                                     </h3>
-                                    <p className="text-sm text-gray-600 mb-4">
+                                    <p
+                                        className={`text-sm mb-4 ${
+                                            isOccupied
+                                                ? "text-gray-300"
+                                                : "text-gray-600"
+                                        }`}
+                                    >
                                         {table.tableShortFullName ||
                                             "Table Description"}
                                     </p>
-                                    <div className="space-y-2">
-                                        <div className="flex justify-between items-center">
-                                            <span className="text-sm text-gray-500">
-                                                Total Amount:
-                                            </span>
-                                            <span className="font-semibold text-green-600">
-                                                ₹{orderData.totalAmount}
+
+                                    {isOccupied ? (
+                                        <div className="space-y-2">
+                                            <div className="flex justify-between items-center">
+                                                <span className="text-sm text-gray-300">
+                                                    Total Amount:
+                                                </span>
+                                                <span className="font-semibold text-green-400">
+                                                    ₹
+                                                    {orderData.totalAmount.toFixed(
+                                                        2
+                                                    )}
+                                                </span>
+                                            </div>
+                                            <div className="flex justify-between items-center">
+                                                <span className="text-sm text-gray-300">
+                                                    Items:
+                                                </span>
+                                                <span className="font-semibold text-white">
+                                                    {orderData.itemCount}
+                                                </span>
+                                            </div>
+                                        </div>
+                                    ) : (
+                                        <div className="text-center">
+                                            <span className="text-sm text-green-600 font-medium">
+                                                Ready to Use
                                             </span>
                                         </div>
-                                        <div className="flex justify-between items-center">
-                                            <span className="text-sm text-gray-500">
-                                                Items:
-                                            </span>
-                                            <span className="font-semibold text-gray-900">
-                                                {orderData.itemCount}
-                                            </span>
-                                        </div>
-                                    </div>
+                                    )}
                                 </div>
                             </div>
                         );
@@ -323,6 +448,26 @@ export default function ManageBillPaymentComponents({
             </div>
 
             {/* Modals */}
+            {showConfirmModal && selectedTable && (
+                <TableUserConfirmComponent
+                    table={selectedTable}
+                    user={user}
+                    onClose={() => {
+                        setShowConfirmModal(false);
+                        setSelectedTable(null);
+                    }}
+                    onConfirm={() => {
+                        setShowConfirmModal(false);
+                        // Refresh the page to get updated data
+                        router.reload();
+                        // Open ViewItemsComponents after order creation
+                        setTimeout(() => {
+                            setShowViewModal(true);
+                        }, 1000);
+                    }}
+                />
+            )}
+
             {showViewModal && selectedTable && (
                 <ViewItemsComponents
                     table={selectedTable}

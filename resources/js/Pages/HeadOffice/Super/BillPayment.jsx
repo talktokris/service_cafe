@@ -1,12 +1,14 @@
 import React from "react";
 import { Head, Link } from "@inertiajs/react";
 import { AdminDashboardLayout } from "../AdminComponents";
-import ManageBillPaymentComponents from "../../BillPaymentStockRecordComponents/ManageBillPaymentComponents";
+import ManageBillPaymentComponents from "../../BillPaymentComponents/ManageBillPaymentComponents";
 
 export default function BillPayment({
     auth,
     restaurantTables = [],
     menuItems = [],
+    orders = [],
+    orderItems = [],
 }) {
     const user = auth?.user;
 
@@ -71,6 +73,8 @@ export default function BillPayment({
                 user={user}
                 restaurantTables={restaurantTables}
                 menuItems={menuItems}
+                orders={orders}
+                orderItems={orderItems}
             />
         </AdminDashboardLayout>
     );

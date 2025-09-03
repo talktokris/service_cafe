@@ -62,21 +62,81 @@ Route::middleware(['auth', 'verified'])->group(function () {
                 ->orderBy('created_at', 'desc')
                 ->get();
             
+            $orders = \App\Models\Order::where('deleteStatus', 0)
+                ->with(['headOffice', 'branch', 'table', 'memberUser'])
+                ->orderBy('created_at', 'desc')
+                ->get();
+            
+            $orderItems = \App\Models\OrderItem::where('deleteStatus', 0)
+                ->with(['headOffice', 'branch', 'table', 'order', 'menuItem'])
+                ->orderBy('created_at', 'desc')
+                ->get();
+            
             \Log::info('Bill Payment Route - RestaurantTables count: ' . $restaurantTables->count());
             \Log::info('Bill Payment Route - MenuItems count: ' . $menuItems->count());
+            \Log::info('Bill Payment Route - Orders count: ' . $orders->count());
+            \Log::info('Bill Payment Route - OrderItems count: ' . $orderItems->count());
             
             return Inertia::render('HeadOffice/Super/BillPayment', [
                 'restaurantTables' => $restaurantTables,
-                'menuItems' => $menuItems
+                'menuItems' => $menuItems,
+                'orders' => $orders,
+                'orderItems' => $orderItems
             ]);
         } catch (\Exception $e) {
             \Log::error('Bill Payment Route Error: ' . $e->getMessage());
             return Inertia::render('HeadOffice/Super/BillPayment', [
                 'restaurantTables' => [],
-                'menuItems' => []
+                'menuItems' => [],
+                'orders' => [],
+                'orderItems' => []
             ]);
         }
     })->name('bill-payment');
+    
+    // Create Order for Table
+    Route::post('/orders', function (\Illuminate\Http\Request $request) {
+        try {
+            $order = \App\Models\Order::create([
+                'headOfficeId' => $request->headOfficeId,
+                'branchId' => $request->branchId,
+                'createUserId' => $request->createUserId,
+                'tableId' => $request->tableId,
+                'tableOccupiedStatus' => $request->tableOccupiedStatus,
+                'buyingPrice' => $request->buyingPrice ?? 0,
+                'sellingPrice' => $request->sellingPrice ?? 0,
+                'discountAmount' => $request->discountAmount ?? 0,
+                'taxAmount' => $request->taxAmount ?? 0,
+                'adminProfitAmount' => $request->adminProfitAmount ?? 0,
+                'adminNetProfitAmount' => $request->adminNetProfitAmount ?? 0,
+                'userCommissionAmount' => $request->userCommissionAmount ?? 0,
+                'customerType' => $request->customerType ?? 'walking',
+                'memberUserId' => $request->memberUserId,
+                'orderStaredDateTime' => $request->orderStaredDateTime,
+                'orderEndDateTime' => $request->orderEndDateTime,
+                'paymentType' => $request->paymentType ?? 'cash',
+                'paymentReference' => $request->paymentReference,
+                'notes' => $request->notes,
+                'paymentStatus' => $request->paymentStatus ?? 0,
+                'deleteStatus' => $request->deleteStatus ?? 0,
+            ]);
+            
+            \Log::info('Order created successfully:', ['order_id' => $order->id]);
+            
+            return response()->json([
+                'success' => true,
+                'order' => $order,
+                'message' => 'Order created successfully'
+            ]);
+        } catch (\Exception $e) {
+            \Log::error('Error creating order:', ['error' => $e->getMessage()]);
+            
+            return response()->json([
+                'success' => false,
+                'message' => 'Failed to create order: ' . $e->getMessage()
+            ], 500);
+        }
+    })->name('orders.create');
     
     // Branch Management
     Route::get('/branches', function () {
