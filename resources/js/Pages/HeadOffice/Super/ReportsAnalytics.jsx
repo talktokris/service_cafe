@@ -58,6 +58,7 @@ export default function ReportsAnalytics({ user }) {
                                 </nav>
                             </div>
                         </div>
+                    </div>
                     <div className="flex space-x-2">
                         <select className="select select-bordered select-sm">
                             <option>Last 7 days</option>

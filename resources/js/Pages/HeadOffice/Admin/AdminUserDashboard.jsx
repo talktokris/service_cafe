@@ -122,6 +122,7 @@ export default function AdminUserDashboard({ user, stats }) {
                                 </nav>
                             </div>
                         </div>
+                    </div>
                 </div>
             </div>
 
