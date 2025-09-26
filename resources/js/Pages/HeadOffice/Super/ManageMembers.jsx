@@ -1,7 +1,7 @@
 import React from "react";
 import { Head, Link } from "@inertiajs/react";
 import { AdminDashboardLayout } from "../AdminComponents";
-import ManageMemberComponents from "../../ManageMemberComponents/ManageMemberComponents";
+import MemberManagementPage from "../../ManageMemberComponents/MemberManagementPage";
 
 export default function ManageMembers({ user, members = [] }) {
     return (
@@ -61,7 +61,7 @@ export default function ManageMembers({ user, members = [] }) {
             </div>
 
             {/* Member Management Component */}
-            <ManageMemberComponents user={user} members={members} />
+            <MemberManagementPage user={user} members={members} />
         </AdminDashboardLayout>
     );
 }

@@ -194,6 +194,46 @@ class User extends Authenticatable
     }
 
     /**
+     * Get the three stars badge for this user.
+     */
+    public function badgeThreeStars()
+    {
+        return $this->hasOne(BadgeThreeStars::class);
+    }
+
+    /**
+     * Get the five stars badge for this user.
+     */
+    public function badgeFiveStars()
+    {
+        return $this->hasOne(BadgeFiveStars::class);
+    }
+
+    /**
+     * Get the seven stars badge for this user.
+     */
+    public function badgeSevenStars()
+    {
+        return $this->hasOne(BadgeSevenStars::class);
+    }
+
+    /**
+     * Get the mega stars badge for this user.
+     */
+    public function badgeMegaStars()
+    {
+        return $this->hasOne(BadgeMegaStars::class);
+    }
+
+    /**
+     * Get the giga stars badge for this user.
+     */
+    public function badgeGigaStars()
+    {
+        return $this->hasOne(BadgeGigaStars::class);
+    }
+
+    /**
      * Scope for active users.
      */
     public function scopeActive($query)

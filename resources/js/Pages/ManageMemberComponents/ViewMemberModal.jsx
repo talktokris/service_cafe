@@ -1,6 +1,6 @@
 import React from "react";
 
-export default function ViewMemberComponents({ member, onClose }) {
+export default function ViewMemberModal({ member, onClose }) {
     if (!member) {
         return null;
     }
@@ -52,9 +52,9 @@ export default function ViewMemberComponents({ member, onClose }) {
                     </div>
                 </div>
 
-                <div className="p-6 space-y-6">
+                <div className="p-8 space-y-6">
                     {/* Personal Information */}
-                    <div className="space-y-4">
+                    <div className="space-y-4 border border-gray-200 rounded-lg bg-gray-50 p-6">
                         <h3 className="text-lg font-medium text-gray-900">
                             Personal Information
                         </h3>
@@ -147,7 +147,7 @@ export default function ViewMemberComponents({ member, onClose }) {
                     </div>
 
                     {/* Member Information */}
-                    <div className="space-y-4">
+                    <div className="space-y-4 border border-gray-200 rounded-lg bg-gray-50 p-6">
                         <h3 className="text-lg font-medium text-gray-900">
                             Member Information
                         </h3>
@@ -212,7 +212,7 @@ export default function ViewMemberComponents({ member, onClose }) {
                     </div>
 
                     {/* Account Information */}
-                    <div className="space-y-4">
+                    <div className="space-y-4 border border-gray-200 rounded-lg bg-gray-50 p-6">
                         <h3 className="text-lg font-medium text-gray-900">
                             Account Information
                         </h3>

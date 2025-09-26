@@ -11,6 +11,11 @@ class DashboardController extends Controller
     {
         $user = $request->user();
         
+        // Check if user is authenticated
+        if (!$user) {
+            return redirect()->route('login')->with('error', 'Please log in to access the dashboard.');
+        }
+        
         // Get user's primary role
         $primaryRole = $user->primary_role;
         
@@ -90,22 +95,23 @@ class DashboardController extends Controller
         $wallet = $user->wallet;
         $referrals = $user->referrals;
         
-        switch ($role->name) {
-            case 'paid_member':
+        // Route based on member_type instead of role
+        switch ($user->member_type) {
+            case 'paid':
                 return Inertia::render('Members/PaidMember/PaidMemberDashboard', [
                     'auth' => ['user' => $user],
                     'stats' => $stats,
                     'wallet' => $wallet,
                     'referrals' => $referrals
                 ]);
-            case 'free_member':
+            case 'free':
                 return Inertia::render('Members/FreeMember/FreeMemberDashboard', [
                     'auth' => ['user' => $user],
                     'stats' => $stats,
                     'referrals' => $referrals
                 ]);
             default:
-                return redirect()->route('login')->with('error', 'Invalid Member role.');
+                return redirect()->route('login')->with('error', 'Invalid member type.');
         }
     }
 

@@ -124,7 +124,17 @@ export default function Header({ user = null }) {
                                 >
                                     <li>
                                         <Link
-                                            href="/dashboard"
+                                            href={
+                                                user.user_type === "member" &&
+                                                user.member_type === "free"
+                                                    ? "/member-f-dashboard"
+                                                    : user.user_type ===
+                                                          "member" &&
+                                                      user.member_type ===
+                                                          "paid"
+                                                    ? "/member-p-dashboard"
+                                                    : "/test-dashboard"
+                                            }
                                             className="justify-between"
                                         >
                                             Dashboard
@@ -132,10 +142,19 @@ export default function Header({ user = null }) {
                                         </Link>
                                     </li>
                                     <li>
-                                        <Link href="/profile">Profile</Link>
+                                        <Link href="/change-password">
+                                            Change Password
+                                        </Link>
                                     </li>
                                     <li>
-                                        <Link href="/settings">Settings</Link>
+                                        <Link href="/profile-settings">
+                                            Profile Setting
+                                        </Link>
+                                    </li>
+                                    <li>
+                                        <Link href="/change-referral">
+                                            Change Referral
+                                        </Link>
                                     </li>
                                     <li>
                                         <Link

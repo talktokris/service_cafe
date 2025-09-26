@@ -619,4 +619,129 @@ Route::middleware('auth')->group(function () {
     })->name('api.members');
 });
 
+// Debug route for CSRF testing
+Route::get('/debug-csrf', function () {
+    return response()->json([
+        'csrf_token' => csrf_token(),
+        'session_id' => session()->getId(),
+        'app_key' => config('app.key'),
+        'session_driver' => config('session.driver'),
+    ]);
+});
+
+// Simple test route to bypass any redirect issues
+Route::get('/test-login', function () {
+    return Inertia::render('Auth/Login', [
+        'canResetPassword' => Route::has('password.request'),
+        'status' => session('status'),
+    ]);
+});
+
+// Free Member Dashboard Route
+Route::get('/member-f-dashboard', function (Request $request) {
+    $user = auth()->user();
+    
+    if (!$user) {
+        return redirect()->route('login')->with('error', 'Please log in to access the dashboard.');
+    }
+    
+    // Check if user is a free member
+    if ($user->user_type !== 'member' || $user->member_type !== 'free') {
+        return redirect()->route('login')->with('error', 'Access denied. This dashboard is for free members only.');
+    }
+    
+    return Inertia::render('Members/FreeMember/FreeMemberDashboard', [
+        'auth' => ['user' => $user],
+        'stats' => [],
+        'referrals' => $user->referrals
+    ]);
+})->name('member.f.dashboard');
+
+// Paid Member Dashboard Route
+Route::get('/member-p-dashboard', function (Request $request) {
+    $user = auth()->user();
+    
+    if (!$user) {
+        return redirect()->route('login')->with('error', 'Please log in to access the dashboard.');
+    }
+    
+    // Check if user is a paid member
+    if ($user->user_type !== 'member' || $user->member_type !== 'paid') {
+        return redirect()->route('login')->with('error', 'Access denied. This dashboard is for paid members only.');
+    }
+    
+    return Inertia::render('Members/PaidMember/PaidMemberDashboard', [
+        'auth' => ['user' => $user],
+        'stats' => [],
+        'wallet' => $user->wallet,
+        'referrals' => $user->referrals
+    ]);
+})->name('member.p.dashboard');
+
+// Test dashboard route with proper Inertia response (keeping for backward compatibility)
+Route::get('/test-dashboard', function (Request $request) {
+    $user = auth()->user();
+    
+    if (!$user) {
+        return redirect()->route('login')->with('error', 'Please log in to access the dashboard.');
+    }
+    
+    // Route based on user type
+    switch ($user->user_type) {
+        case 'headoffice':
+            return Inertia::render('HeadOffice/Super/SuperUserDashboard', [
+                'auth' => ['user' => $user],
+                'stats' => []
+            ]);
+        case 'brandoffice':
+            return Inertia::render('HeadOffice/Admin/AdminUserDashboard', [
+                'auth' => ['user' => $user],
+                'stats' => []
+            ]);
+        case 'member':
+            // Route based on member_type
+            switch ($user->member_type) {
+                case 'paid':
+                    return redirect()->route('member.p.dashboard');
+                case 'free':
+                    return redirect()->route('member.f.dashboard');
+                default:
+                    return redirect()->route('login')->with('error', 'Invalid member type.');
+            }
+        default:
+            return redirect()->route('login')->with('error', 'Invalid user type.');
+    }
+});
+
+// Debug route for JSON response (for testing only)
+Route::get('/debug-user', function (Request $request) {
+    $user = auth()->user();
+    
+    if (!$user) {
+        return response()->json(['error' => 'Not authenticated'], 401);
+    }
+    
+    return response()->json([
+        'user' => $user,
+        'user_type' => $user->user_type,
+        'member_type' => $user->member_type ?? 'N/A',
+        'primary_role' => $user->primary_role ?? 'N/A'
+    ]);
+});
+
+// Profile Routes (Common for all members)
+Route::middleware(['auth'])->group(function () {
+    // Change Password
+    Route::get('/change-password', [ProfileController::class, 'changePassword'])->name('profile.change-password');
+    Route::post('/change-password', [ProfileController::class, 'updatePassword'])->name('profile.update-password');
+    
+    // Profile Settings
+    Route::get('/profile-settings', [ProfileController::class, 'profileSettings'])->name('profile.settings');
+    Route::post('/profile-settings', [ProfileController::class, 'updateProfile'])->name('profile.update');
+    
+    // Change Referral Code
+    Route::get('/change-referral', [ProfileController::class, 'changeReferral'])->name('profile.change-referral');
+    Route::post('/change-referral', [ProfileController::class, 'updateReferral'])->name('profile.update-referral');
+});
+
 require __DIR__.'/auth.php';

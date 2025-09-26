@@ -1,11 +1,7 @@
 import React, { useState } from "react";
 import { router } from "@inertiajs/react";
 
-export default function ResetPasswordComponents({
-    member,
-    onClose,
-    onSuccess,
-}) {
+export default function ResetPasswordModal({ member, onClose, onSuccess }) {
     const [formData, setFormData] = useState({
         new_password: "",
         new_password_confirmation: "",
@@ -114,9 +110,9 @@ export default function ResetPasswordComponents({
                     </div>
                 </div>
 
-                <div className="p-6">
+                <div className="p-8">
                     {/* Member Information */}
-                    <div className="bg-gray-50 rounded-lg p-4 mb-6">
+                    <div className="bg-gray-50 rounded-lg p-6 mb-6 border border-gray-200">
                         <h4 className="font-medium text-gray-900 mb-3">
                             Member Information:
                         </h4>
@@ -144,7 +140,10 @@ export default function ResetPasswordComponents({
                         </div>
                     </div>
 
-                    <form onSubmit={handleSubmit} className="space-y-4">
+                    <form
+                        onSubmit={handleSubmit}
+                        className="space-y-4 border border-gray-200 rounded-lg bg-gray-50 p-6"
+                    >
                         {/* New Password */}
                         <div>
                             <label className="label">
@@ -213,14 +212,14 @@ export default function ResetPasswordComponents({
                             <button
                                 type="button"
                                 onClick={onClose}
-                                className="btn btn-ghost"
+                                className="btn btn-outline border-gray-400 text-gray-600 hover:bg-gray-100"
                                 disabled={isSubmitting}
                             >
                                 Cancel
                             </button>
                             <button
                                 type="submit"
-                                className="btn btn-primary"
+                                className="btn bg-amber-800 hover:bg-amber-900 text-white border-amber-800 hover:border-amber-900"
                                 disabled={isSubmitting}
                             >
                                 {isSubmitting ? (

@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { router } from "@inertiajs/react";
 
-export default function EditMemberComponents({ member, onClose, onSuccess }) {
+export default function EditMemberModal({ member, onClose, onSuccess }) {
     const [formData, setFormData] = useState({
         first_name: "",
         last_name: "",
@@ -151,7 +151,10 @@ export default function EditMemberComponents({ member, onClose, onSuccess }) {
                     </div>
                 </div>
 
-                <form onSubmit={handleSubmit} className="p-6 space-y-6">
+                <form
+                    onSubmit={handleSubmit}
+                    className="p-8 space-y-6 border border-gray-200 rounded-lg bg-gray-50"
+                >
                     {/* Personal Information */}
                     <div className="space-y-4">
                         <h3 className="text-lg font-medium text-gray-900">
@@ -440,14 +443,14 @@ export default function EditMemberComponents({ member, onClose, onSuccess }) {
                         <button
                             type="button"
                             onClick={onClose}
-                            className="btn btn-ghost"
+                            className="btn btn-outline border-gray-400 text-gray-600 hover:bg-gray-100"
                             disabled={isSubmitting}
                         >
                             Cancel
                         </button>
                         <button
                             type="submit"
-                            className="btn btn-primary"
+                            className="btn bg-amber-800 hover:bg-amber-900 text-white border-amber-800 hover:border-amber-900"
                             disabled={isSubmitting}
                         >
                             {isSubmitting ? (

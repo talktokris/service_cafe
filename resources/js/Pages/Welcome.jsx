@@ -24,7 +24,16 @@ export default function Welcome({ auth, laravelVersion, phpVersion }) {
                         <div className="flex flex-col sm:flex-row gap-4 justify-center">
                             {auth.user ? (
                                 <Link
-                                    href={route("dashboard")}
+                                    href={
+                                        auth.user.user_type === "member" &&
+                                        auth.user.member_type === "free"
+                                            ? "/member-f-dashboard"
+                                            : auth.user.user_type ===
+                                                  "member" &&
+                                              auth.user.member_type === "paid"
+                                            ? "/member-p-dashboard"
+                                            : "/test-dashboard"
+                                    }
                                     className="btn btn-accent btn-lg"
                                 >
                                     Go to Dashboard

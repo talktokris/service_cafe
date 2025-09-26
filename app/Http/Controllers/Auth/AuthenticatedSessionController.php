@@ -33,6 +33,19 @@ class AuthenticatedSessionController extends Controller
 
         $request->session()->regenerate();
 
+        // Get the authenticated user
+        $user = Auth::user();
+
+        // Redirect based on user type and member type
+        if ($user->user_type === 'member') {
+            if ($user->member_type === 'free') {
+                return redirect()->intended('/member-f-dashboard');
+            } elseif ($user->member_type === 'paid') {
+                return redirect()->intended('/member-p-dashboard');
+            }
+        }
+
+        // Fallback to original dashboard for other user types
         return redirect()->intended(route('dashboard', absolute: false));
     }
 
