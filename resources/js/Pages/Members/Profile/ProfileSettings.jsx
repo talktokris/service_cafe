@@ -2,22 +2,64 @@ import { Head, useForm } from "@inertiajs/react";
 import MemberDashboardLayout from "../Components/MemberDashboardLayout";
 import Breadcrumb from "../Components/Breadcrumb";
 
-export default function ProfileSettings({ auth, user }) {
+export default function ProfileSettings({ auth, user, flash }) {
     const memberType = auth.user.member_type || "free";
     const { data, setData, post, processing, errors, reset } = useForm({
         first_name: user.first_name || "",
         last_name: user.last_name || "",
         gender: user.gender || "",
-        country: user.country || "",
+        country: user.country || "Nepal",
         email: user.email || "",
-        phone: user.phone || "",
+        phone: user.phone || "+977",
         address: user.address || "",
     });
+
+    // Comprehensive list of countries
+    const countries = [
+        "Afghanistan", "Albania", "Algeria", "Andorra", "Angola", "Antigua and Barbuda", "Argentina", "Armenia", "Australia", "Austria",
+        "Azerbaijan", "Bahamas", "Bahrain", "Bangladesh", "Barbados", "Belarus", "Belgium", "Belize", "Benin", "Bhutan",
+        "Bolivia", "Bosnia and Herzegovina", "Botswana", "Brazil", "Brunei", "Bulgaria", "Burkina Faso", "Burundi", "Cambodia", "Cameroon",
+        "Canada", "Cape Verde", "Central African Republic", "Chad", "Chile", "China", "Colombia", "Comoros", "Congo", "Costa Rica",
+        "Croatia", "Cuba", "Cyprus", "Czech Republic", "Denmark", "Djibouti", "Dominica", "Dominican Republic", "Ecuador", "Egypt",
+        "El Salvador", "Equatorial Guinea", "Eritrea", "Estonia", "Ethiopia", "Fiji", "Finland", "France", "Gabon", "Gambia",
+        "Georgia", "Germany", "Ghana", "Greece", "Grenada", "Guatemala", "Guinea", "Guinea-Bissau", "Guyana", "Haiti",
+        "Honduras", "Hungary", "Iceland", "India", "Indonesia", "Iran", "Iraq", "Ireland", "Israel", "Italy",
+        "Jamaica", "Japan", "Jordan", "Kazakhstan", "Kenya", "Kiribati", "Kuwait", "Kyrgyzstan", "Laos", "Latvia",
+        "Lebanon", "Lesotho", "Liberia", "Libya", "Liechtenstein", "Lithuania", "Luxembourg", "Madagascar", "Malawi", "Malaysia",
+        "Maldives", "Mali", "Malta", "Marshall Islands", "Mauritania", "Mauritius", "Mexico", "Micronesia", "Moldova", "Monaco",
+        "Mongolia", "Montenegro", "Morocco", "Mozambique", "Myanmar", "Namibia", "Nauru", "Nepal", "Netherlands", "New Zealand",
+        "Nicaragua", "Niger", "Nigeria", "North Korea", "North Macedonia", "Norway", "Oman", "Pakistan", "Palau", "Panama",
+        "Papua New Guinea", "Paraguay", "Peru", "Philippines", "Poland", "Portugal", "Qatar", "Romania", "Russia", "Rwanda",
+        "Saint Kitts and Nevis", "Saint Lucia", "Saint Vincent and the Grenadines", "Samoa", "San Marino", "Sao Tome and Principe", "Saudi Arabia", "Senegal", "Serbia", "Seychelles",
+        "Sierra Leone", "Singapore", "Slovakia", "Slovenia", "Solomon Islands", "Somalia", "South Africa", "South Korea", "South Sudan", "Spain",
+        "Sri Lanka", "Sudan", "Suriname", "Sweden", "Switzerland", "Syria", "Taiwan", "Tajikistan", "Tanzania", "Thailand",
+        "Timor-Leste", "Togo", "Tonga", "Trinidad and Tobago", "Tunisia", "Turkey", "Turkmenistan", "Tuvalu", "Uganda", "Ukraine",
+        "United Arab Emirates", "United Kingdom", "United States", "Uruguay", "Uzbekistan", "Vanuatu", "Vatican City", "Venezuela", "Vietnam", "Yemen",
+        "Zambia", "Zimbabwe"
+    ];
+
+    // Phone number validation
+    const handlePhoneChange = (e) => {
+        let value = e.target.value;
+        
+        // Ensure it starts with +977
+        if (!value.startsWith('+977')) {
+            value = '+977' + value.replace(/[^0-9]/g, '');
+        } else {
+            // Keep only +977 and digits after it
+            value = '+977' + value.substring(4).replace(/[^0-9]/g, '');
+        }
+        
+        setData("phone", value);
+    };
 
     const submit = (e) => {
         e.preventDefault();
         post(route("profile.update"), {
-            onFinish: () => reset(),
+            onSuccess: () => {
+                // Keep the updated values in the form
+                // Don't reset the form
+            },
         });
     };
 
@@ -50,6 +92,32 @@ export default function ProfileSettings({ auth, user }) {
                         </svg>
                     }
                 />
+
+                {/* Success Message */}
+                {flash.success && (
+                    <div className="bg-green-50 border border-green-200 rounded-md p-4 mb-6">
+                        <div className="flex">
+                            <div className="flex-shrink-0">
+                                <svg
+                                    className="h-5 w-5 text-green-400"
+                                    viewBox="0 0 20 20"
+                                    fill="currentColor"
+                                >
+                                    <path
+                                        fillRule="evenodd"
+                                        d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z"
+                                        clipRule="evenodd"
+                                    />
+                                </svg>
+                            </div>
+                            <div className="ml-3">
+                                <p className="text-sm font-medium text-green-800">
+                                    {flash.success}
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+                )}
 
                 {/* Main Content */}
                 <div className="py-12">
@@ -164,9 +232,8 @@ export default function ProfileSettings({ auth, user }) {
                                             >
                                                 Country
                                             </label>
-                                            <input
+                                            <select
                                                 id="country"
-                                                type="text"
                                                 value={data.country}
                                                 onChange={(e) =>
                                                     setData(
@@ -175,8 +242,14 @@ export default function ProfileSettings({ auth, user }) {
                                                     )
                                                 }
                                                 className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm"
-                                                maxLength={255}
-                                            />
+                                            >
+                                                <option value="">Select Country</option>
+                                                {countries.map((country) => (
+                                                    <option key={country} value={country}>
+                                                        {country}
+                                                    </option>
+                                                ))}
+                                            </select>
                                             {errors.country && (
                                                 <p className="mt-1 text-sm text-red-600">
                                                     {errors.country}
@@ -225,15 +298,16 @@ export default function ProfileSettings({ auth, user }) {
                                                 id="phone"
                                                 type="tel"
                                                 value={data.phone}
-                                                onChange={(e) =>
-                                                    setData(
-                                                        "phone",
-                                                        e.target.value
-                                                    )
-                                                }
+                                                onChange={handlePhoneChange}
                                                 className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm"
-                                                maxLength={20}
+                                                placeholder="+977XXXXXXXXX"
+                                                minLength={13}
+                                                maxLength={14}
+                                                pattern="\+977[0-9]{9,10}"
                                             />
+                                            <div className="mt-1 text-xs text-gray-500">
+                                                Format: +977 followed by 9-10 digits
+                                            </div>
                                             {errors.phone && (
                                                 <p className="mt-1 text-sm text-red-600">
                                                     {errors.phone}

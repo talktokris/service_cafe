@@ -16,7 +16,11 @@ class ProfileController extends Controller
     public function changePassword()
     {
         return Inertia::render('Members/Profile/ChangePassword', [
-            'auth' => ['user' => auth()->user()]
+            'auth' => ['user' => auth()->user()],
+            'flash' => [
+                'success' => session('success'),
+                'error' => session('error')
+            ]
         ]);
     }
 
@@ -63,7 +67,11 @@ class ProfileController extends Controller
         
         return Inertia::render('Members/Profile/ProfileSettings', [
             'auth' => ['user' => $user],
-            'user' => $user
+            'user' => $user,
+            'flash' => [
+                'success' => session('success'),
+                'error' => session('error')
+            ]
         ]);
     }
 
@@ -80,7 +88,7 @@ class ProfileController extends Controller
             'gender' => ['nullable', 'string', 'in:male,female,other'],
             'country' => ['nullable', 'string', 'max:255'],
             'email' => ['required', 'email', 'max:255', Rule::unique('users')->ignore($user->id)],
-            'phone' => ['nullable', 'string', 'max:20'],
+            'phone' => ['nullable', 'string', 'regex:/^\+977[0-9]{9,10}$/', 'min:13', 'max:14'],
             'address' => ['nullable', 'string', 'max:500'],
         ], [
             'email.required' => 'Email is required.',
@@ -90,7 +98,9 @@ class ProfileController extends Controller
             'last_name.max' => 'Last name cannot exceed 255 characters.',
             'gender.in' => 'Please select a valid gender.',
             'country.max' => 'Country cannot exceed 255 characters.',
-            'phone.max' => 'Phone number cannot exceed 20 characters.',
+            'phone.regex' => 'Phone number must start with +977 followed by 9-10 digits.',
+            'phone.min' => 'Phone number must be at least 13 characters (+977 + 9 digits).',
+            'phone.max' => 'Phone number cannot exceed 14 characters (+977 + 10 digits).',
             'address.max' => 'Address cannot exceed 500 characters.',
         ]);
 
@@ -124,7 +134,11 @@ class ProfileController extends Controller
         
         return Inertia::render('Members/Profile/ChangeReferral', [
             'auth' => ['user' => $user],
-            'user' => $user
+            'user' => $user,
+            'flash' => [
+                'success' => session('success'),
+                'error' => session('error')
+            ]
         ]);
     }
 
@@ -140,30 +154,30 @@ class ProfileController extends Controller
                 'required',
                 'string',
                 'min:3',
-                'max:20',
-                'regex:/^[A-Z0-9]+$/',
+                'max:60',
+                'regex:/^[a-z0-9]+$/',
                 Rule::unique('users')->ignore($user->id)
             ],
         ], [
-            'referral_code.required' => 'Referral code is required.',
-            'referral_code.min' => 'Referral code must be at least 3 characters.',
-            'referral_code.max' => 'Referral code cannot exceed 20 characters.',
-            'referral_code.regex' => 'Referral code can only contain uppercase letters and numbers.',
-            'referral_code.unique' => 'This referral code is already taken.',
+            'referral_code.required' => 'Referral address is required.',
+            'referral_code.min' => 'Referral address must be at least 3 characters.',
+            'referral_code.max' => 'Referral address cannot exceed 60 characters.',
+            'referral_code.regex' => 'Referral address can only contain lowercase letters and numbers.',
+            'referral_code.unique' => 'This referral address is already taken.',
         ]);
 
         if ($validator->fails()) {
             return back()->withErrors($validator)->withInput();
         }
 
-        // Sanitize and format referral code
-        $referralCode = strtoupper(trim(strip_tags($request->referral_code)));
+        // Sanitize and format referral address
+        $referralCode = strtolower(trim(strip_tags($request->referral_code)));
 
-        // Update referral code
+        // Update referral address
         $user->update([
             'referral_code' => $referralCode
         ]);
 
-        return back()->with('success', 'Referral code updated successfully!');
+        return back()->with('success', 'Referral address updated successfully!');
     }
 }

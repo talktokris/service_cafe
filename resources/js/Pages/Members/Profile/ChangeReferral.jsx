@@ -2,7 +2,7 @@ import { Head, useForm } from "@inertiajs/react";
 import MemberDashboardLayout from "../Components/MemberDashboardLayout";
 import Breadcrumb from "../Components/Breadcrumb";
 
-export default function ChangeReferral({ auth, user }) {
+export default function ChangeReferral({ auth, user, flash }) {
     const memberType = auth.user.member_type || "free";
     const { data, setData, post, processing, errors, reset } = useForm({
         referral_code: user.referral_code || "",
@@ -11,28 +11,31 @@ export default function ChangeReferral({ auth, user }) {
     const submit = (e) => {
         e.preventDefault();
         post(route("profile.update-referral"), {
-            onFinish: () => reset(),
+            onSuccess: () => {
+                // Don't reset the form, keep the updated value
+                setData("referral_code", data.referral_code);
+            },
         });
     };
 
     const handleReferralCodeChange = (e) => {
-        // Convert to uppercase and remove special characters
-        const value = e.target.value.toUpperCase().replace(/[^A-Z0-9]/g, "");
+        // Convert to lowercase and remove special characters, allow only letters and numbers
+        const value = e.target.value.toLowerCase().replace(/[^a-z0-9]/g, "");
         setData("referral_code", value);
     };
 
     return (
         <MemberDashboardLayout
-            title="Change Referral Code - Serve Cafe"
+            title="Change Referral Address - Serve Cafe"
             user={auth.user}
             memberType={memberType}
         >
-            <Head title="Change Referral Code" />
+            <Head title="Change Referral Address" />
 
             <div>
                 {/* Breadcrumb */}
                 <Breadcrumb
-                    title="Change Referral Code"
+                    title="Change Referral Address"
                     links={["Home", "Change Referral"]}
                     icon={
                         <svg
@@ -50,6 +53,32 @@ export default function ChangeReferral({ auth, user }) {
                         </svg>
                     }
                 />
+
+                {/* Success Message */}
+                {flash.success && (
+                    <div className="bg-green-50 border border-green-200 rounded-md p-4 mb-6">
+                        <div className="flex">
+                            <div className="flex-shrink-0">
+                                <svg
+                                    className="h-5 w-5 text-green-400"
+                                    viewBox="0 0 20 20"
+                                    fill="currentColor"
+                                >
+                                    <path
+                                        fillRule="evenodd"
+                                        d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z"
+                                        clipRule="evenodd"
+                                    />
+                                </svg>
+                            </div>
+                            <div className="ml-3">
+                                <p className="text-sm font-medium text-green-800">
+                                    {flash.success}
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+                )}
 
                 {/* Main Content */}
                 <div className="py-12">
@@ -76,7 +105,7 @@ export default function ChangeReferral({ auth, user }) {
                                         </div>
                                         <div>
                                             <label className="block text-sm font-medium text-gray-700">
-                                                Current Referral Code
+                                                Current Referral Address
                                             </label>
                                             <p className="mt-1 text-sm font-mono text-indigo-600 font-semibold">
                                                 {user.referral_code ||
@@ -86,7 +115,7 @@ export default function ChangeReferral({ auth, user }) {
                                     </div>
                                 </div>
 
-                                {/* Change Referral Code Form */}
+                                {/* Change Referral Address Form */}
                                 <form
                                     onSubmit={submit}
                                     className="space-y-6 border border-gray-200 rounded-lg bg-gray-50 p-6"
@@ -96,7 +125,7 @@ export default function ChangeReferral({ auth, user }) {
                                             htmlFor="referral_code"
                                             className="block text-sm font-medium text-gray-700"
                                         >
-                                            New Referral Code *
+                                            New Referral Address *
                                         </label>
                                         <input
                                             id="referral_code"
@@ -104,11 +133,11 @@ export default function ChangeReferral({ auth, user }) {
                                             value={data.referral_code}
                                             onChange={handleReferralCodeChange}
                                             className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm font-mono"
-                                            placeholder="Enter your desired referral code"
+                                            placeholder="Enter your desired referral address"
                                             required
                                             minLength={3}
-                                            maxLength={20}
-                                            pattern="[A-Z0-9]+"
+                                            maxLength={60}
+                                            pattern="[a-z0-9]+"
                                         />
                                         {errors.referral_code && (
                                             <p className="mt-1 text-sm text-red-600">
@@ -118,10 +147,10 @@ export default function ChangeReferral({ auth, user }) {
                                         <div className="mt-2 text-xs text-gray-500">
                                             <ul className="list-disc list-inside space-y-1">
                                                 <li>
-                                                    Must be 3-20 characters long
+                                                    Must be 3-60 characters long
                                                 </li>
                                                 <li>
-                                                    Only uppercase letters and
+                                                    Only lowercase letters and
                                                     numbers allowed
                                                 </li>
                                                 <li>
@@ -131,7 +160,7 @@ export default function ChangeReferral({ auth, user }) {
                                                 <li>
                                                     Current length:{" "}
                                                     {data.referral_code.length}
-                                                    /20
+                                                    /60
                                                 </li>
                                             </ul>
                                         </div>
@@ -143,13 +172,14 @@ export default function ChangeReferral({ auth, user }) {
                                             type="submit"
                                             disabled={
                                                 processing ||
-                                                data.referral_code.length < 3
+                                                data.referral_code.length < 3 ||
+                                                data.referral_code.length > 60
                                             }
                                             className="inline-flex items-center px-4 py-2 bg-amber-800 border border-transparent rounded-md font-semibold text-xs text-white uppercase tracking-widest hover:bg-amber-900 focus:bg-amber-900 active:bg-amber-900 focus:outline-none focus:ring-2 focus:ring-amber-500 focus:ring-offset-2 transition ease-in-out duration-150 disabled:opacity-25"
                                         >
                                             {processing
                                                 ? "Updating..."
-                                                : "Update Referral Code"}
+                                                : "Update Referral Address"}
                                         </button>
                                     </div>
                                 </form>
