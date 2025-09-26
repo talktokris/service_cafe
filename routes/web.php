@@ -3,6 +3,7 @@
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\UserController;
+use App\Http\Controllers\Auth\RegisterController;
 use Illuminate\Foundation\Application;
 use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
@@ -743,5 +744,9 @@ Route::middleware(['auth'])->group(function () {
     Route::get('/change-referral', [ProfileController::class, 'changeReferral'])->name('profile.change-referral');
     Route::post('/change-referral', [ProfileController::class, 'updateReferral'])->name('profile.update-referral');
 });
+
+// Registration with referral code support
+Route::get('/join/{referral_code}', [RegisterController::class, 'showRegistrationForm'])->name('register.with.referral');
+Route::post('/join/{referral_code}', [RegisterController::class, 'register'])->name('register.submit');
 
 require __DIR__.'/auth.php';

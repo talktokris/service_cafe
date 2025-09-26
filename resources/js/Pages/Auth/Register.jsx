@@ -1,120 +1,296 @@
-import InputError from '@/Components/InputError';
-import InputLabel from '@/Components/InputLabel';
-import PrimaryButton from '@/Components/PrimaryButton';
-import TextInput from '@/Components/TextInput';
-import GuestLayout from '@/Layouts/GuestLayout';
-import { Head, Link, useForm } from '@inertiajs/react';
+import { Head, useForm } from "@inertiajs/react";
+import { useState } from "react";
 
-export default function Register() {
+export default function Register({ referral_code, referrer_name, flash }) {
     const { data, setData, post, processing, errors, reset } = useForm({
-        name: '',
-        email: '',
-        password: '',
-        password_confirmation: '',
+        first_name: "",
+        last_name: "",
+        email: "",
+        password: "",
+        password_confirmation: "",
     });
 
     const submit = (e) => {
         e.preventDefault();
-
-        post(route('register'), {
-            onFinish: () => reset('password', 'password_confirmation'),
+        post(route("register.submit", { referral_code: referral_code }), {
+            onSuccess: () => {
+                // Clear password fields after successful registration
+                setData("password", "");
+                setData("password_confirmation", "");
+            },
         });
     };
 
     return (
-        <GuestLayout>
-            <Head title="Register" />
+        <div className="min-h-screen bg-gray-50 flex flex-col justify-center py-12 sm:px-6 lg:px-8">
+            <Head title="Join Serve Cafe" />
 
-            <form onSubmit={submit}>
-                <div>
-                    <InputLabel htmlFor="name" value="Name" />
-
-                    <TextInput
-                        id="name"
-                        name="name"
-                        value={data.name}
-                        className="mt-1 block w-full"
-                        autoComplete="name"
-                        isFocused={true}
-                        onChange={(e) => setData('name', e.target.value)}
-                        required
-                    />
-
-                    <InputError message={errors.name} className="mt-2" />
-                </div>
-
-                <div className="mt-4">
-                    <InputLabel htmlFor="email" value="Email" />
-
-                    <TextInput
-                        id="email"
-                        type="email"
-                        name="email"
-                        value={data.email}
-                        className="mt-1 block w-full"
-                        autoComplete="username"
-                        onChange={(e) => setData('email', e.target.value)}
-                        required
-                    />
-
-                    <InputError message={errors.email} className="mt-2" />
-                </div>
-
-                <div className="mt-4">
-                    <InputLabel htmlFor="password" value="Password" />
-
-                    <TextInput
-                        id="password"
-                        type="password"
-                        name="password"
-                        value={data.password}
-                        className="mt-1 block w-full"
-                        autoComplete="new-password"
-                        onChange={(e) => setData('password', e.target.value)}
-                        required
-                    />
-
-                    <InputError message={errors.password} className="mt-2" />
-                </div>
-
-                <div className="mt-4">
-                    <InputLabel
-                        htmlFor="password_confirmation"
-                        value="Confirm Password"
-                    />
-
-                    <TextInput
-                        id="password_confirmation"
-                        type="password"
-                        name="password_confirmation"
-                        value={data.password_confirmation}
-                        className="mt-1 block w-full"
-                        autoComplete="new-password"
-                        onChange={(e) =>
-                            setData('password_confirmation', e.target.value)
-                        }
-                        required
-                    />
-
-                    <InputError
-                        message={errors.password_confirmation}
-                        className="mt-2"
+            <div className="sm:mx-auto sm:w-full sm:max-w-md">
+                <div className="flex justify-center">
+                    <img
+                        className="h-12 w-auto"
+                        src="/assets/art-logo.png"
+                        alt="Serve Cafe"
                     />
                 </div>
+                <h2 className="mt-6 text-center text-3xl font-extrabold text-gray-900">
+                    Join Serve Cafe
+                </h2>
+                <p className="mt-2 text-center text-sm text-gray-600">
+                    You're joining through {referrer_name}'s referral
+                </p>
+            </div>
 
-                <div className="mt-4 flex items-center justify-end">
-                    <Link
-                        href={route('login')}
-                        className="rounded-md text-sm text-gray-600 underline hover:text-gray-900 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2"
-                    >
-                        Already registered?
-                    </Link>
+            <div className="mt-8 sm:mx-auto sm:w-full sm:max-w-lg">
+                <div className="bg-white py-8 px-4 shadow sm:rounded-lg sm:px-10">
+                    {/* Success Message */}
+                    {flash.success && (
+                        <div className="bg-green-50 border border-green-200 rounded-md p-4 mb-6">
+                            <div className="flex">
+                                <div className="flex-shrink-0">
+                                    <svg
+                                        className="h-5 w-5 text-green-400"
+                                        viewBox="0 0 20 20"
+                                        fill="currentColor"
+                                    >
+                                        <path
+                                            fillRule="evenodd"
+                                            d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z"
+                                            clipRule="evenodd"
+                                        />
+                                    </svg>
+                                </div>
+                                <div className="ml-3">
+                                    <p className="text-sm font-medium text-green-800">
+                                        {flash.success}
+                                    </p>
+                                </div>
+                            </div>
+                        </div>
+                    )}
 
-                    <PrimaryButton className="ms-4" disabled={processing}>
-                        Register
-                    </PrimaryButton>
+                    {/* Error Message */}
+                    {flash.error && (
+                        <div className="bg-red-50 border border-red-200 rounded-md p-4 mb-6">
+                            <div className="flex">
+                                <div className="flex-shrink-0">
+                                    <svg
+                                        className="h-5 w-5 text-red-400"
+                                        viewBox="0 0 20 20"
+                                        fill="currentColor"
+                                    >
+                                        <path
+                                            fillRule="evenodd"
+                                            d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z"
+                                            clipRule="evenodd"
+                                        />
+                                    </svg>
+                                </div>
+                                <div className="ml-3">
+                                    <p className="text-sm font-medium text-red-800">
+                                        {flash.error}
+                                    </p>
+                                </div>
+                            </div>
+                        </div>
+                    )}
+
+                    <form className="space-y-6 mb-8" onSubmit={submit}>
+                        {/* First Name and Last Name Row */}
+                        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                            {/* First Name */}
+                            <div>
+                                <label
+                                    htmlFor="first_name"
+                                    className="block text-sm font-medium text-gray-700 mb-2"
+                                >
+                                    First Name *
+                                </label>
+                                <input
+                                    id="first_name"
+                                    type="text"
+                                    value={data.first_name}
+                                    onChange={(e) =>
+                                        setData("first_name", e.target.value)
+                                    }
+                                    className="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-amber-500 focus:border-amber-500 text-gray-900 text-sm"
+                                    placeholder="Enter your first name"
+                                    required
+                                    maxLength={255}
+                                />
+                                {errors.first_name && (
+                                    <p className="mt-1 text-sm text-red-600">
+                                        {errors.first_name}
+                                    </p>
+                                )}
+                            </div>
+
+                            {/* Last Name */}
+                            <div>
+                                <label
+                                    htmlFor="last_name"
+                                    className="block text-sm font-medium text-gray-700 mb-2"
+                                >
+                                    Last Name *
+                                </label>
+                                <input
+                                    id="last_name"
+                                    type="text"
+                                    value={data.last_name}
+                                    onChange={(e) =>
+                                        setData("last_name", e.target.value)
+                                    }
+                                    className="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-amber-500 focus:border-amber-500 text-gray-900 text-sm"
+                                    placeholder="Enter your last name"
+                                    required
+                                    maxLength={255}
+                                />
+                                {errors.last_name && (
+                                    <p className="mt-1 text-sm text-red-600">
+                                        {errors.last_name}
+                                    </p>
+                                )}
+                            </div>
+                        </div>
+
+                        {/* Referral */}
+                        <div>
+                            <label
+                                htmlFor="referral"
+                                className="block text-sm font-medium text-gray-700 mb-2"
+                            >
+                                Referral
+                            </label>
+                            <input
+                                id="referral"
+                                type="text"
+                                value={`${referrer_name} (${referral_code})`}
+                                className="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm bg-gray-50 text-gray-600 text-sm cursor-not-allowed"
+                                readOnly
+                            />
+                            <div className="mt-1 text-xs text-gray-500">
+                                You're joining through this referral
+                            </div>
+                        </div>
+
+                        {/* Email */}
+                        <div>
+                            <label
+                                htmlFor="email"
+                                className="block text-sm font-medium text-gray-700 mb-2"
+                            >
+                                Email Address *
+                            </label>
+                            <input
+                                id="email"
+                                type="email"
+                                value={data.email}
+                                onChange={(e) =>
+                                    setData("email", e.target.value)
+                                }
+                                className="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-amber-500 focus:border-amber-500 text-gray-900 text-sm"
+                                placeholder="Enter your email address"
+                                required
+                                maxLength={255}
+                            />
+                            {errors.email && (
+                                <p className="mt-1 text-sm text-red-600">
+                                    {errors.email}
+                                </p>
+                            )}
+                        </div>
+
+                        {/* Password and Confirm Password Row */}
+                        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                            {/* Password */}
+                            <div>
+                                <label
+                                    htmlFor="password"
+                                    className="block text-sm font-medium text-gray-700 mb-2"
+                                >
+                                    Password *
+                                </label>
+                                <input
+                                    id="password"
+                                    type="password"
+                                    value={data.password}
+                                    onChange={(e) =>
+                                        setData("password", e.target.value)
+                                    }
+                                    className="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-amber-500 focus:border-amber-500 text-gray-900 text-sm"
+                                    placeholder="Enter your password"
+                                    required
+                                    minLength={8}
+                                />
+                                <div className="mt-1 text-xs text-gray-500">
+                                    Must be at least 8 characters
+                                </div>
+                                {errors.password && (
+                                    <p className="mt-1 text-sm text-red-600">
+                                        {errors.password}
+                                    </p>
+                                )}
+                            </div>
+
+                            {/* Confirm Password */}
+                            <div>
+                                <label
+                                    htmlFor="password_confirmation"
+                                    className="block text-sm font-medium text-gray-700 mb-2"
+                                >
+                                    Confirm Password *
+                                </label>
+                                <input
+                                    id="password_confirmation"
+                                    type="password"
+                                    value={data.password_confirmation}
+                                    onChange={(e) =>
+                                        setData(
+                                            "password_confirmation",
+                                            e.target.value
+                                        )
+                                    }
+                                    className="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-amber-500 focus:border-amber-500 text-gray-900 text-sm"
+                                    placeholder="Confirm your password"
+                                    required
+                                    minLength={8}
+                                />
+                                {errors.password_confirmation && (
+                                    <p className="mt-1 text-sm text-red-600">
+                                        {errors.password_confirmation}
+                                    </p>
+                                )}
+                            </div>
+                        </div>
+
+                        {/* Submit Button */}
+                        <div className="pt-4">
+                            <button
+                                type="submit"
+                                disabled={processing}
+                                className="w-full flex justify-center py-3 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-amber-800 hover:bg-amber-900 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-amber-500 disabled:opacity-50 transition-colors duration-200"
+                            >
+                                {processing
+                                    ? "Creating Account..."
+                                    : "Create Account"}
+                            </button>
+                        </div>
+
+                        {/* Login Link */}
+                        <div className="text-center">
+                            <p className="text-sm text-gray-600">
+                                Already have an account?{" "}
+                                <a
+                                    href="/login"
+                                    className="font-medium text-amber-600 hover:text-amber-500"
+                                >
+                                    Sign in
+                                </a>
+                            </p>
+                        </div>
+                    </form>
                 </div>
-            </form>
-        </GuestLayout>
+            </div>
+        </div>
     );
 }

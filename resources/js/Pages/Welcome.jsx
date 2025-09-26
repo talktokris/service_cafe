@@ -55,6 +55,19 @@ export default function Welcome({ auth, laravelVersion, phpVersion }) {
                                 </>
                             )}
                         </div>
+
+                        {/* Test Registration Link */}
+                        <div className="mt-4">
+                            <p className="text-sm text-primary-content/80 mb-2">
+                                Test registration with referral code:
+                            </p>
+                            <Link
+                                href="/join/test123"
+                                className="btn btn-sm btn-outline btn-primary-content"
+                            >
+                                Join with Referral Code: test123
+                            </Link>
+                        </div>
                     </div>
                 </div>
             </div>
