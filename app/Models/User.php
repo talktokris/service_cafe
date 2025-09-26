@@ -234,6 +234,96 @@ class User extends Authenticatable
     }
 
     /**
+     * Get transactions where this user is the sender
+     */
+    public function transactionsFrom()
+    {
+        return $this->hasMany(Transaction::class, 'transaction_from_id');
+    }
+
+    /**
+     * Get transactions where this user is the receiver
+     */
+    public function transactionsTo()
+    {
+        return $this->hasMany(Transaction::class, 'transaction_to_id');
+    }
+
+    /**
+     * Get transactions triggered by this user
+     */
+    public function transactionsTriggered()
+    {
+        return $this->hasMany(Transaction::class, 'trigger_id');
+    }
+
+    /**
+     * Get all transactions related to this user
+     */
+    public function transactions()
+    {
+        return $this->hasMany(Transaction::class, 'transaction_from_id')
+            ->orWhere('transaction_to_id', $this->id)
+            ->orWhere('trigger_id', $this->id);
+    }
+
+    /**
+     * Get member upline rank record
+     */
+    public function memberUplineRank()
+    {
+        return $this->hasOne(MemberUplineRank::class, 'user_id');
+    }
+
+    /**
+     * Get upline rank records where this user is a referral
+     */
+    public function uplineRankAsReferral()
+    {
+        return $this->hasMany(MemberUplineRank::class, 'refferal_user_id');
+    }
+
+    /**
+     * Get upline rank records where this user is a three star
+     */
+    public function uplineRankAsThreeStar()
+    {
+        return $this->hasMany(MemberUplineRank::class, 'three_star_user_id');
+    }
+
+    /**
+     * Get upline rank records where this user is a five star
+     */
+    public function uplineRankAsFiveStar()
+    {
+        return $this->hasMany(MemberUplineRank::class, 'five_star_user_id');
+    }
+
+    /**
+     * Get upline rank records where this user is a seven star
+     */
+    public function uplineRankAsSevenStar()
+    {
+        return $this->hasMany(MemberUplineRank::class, 'seven_star_user_id');
+    }
+
+    /**
+     * Get upline rank records where this user is a mega star
+     */
+    public function uplineRankAsMegaStar()
+    {
+        return $this->hasMany(MemberUplineRank::class, 'mega_star_user_id');
+    }
+
+    /**
+     * Get upline rank records where this user is a giga star
+     */
+    public function uplineRankAsGigaStar()
+    {
+        return $this->hasMany(MemberUplineRank::class, 'giga_star_user_id');
+    }
+
+    /**
      * Scope for active users.
      */
     public function scopeActive($query)
