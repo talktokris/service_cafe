@@ -1,21 +1,29 @@
 import { Head, useForm, Link } from "@inertiajs/react";
 import { useState, useEffect } from "react";
-import MemberDashboardLayout from "../Components/MemberDashboardLayout";
-import Breadcrumb from "../Components/Breadcrumb";
+import { AdminDashboardLayout } from "../AdminComponents";
+import TopupFundComponent from "../../TransactionComponent/TopupFundComponent";
 
-export default function Transactions({ auth, transactions, summary, filters }) {
-    const memberType = auth.user.member_type || "paid";
+export default function MemberTransactions({
+    auth,
+    transactions,
+    summary,
+    filters,
+    member,
+    encodedUserId,
+}) {
     const [searchForm, setSearchForm] = useState({
         transaction_id: filters?.transaction_id || "",
         from_date: filters?.from_date || "",
         to_date: filters?.to_date || "",
     });
 
+    const [showTopupModal, setShowTopupModal] = useState(false);
+
     const { data, setData, get, processing } = useForm(searchForm);
 
     const handleSearch = (e) => {
         e.preventDefault();
-        get("/transactions", {
+        get(`/member-transactions/${encodedUserId}`, {
             data: data,
             preserveState: true,
             replace: true,
@@ -28,7 +36,7 @@ export default function Transactions({ auth, transactions, summary, filters }) {
             from_date: "",
             to_date: "",
         });
-        get("/transactions", {
+        get(`/member-transactions/${encodedUserId}`, {
             data: {
                 transaction_id: "",
                 from_date: "",
@@ -37,6 +45,12 @@ export default function Transactions({ auth, transactions, summary, filters }) {
             preserveState: true,
             replace: true,
         });
+    };
+
+    const handleTopupSuccess = () => {
+        setShowTopupModal(false);
+        // Refresh the page to show updated transactions
+        window.location.reload();
     };
 
     const formatCurrency = (amount) => {
@@ -65,37 +79,116 @@ export default function Transactions({ auth, transactions, summary, filters }) {
     };
 
     return (
-        <MemberDashboardLayout
-            title="Transactions - Serve Cafe"
+        <AdminDashboardLayout
+            title="Member Transactions - Serve Cafe"
             user={auth.user}
-            memberType={memberType}
         >
-            <Head title="Transactions" />
+            <Head title="Member Transactions" />
 
             <div>
                 {/* Breadcrumb */}
-                <Breadcrumb
-                    title="Transaction History"
-                    links={["Home", "Transactions"]}
-                    icon={
-                        <svg
-                            className="w-6 h-6 text-red-600"
-                            fill="none"
-                            stroke="currentColor"
-                            viewBox="0 0 24 24"
-                        >
-                            <path
-                                strokeLinecap="round"
-                                strokeLinejoin="round"
-                                strokeWidth="2"
-                                d="M9 5H7a2 2 0 00-2 2v10a2 2 0 002 2h8a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-3 7h3m-3 4h3m-6-4h.01M9 16h.01"
-                            />
-                        </svg>
-                    }
-                />
+                <div className="bg-gray-50 border-b border-gray-200 px-6 py-4">
+                    <div className="flex items-center space-x-3">
+                        <div className="w-10 h-10 bg-red-100 rounded-lg flex items-center justify-center">
+                            <svg
+                                className="w-6 h-6 text-red-600"
+                                fill="none"
+                                stroke="currentColor"
+                                viewBox="0 0 24 24"
+                            >
+                                <path
+                                    strokeLinecap="round"
+                                    strokeLinejoin="round"
+                                    strokeWidth="2"
+                                    d="M9 5H7a2 2 0 00-2 2v10a2 2 0 002 2h8a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-3 7h3m-3 4h3m-6-4h.01M9 16h.01"
+                                />
+                            </svg>
+                        </div>
+                        <div>
+                            <h1 className="text-2xl font-bold text-gray-900">
+                                Member Transactions
+                            </h1>
+                            <nav className="flex items-center space-x-2 text-sm mt-1">
+                                <Link
+                                    href="/dashboard"
+                                    className="font-medium text-gray-600 hover:text-gray-900"
+                                >
+                                    Home
+                                </Link>
+                                <svg
+                                    className="w-4 h-4 text-gray-400"
+                                    fill="currentColor"
+                                    viewBox="0 0 20 20"
+                                >
+                                    <path
+                                        fillRule="evenodd"
+                                        d="M7.293 14.707a1 1 0 010-1.414L10.586 10 7.293 6.707a1 1 0 011.414-1.414l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414 0z"
+                                        clipRule="evenodd"
+                                    ></path>
+                                </svg>
+                                <Link
+                                    href="/manage-members"
+                                    className="font-medium text-gray-600 hover:text-gray-900"
+                                >
+                                    Members
+                                </Link>
+                                <svg
+                                    className="w-4 h-4 text-gray-400"
+                                    fill="currentColor"
+                                    viewBox="0 0 20 20"
+                                >
+                                    <path
+                                        fillRule="evenodd"
+                                        d="M7.293 14.707a1 1 0 010-1.414L10.586 10 7.293 6.707a1 1 0 011.414-1.414l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414 0z"
+                                        clipRule="evenodd"
+                                    ></path>
+                                </svg>
+                                <span className="font-medium text-gray-700">
+                                    {member?.first_name} {member?.last_name} -
+                                    Transactions
+                                </span>
+                            </nav>
+                        </div>
+                    </div>
+                </div>
 
                 {/* Main Content */}
                 <div className="p-6 space-y-6">
+                    {/* Member Info Card */}
+                    <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
+                        <h3 className="text-lg font-medium text-gray-900 mb-4">
+                            Member Information
+                        </h3>
+                        <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                            <div>
+                                <p className="text-sm font-medium text-gray-500">
+                                    Name
+                                </p>
+                                <p className="text-lg font-semibold text-gray-900">
+                                    {member?.first_name} {member?.last_name}
+                                </p>
+                            </div>
+                            <div>
+                                <p className="text-sm font-medium text-gray-500">
+                                    Email
+                                </p>
+                                <p className="text-lg font-semibold text-gray-900">
+                                    {member?.email}
+                                </p>
+                            </div>
+                            <div>
+                                <p className="text-sm font-medium text-gray-500">
+                                    Member Type
+                                </p>
+                                <p className="text-lg font-semibold text-gray-900">
+                                    {member?.member_type === "paid"
+                                        ? "Paid Member"
+                                        : "Free Member"}
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+
                     {/* Summary Cards */}
                     <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
                         {/* Total Debits */}
@@ -190,11 +283,19 @@ export default function Transactions({ auth, transactions, summary, filters }) {
                         </div>
                     </div>
 
-                    {/* Search Form */}
+                    {/* Search Form and Fund Topup Button */}
                     <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
-                        <h3 className="text-lg font-medium text-gray-900 mb-4">
-                            Search Transactions
-                        </h3>
+                        <div className="flex items-center justify-between mb-4">
+                            <h3 className="text-lg font-medium text-gray-900">
+                                Search Transactions
+                            </h3>
+                            <button
+                                onClick={() => setShowTopupModal(true)}
+                                className="px-4 py-2 bg-green-600 text-white rounded-md hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-green-500 focus:ring-offset-2 transition-colors duration-200"
+                            >
+                                Fund Topup
+                            </button>
+                        </div>
                         <form onSubmit={handleSearch} className="space-y-4">
                             <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                                 {/* Transaction ID */}
@@ -406,6 +507,16 @@ export default function Transactions({ auth, transactions, summary, filters }) {
                     </div>
                 </div>
             </div>
-        </MemberDashboardLayout>
+
+            {/* Topup Fund Modal */}
+            {showTopupModal && (
+                <TopupFundComponent
+                    member={member}
+                    encodedUserId={encodedUserId}
+                    onClose={() => setShowTopupModal(false)}
+                    onSuccess={handleTopupSuccess}
+                />
+            )}
+        </AdminDashboardLayout>
     );
 }

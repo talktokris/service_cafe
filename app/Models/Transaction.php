@@ -15,6 +15,7 @@ class Transaction extends Model
         'transaction_from_id',
         'transaction_to_id',
         'trigger_id',
+        'created_user_id',
         'amount',
         'transaction_date',
         'status',
@@ -52,6 +53,11 @@ class Transaction extends Model
     public function trigger(): BelongsTo
     {
         return $this->belongsTo(User::class, 'trigger_id');
+    }
+
+    public function createdUser(): BelongsTo
+    {
+        return $this->belongsTo(User::class, 'created_user_id');
     }
 
     /**

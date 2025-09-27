@@ -120,6 +120,12 @@ export default function ManageMemberComponents({ user, members = [] }) {
         setShowResetPasswordModal(true);
     };
 
+    // Handle view transactions button click
+    const handleViewTransactionsClick = (member) => {
+        const encodedUserId = btoa(member.id.toString());
+        window.location.href = `/member-transactions/${encodedUserId}`;
+    };
+
     // Get member type display name
     const getMemberTypeDisplay = (memberType) => {
         const typeMap = {
@@ -511,6 +517,16 @@ export default function ManageMemberComponents({ user, members = [] }) {
                                                             className="btn btn-ghost btn-xs text-amber-700 hover:bg-amber-50"
                                                         >
                                                             Reset Password
+                                                        </button>
+                                                        <button
+                                                            onClick={() =>
+                                                                handleViewTransactionsClick(
+                                                                    member
+                                                                )
+                                                            }
+                                                            className="btn btn-ghost btn-xs text-blue-700 hover:bg-blue-50"
+                                                        >
+                                                            View Transactions
                                                         </button>
                                                     </div>
                                                 </td>
