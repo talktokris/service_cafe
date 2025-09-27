@@ -6,6 +6,8 @@ use App\Http\Controllers\UserController;
 use App\Http\Controllers\Auth\RegisterController;
 use Illuminate\Foundation\Application;
 use Illuminate\Support\Facades\Route;
+use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\Auth;
 use Inertia\Inertia;
 
 Route::get('/', function () {
@@ -109,10 +111,10 @@ Route::middleware(['auth', 'verified'])->group(function () {
                 ->orderBy('created_at', 'desc')
                 ->get();
             
-            \Log::info('Bill Payment Route - RestaurantTables count: ' . $restaurantTables->count());
-            \Log::info('Bill Payment Route - MenuItems count: ' . $menuItems->count());
-            \Log::info('Bill Payment Route - Orders count: ' . $orders->count());
-            \Log::info('Bill Payment Route - OrderItems count: ' . $orderItems->count());
+            Log::info('Bill Payment Route - RestaurantTables count: ' . $restaurantTables->count());
+            Log::info('Bill Payment Route - MenuItems count: ' . $menuItems->count());
+            Log::info('Bill Payment Route - Orders count: ' . $orders->count());
+            Log::info('Bill Payment Route - OrderItems count: ' . $orderItems->count());
             
             return Inertia::render('HeadOffice/Super/BillPayment', [
                 'restaurantTables' => $restaurantTables,
@@ -121,7 +123,7 @@ Route::middleware(['auth', 'verified'])->group(function () {
                 'orderItems' => $orderItems
             ]);
         } catch (\Exception $e) {
-            \Log::error('Bill Payment Route Error: ' . $e->getMessage());
+            Log::error('Bill Payment Route Error: ' . $e->getMessage());
             return Inertia::render('HeadOffice/Super/BillPayment', [
                 'restaurantTables' => [],
                 'menuItems' => [],
@@ -158,7 +160,7 @@ Route::middleware(['auth', 'verified'])->group(function () {
                 'deleteStatus' => $request->deleteStatus ?? 0,
             ]);
             
-            \Log::info('Order created successfully:', ['order_id' => $order->id]);
+            Log::info('Order created successfully:', ['order_id' => $order->id]);
             
             return response()->json([
                 'success' => true,
@@ -166,7 +168,7 @@ Route::middleware(['auth', 'verified'])->group(function () {
                 'message' => 'Order created successfully'
             ]);
         } catch (\Exception $e) {
-            \Log::error('Error creating order:', ['error' => $e->getMessage()]);
+            Log::error('Error creating order:', ['error' => $e->getMessage()]);
             
             return response()->json([
                 'success' => false,
@@ -201,7 +203,7 @@ Route::middleware(['auth', 'verified'])->group(function () {
                 'deleteStatus' => 0,
             ]);
             
-            \Log::info('Order item created successfully:', [
+            Log::info('Order item created successfully:', [
                 'order_item_id' => $orderItem->id,
                 'order_id' => $orderItem->orderId,
                 'menu_id' => $orderItem->menuId,
@@ -215,7 +217,7 @@ Route::middleware(['auth', 'verified'])->group(function () {
                 'message' => 'Menu item added to order successfully'
             ]);
         } catch (\Exception $e) {
-            \Log::error('Error creating order item:', ['error' => $e->getMessage()]);
+            Log::error('Error creating order item:', ['error' => $e->getMessage()]);
             
             return response()->json([
                 'success' => false,
@@ -228,7 +230,7 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::get('/order-items', function (\Illuminate\Http\Request $request) {
         try {
             // Debug logging
-            \Log::info('Fetching order items with params:', [
+            Log::info('Fetching order items with params:', [
                 'orderId' => $request->orderId,
                 'headOfficeId' => $request->headOfficeId,
                 'branchId' => $request->branchId,
@@ -250,7 +252,7 @@ Route::middleware(['auth', 'verified'])->group(function () {
             
             $orderItems = $query->get();
 
-            \Log::info('Found order items:', ['count' => $orderItems->count()]);
+            Log::info('Found order items:', ['count' => $orderItems->count()]);
 
             return response()->json([
                 'success' => true,
@@ -293,7 +295,7 @@ Route::middleware(['auth', 'verified'])->group(function () {
                 }),
             ]);
         } catch (\Exception $e) {
-            \Log::error('Error fetching order items: ' . $e->getMessage());
+            Log::error('Error fetching order items: ' . $e->getMessage());
             return response()->json([
                 'success' => false,
                 'message' => 'Failed to fetch order items',
@@ -317,7 +319,7 @@ Route::middleware(['auth', 'verified'])->group(function () {
                 'orderItem' => $orderItem,
             ]);
         } catch (\Exception $e) {
-            \Log::error('Error updating order item: ' . $e->getMessage());
+            Log::error('Error updating order item: ' . $e->getMessage());
             return response()->json([
                 'success' => false,
                 'message' => 'Failed to update order item',
@@ -339,7 +341,7 @@ Route::middleware(['auth', 'verified'])->group(function () {
                 'message' => 'Order item deleted successfully',
             ]);
         } catch (\Exception $e) {
-            \Log::error('Error deleting order item: ' . $e->getMessage());
+            Log::error('Error deleting order item: ' . $e->getMessage());
             return response()->json([
                 'success' => false,
                 'message' => 'Failed to delete order item',
@@ -363,7 +365,7 @@ Route::middleware(['auth', 'verified'])->group(function () {
                 'selectedMember.id' => 'nullable|integer|exists:users,id'
             ]);
 
-            $user = auth()->user();
+            $user = Auth::user();
             
             // Find the active order for this table
             $order = \App\Models\Order::where('tableId', $validated['tableId'])
@@ -414,7 +416,7 @@ Route::middleware(['auth', 'verified'])->group(function () {
                 'tableOccupiedStatus' => 0, // Free the table
             ]);
 
-            \Log::info('Payment processed successfully', [
+            Log::info('Payment processed successfully', [
                 'orderId' => $order->id,
                 'tableId' => $validated['tableId'],
                 'paymentMethod' => $validated['paymentMethod'],
@@ -451,7 +453,7 @@ Route::middleware(['auth', 'verified'])->group(function () {
                 'errors' => $e->errors()
             ], 422);
         } catch (\Exception $e) {
-            \Log::error('Payment processing failed', [
+            Log::error('Payment processing failed', [
                 'error' => $e->getMessage(),
                 'request' => $request->all()
             ]);
@@ -610,7 +612,7 @@ Route::middleware('auth')->group(function () {
                 'members' => $members,
             ]);
         } catch (\Exception $e) {
-            \Log::error('Error fetching members: ' . $e->getMessage());
+            Log::error('Error fetching members: ' . $e->getMessage());
             return response()->json([
                 'success' => false,
                 'message' => 'Failed to fetch members',
@@ -639,8 +641,8 @@ Route::get('/test-login', function () {
 });
 
 // Free Member Dashboard Route
-Route::get('/member-f-dashboard', function (Request $request) {
-    $user = auth()->user();
+Route::get('/member-f-dashboard', function () {
+    $user = Auth::user();
     
     if (!$user) {
         return redirect()->route('login')->with('error', 'Please log in to access the dashboard.');
@@ -659,8 +661,8 @@ Route::get('/member-f-dashboard', function (Request $request) {
 })->name('member.f.dashboard');
 
 // Paid Member Dashboard Route
-Route::get('/member-p-dashboard', function (Request $request) {
-    $user = auth()->user();
+Route::get('/member-p-dashboard', function () {
+    $user = Auth::user();
     
     if (!$user) {
         return redirect()->route('login')->with('error', 'Please log in to access the dashboard.');
@@ -679,9 +681,85 @@ Route::get('/member-p-dashboard', function (Request $request) {
     ]);
 })->name('member.p.dashboard');
 
+// Transactions Route (Paid Members Only)
+Route::get('/transactions', function (\Illuminate\Http\Request $request) {
+    $user = Auth::user();
+    
+    if (!$user) {
+        return redirect()->route('login')->with('error', 'Please log in to access transactions.');
+    }
+    
+    // Check if user is a paid member
+    if ($user->user_type !== 'member' || $user->member_type !== 'paid') {
+        return redirect()->route('login')->with('error', 'Access denied. This page is for paid members only.');
+    }
+    
+    // Get search filters
+    $transactionId = $request->get('transaction_id');
+    $fromDate = $request->get('from_date');
+    $toDate = $request->get('to_date');
+    
+    // Build query for transactions where user is the recipient
+    $query = \App\Models\Transaction::where('transaction_to_id', $user->id)
+        ->orderBy('created_at', 'desc')
+        ->limit(100);
+    
+    // Apply filters
+    if ($transactionId) {
+        $query->where('id', 'like', '%' . $transactionId . '%');
+    }
+    
+    if ($fromDate) {
+        $query->whereDate('created_at', '>=', $fromDate);
+    }
+    
+    if ($toDate) {
+        $query->whereDate('created_at', '<=', $toDate);
+    }
+    
+    $transactions = $query->get();
+    
+    // Calculate running balance and summary
+    $totalDebits = 0;
+    $totalCredits = 0;
+    $runningBalance = 0;
+    
+    $transactionsWithBalance = $transactions->map(function ($transaction) use (&$runningBalance, &$totalDebits, &$totalCredits) {
+        if ($transaction->debit_credit == 1) {
+            // Debit
+            $runningBalance -= $transaction->amount;
+            $totalDebits += $transaction->amount;
+        } else {
+            // Credit
+            $runningBalance += $transaction->amount;
+            $totalCredits += $transaction->amount;
+        }
+        
+        $transaction->balance = $runningBalance;
+        return $transaction;
+    });
+    
+    $summary = [
+        'total_debits' => $totalDebits,
+        'total_credits' => $totalCredits,
+        'balance' => $runningBalance,
+    ];
+    
+    return Inertia::render('Members/PaidMember/Transactions', [
+        'auth' => ['user' => $user],
+        'transactions' => $transactionsWithBalance,
+        'summary' => $summary,
+        'filters' => [
+            'transaction_id' => $transactionId,
+            'from_date' => $fromDate,
+            'to_date' => $toDate,
+        ]
+    ]);
+})->name('transactions');
+
 // Test dashboard route with proper Inertia response (keeping for backward compatibility)
-Route::get('/test-dashboard', function (Request $request) {
-    $user = auth()->user();
+Route::get('/test-dashboard', function () {
+    $user = Auth::user();
     
     if (!$user) {
         return redirect()->route('login')->with('error', 'Please log in to access the dashboard.');
@@ -715,8 +793,8 @@ Route::get('/test-dashboard', function (Request $request) {
 });
 
 // Debug route for JSON response (for testing only)
-Route::get('/debug-user', function (Request $request) {
-    $user = auth()->user();
+Route::get('/debug-user', function () {
+    $user = Auth::user();
     
     if (!$user) {
         return response()->json(['error' => 'Not authenticated'], 401);
