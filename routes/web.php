@@ -917,6 +917,82 @@ Route::get('/transactions', function (\Illuminate\Http\Request $request) {
     ]);
 })->name('transactions');
 
+// Free Member Transactions Route (Free Members Only)
+Route::get('/free-transactions', function (\Illuminate\Http\Request $request) {
+    $user = Auth::user();
+    
+    if (!$user) {
+        return redirect()->route('login')->with('error', 'Please log in to access transactions.');
+    }
+    
+    // Check if user is a free member
+    if ($user->user_type !== 'member' || $user->member_type !== 'free') {
+        return redirect()->route('login')->with('error', 'Access denied. This page is for free members only.');
+    }
+    
+    // Get search filters
+    $transactionId = $request->get('transaction_id');
+    $fromDate = $request->get('from_date');
+    $toDate = $request->get('to_date');
+    
+    // Build query for transactions where user is the recipient
+    $query = \App\Models\Transaction::where('transaction_to_id', $user->id)
+        ->orderBy('created_at', 'desc')
+        ->limit(100);
+    
+    // Apply filters
+    if ($transactionId) {
+        $query->where('id', 'like', '%' . $transactionId . '%');
+    }
+    
+    if ($fromDate) {
+        $query->whereDate('created_at', '>=', $fromDate);
+    }
+    
+    if ($toDate) {
+        $query->whereDate('created_at', '<=', $toDate);
+    }
+    
+    $transactions = $query->get();
+    
+    // Calculate running balance and summary
+    $totalDebits = 0;
+    $totalCredits = 0;
+    $runningBalance = 0;
+    
+    $transactionsWithBalance = $transactions->map(function ($transaction) use (&$runningBalance, &$totalDebits, &$totalCredits) {
+        if ($transaction->debit_credit == 1) {
+            // Debit
+            $runningBalance -= $transaction->amount;
+            $totalDebits += $transaction->amount;
+        } else {
+            // Credit
+            $runningBalance += $transaction->amount;
+            $totalCredits += $transaction->amount;
+        }
+        
+        $transaction->balance = $runningBalance;
+        return $transaction;
+    });
+    
+    $summary = [
+        'total_debits' => $totalDebits,
+        'total_credits' => $totalCredits,
+        'balance' => $runningBalance,
+    ];
+    
+    return Inertia::render('Members/FreeMember/Transactions', [
+        'auth' => ['user' => $user],
+        'transactions' => $transactionsWithBalance,
+        'summary' => $summary,
+        'filters' => [
+            'transaction_id' => $transactionId,
+            'from_date' => $fromDate,
+            'to_date' => $toDate,
+        ]
+    ]);
+})->name('free.transactions');
+
 // Member Transactions Route (Super Admin Only)
 Route::get('/member-transactions/{encodedUserId}', function (\Illuminate\Http\Request $request, $encodedUserId) {
     $user = Auth::user();
