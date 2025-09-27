@@ -33,8 +33,8 @@ export default function FreeMemberSidebar({ isOpen, onClose, user }) {
             ),
         },
         {
-            title: "My Orders",
-            href: "/my-orders",
+            title: "Orders",
+            href: "/free-orders",
             icon: (
                 <svg
                     xmlns="http://www.w3.org/2000/svg"

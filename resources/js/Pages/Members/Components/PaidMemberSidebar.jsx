@@ -33,8 +33,8 @@ export default function PaidMemberSidebar({ isOpen, onClose, user }) {
             ),
         },
         {
-            title: "My Orders",
-            href: "/my-orders",
+            title: "Orders",
+            href: "/paid-orders",
             icon: (
                 <svg
                     xmlns="http://www.w3.org/2000/svg"
