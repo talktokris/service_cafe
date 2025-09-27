@@ -555,6 +555,59 @@ Route::middleware(['auth', 'verified'])->group(function () {
         ]);
     })->name('stock-item-settings-page');
     
+    // Package Setup
+    Route::get('/package-setup', function () {
+        $packages = \App\Models\PackageOffer::orderBy('created_at', 'desc')
+            ->get();
+        
+        return Inertia::render('HeadOffice/Super/ManagePackageSettings', [
+            'packages' => $packages
+        ]);
+    })->name('package-setup');
+    
+    // API route to get latest active package
+    Route::get('/api/latest-active-package', function () {
+        try {
+            $latestPackage = \App\Models\PackageOffer::where('status', 1)
+                ->orderBy('id', 'desc')
+                ->first();
+            
+            if ($latestPackage) {
+                return response()->json([
+                    'success' => true,
+                    'package' => [
+                        'id' => $latestPackage->id,
+                        'package_name' => $latestPackage->package_name,
+                        'package_amount' => $latestPackage->package_amount,
+                        'valid_from_date' => $latestPackage->valid_from_date,
+                        'valid_to_date' => $latestPackage->valid_to_date,
+                        'status' => $latestPackage->status,
+                        'created_at' => $latestPackage->created_at,
+                    ]
+                ]);
+            } else {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'No active packages found',
+                    'package' => null
+                ]);
+            }
+        } catch (\Exception $e) {
+            Log::error('Error fetching latest active package: ' . $e->getMessage());
+            
+            return response()->json([
+                'success' => false,
+                'message' => 'Error fetching package data',
+                'package' => null
+            ], 500);
+        }
+    })->name('api.latest-active-package');
+    
+    // Latest Package Demo
+    Route::get('/latest-package-demo', function () {
+        return Inertia::render('HeadOffice/Super/LatestPackageDemo');
+    })->name('latest-package-demo');
+    
     // Office Profile Management Routes
     Route::resource('office-profiles', App\Http\Controllers\OfficeProfileController::class);
     Route::get('/office-profiles-api', [App\Http\Controllers\OfficeProfileController::class, 'getOfficeProfiles'])->name('office-profiles.api');
@@ -585,6 +638,113 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::get('/manage-members', [UserController::class, 'manageMembers'])->name('manage-members');
     Route::put('/members/{member}', [UserController::class, 'updateMember'])->name('members.update');
     Route::post('/members/{member}/reset-password', [UserController::class, 'resetMemberPassword'])->name('members.reset-password');
+    
+    // Package Management Routes
+    Route::post('/package-offers', function (\Illuminate\Http\Request $request) {
+        $validated = $request->validate([
+            'package_name' => 'nullable|string|max:250',
+            'package_amount' => 'required|integer|min:0|max:999999',
+            'valid_from_date' => 'nullable|date',
+            'valid_to_date' => 'nullable|date|after_or_equal:valid_from_date',
+            'status' => 'required|integer|in:0,1',
+        ], [
+            'package_name.max' => 'Package name cannot exceed 250 characters.',
+            'package_amount.required' => 'Package amount is required.',
+            'package_amount.integer' => 'Package amount must be a valid number.',
+            'package_amount.min' => 'Package amount must be at least 0.',
+            'package_amount.max' => 'Package amount cannot exceed 999,999.',
+            'valid_from_date.date' => 'Valid from date must be a valid date.',
+            'valid_to_date.date' => 'Valid to date must be a valid date.',
+            'valid_to_date.after_or_equal' => 'Valid to date must be after or equal to valid from date.',
+            'status.required' => 'Status is required.',
+            'status.in' => 'Status must be either 0 (Not Active) or 1 (Active).',
+        ]);
+
+        try {
+            $package = \App\Models\PackageOffer::create($validated);
+            
+            Log::info('Package created successfully', [
+                'package_id' => $package->id,
+                'package_name' => $package->package_name,
+                'package_amount' => $package->package_amount
+            ]);
+            
+            return back()->with('success', 'Package created successfully!');
+        } catch (\Exception $e) {
+            Log::error('Package creation failed', [
+                'error' => $e->getMessage(),
+                'data' => $validated
+            ]);
+            
+            return back()->withErrors(['error' => 'Failed to create package. Please try again.']);
+        }
+    })->name('package-offers.store');
+    
+    Route::put('/package-offers/{package}', function (\Illuminate\Http\Request $request, $package) {
+        $packageModel = \App\Models\PackageOffer::findOrFail($package);
+        
+        $validated = $request->validate([
+            'package_name' => 'nullable|string|max:250',
+            'package_amount' => 'required|integer|min:0|max:999999',
+            'valid_from_date' => 'nullable|date',
+            'valid_to_date' => 'nullable|date|after_or_equal:valid_from_date',
+            'status' => 'required|integer|in:0,1',
+        ], [
+            'package_name.max' => 'Package name cannot exceed 250 characters.',
+            'package_amount.required' => 'Package amount is required.',
+            'package_amount.integer' => 'Package amount must be a valid number.',
+            'package_amount.min' => 'Package amount must be at least 0.',
+            'package_amount.max' => 'Package amount cannot exceed 999,999.',
+            'valid_from_date.date' => 'Valid from date must be a valid date.',
+            'valid_to_date.date' => 'Valid to date must be a valid date.',
+            'valid_to_date.after_or_equal' => 'Valid to date must be after or equal to valid from date.',
+            'status.required' => 'Status is required.',
+            'status.in' => 'Status must be either 0 (Not Active) or 1 (Active).',
+        ]);
+
+        try {
+            $packageModel->update($validated);
+            
+            Log::info('Package updated successfully', [
+                'package_id' => $packageModel->id,
+                'package_name' => $packageModel->package_name,
+                'package_amount' => $packageModel->package_amount
+            ]);
+            
+            return back()->with('success', 'Package updated successfully!');
+        } catch (\Exception $e) {
+            Log::error('Package update failed', [
+                'error' => $e->getMessage(),
+                'package_id' => $package,
+                'data' => $validated
+            ]);
+            
+            return back()->withErrors(['error' => 'Failed to update package. Please try again.']);
+        }
+    })->name('package-offers.update');
+    
+    Route::delete('/package-offers/{package}', function ($package) {
+        try {
+            $packageModel = \App\Models\PackageOffer::findOrFail($package);
+            $packageName = $packageModel->package_name;
+            
+            $packageModel->delete();
+            
+            Log::info('Package deleted successfully', [
+                'package_id' => $package,
+                'package_name' => $packageName
+            ]);
+            
+            return back()->with('success', 'Package deleted successfully!');
+        } catch (\Exception $e) {
+            Log::error('Package deletion failed', [
+                'error' => $e->getMessage(),
+                'package_id' => $package
+            ]);
+            
+            return back()->withErrors(['error' => 'Failed to delete package. Please try again.']);
+        }
+    })->name('package-offers.destroy');
     
 });
 

@@ -21,7 +21,10 @@ class RegisterController extends Controller
         $referrer = User::where('referral_code', $referral_code)->first();
         
         if (!$referrer) {
-            return redirect()->route('welcome')->with('error', 'Invalid referral code.');
+            return Inertia::render('Auth/InvalidReferralCode', [
+                'referral_code' => $referral_code,
+                'error' => 'The referral code "' . $referral_code . '" is invalid or does not exist. Please check the link and try again.'
+            ]);
         }
 
         return Inertia::render('Auth/Register', [
@@ -43,7 +46,10 @@ class RegisterController extends Controller
         $referrer = User::where('referral_code', $referral_code)->first();
         
         if (!$referrer) {
-            return redirect()->route('welcome')->with('error', 'Invalid referral code.');
+            return Inertia::render('Auth/InvalidReferralCode', [
+                'referral_code' => $referral_code,
+                'error' => 'The referral code "' . $referral_code . '" is invalid or does not exist. Please check the link and try again.'
+            ]);
         }
 
         $validator = Validator::make($request->all(), [
