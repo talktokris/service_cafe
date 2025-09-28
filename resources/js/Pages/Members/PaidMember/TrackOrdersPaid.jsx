@@ -37,7 +37,7 @@ export default function TrackOrdersPaid({ auth, orders, filters }) {
                 />
 
                 {/* Main Content */}
-                <div className="p-6">
+                <div className="p-3 sm:p-4 lg:p-6">
                     <OrdersComponents
                         auth={auth}
                         orders={orders}
