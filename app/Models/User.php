@@ -66,6 +66,13 @@ class User extends Authenticatable
     }
 
     /**
+     * The accessors to append to the model's array form.
+     *
+     * @var array
+     */
+    protected $appends = ['current_wallet_balance'];
+
+    /**
      * Get the roles that belong to the user.
      */
     public function roles()
@@ -337,5 +344,29 @@ class User extends Authenticatable
     public function scopeNotDeleted($query)
     {
         return $query->where('deleteStatus', 0);
+    }
+
+    /**
+     * Calculate current wallet balance from transactions
+     */
+    public function getCurrentWalletBalance()
+    {
+        $totalCredits = \App\Models\Transaction::where('transaction_to_id', $this->id)
+            ->where('debit_credit', 2)
+            ->sum('amount');
+        
+        $totalDebits = \App\Models\Transaction::where('transaction_to_id', $this->id)
+            ->where('debit_credit', 1)
+            ->sum('amount');
+        
+        return $totalCredits - $totalDebits;
+    }
+
+    /**
+     * Get the current wallet balance attribute
+     */
+    public function getCurrentWalletBalanceAttribute()
+    {
+        return $this->getCurrentWalletBalance();
     }
 }

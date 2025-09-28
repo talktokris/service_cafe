@@ -43,22 +43,22 @@ class DashboardController extends Controller
         switch ($role->name) {
             case 'super_user':
                 return Inertia::render('HeadOffice/Super/SuperUserDashboard', [
-                    'user' => $user,
+                    'auth' => ['user' => $user],
                     'stats' => $stats
                 ]);
             case 'admin_user':
                 return Inertia::render('HeadOffice/Admin/AdminUserDashboard', [
-                    'user' => $user,
+                    'auth' => ['user' => $user],
                     'stats' => $stats
                 ]);
             case 'account_user':
                 return Inertia::render('HeadOffice/Account/AccountUserDashboard', [
-                    'user' => $user,
+                    'auth' => ['user' => $user],
                     'stats' => $stats
                 ]);
             case 'billing_user':
                 return Inertia::render('HeadOffice/Billing/BillingUserDashboard', [
-                    'user' => $user,
+                    'auth' => ['user' => $user],
                     'stats' => $stats
                 ]);
             default:
@@ -102,12 +102,14 @@ class DashboardController extends Controller
                     'auth' => ['user' => $user],
                     'stats' => $stats,
                     'wallet' => $wallet,
+                    'walletBalance' => $user->getCurrentWalletBalance(),
                     'referrals' => $referrals
                 ]);
             case 'free':
                 return Inertia::render('Members/FreeMember/FreeMemberDashboard', [
                     'auth' => ['user' => $user],
                     'stats' => $stats,
+                    'walletBalance' => $user->getCurrentWalletBalance(),
                     'referrals' => $referrals
                 ]);
             default:

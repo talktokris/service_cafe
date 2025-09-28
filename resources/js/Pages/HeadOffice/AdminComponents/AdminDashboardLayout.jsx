@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { Head } from "@inertiajs/react";
+import { Head, usePage } from "@inertiajs/react";
 import AdminHeader from "./AdminHeader";
 import AdminFooter from "./AdminFooter";
 import AdminSidebar from "./AdminSidebar";
@@ -9,6 +9,7 @@ export default function AdminDashboardLayout({
     title = "Admin Dashboard",
     user = null,
 }) {
+    const { walletBalance } = usePage().props;
     const [sidebarOpen, setSidebarOpen] = useState(false);
 
     const toggleSidebar = () => {
@@ -27,7 +28,11 @@ export default function AdminDashboardLayout({
             <Head title={title} />
 
             {/* Header */}
-            <AdminHeader user={user} onMenuToggle={toggleSidebar} />
+            <AdminHeader
+                user={user}
+                onMenuToggle={toggleSidebar}
+                walletBalance={walletBalance}
+            />
 
             {/* Main Content Area */}
             <div className="flex flex-1">

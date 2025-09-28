@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { Head } from "@inertiajs/react";
+import { Head, usePage } from "@inertiajs/react";
 import MemberHeader from "./MemberHeader";
 import MemberSidebar from "./MemberSidebar";
 import MemberFooter from "./MemberFooter";
@@ -9,7 +9,12 @@ export default function MemberDashboardLayout({
     title = "Member Dashboard",
     user = null,
     memberType = "free",
+    walletBalance = null, // Will use global walletBalance if not provided
 }) {
+    const { walletBalance: globalWalletBalance } = usePage().props;
+    const finalWalletBalance =
+        walletBalance !== null ? walletBalance : globalWalletBalance;
+
     const [sidebarOpen, setSidebarOpen] = useState(false);
 
     const toggleSidebar = () => {
@@ -32,6 +37,7 @@ export default function MemberDashboardLayout({
                 user={user}
                 onMenuToggle={toggleSidebar}
                 memberType={memberType}
+                walletBalance={finalWalletBalance}
             />
 
             {/* Main Content Area */}

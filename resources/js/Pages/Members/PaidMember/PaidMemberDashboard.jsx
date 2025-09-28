@@ -6,6 +6,7 @@ export default function PaidMemberDashboard({
     auth,
     stats,
     wallet,
+    walletBalance,
     referrals,
 }) {
     return (
@@ -13,6 +14,7 @@ export default function PaidMemberDashboard({
             title="Paid Member Dashboard - Serve Cafe"
             user={auth.user}
             memberType="paid"
+            walletBalance={walletBalance}
         >
             <Head title="Paid Member Dashboard" />
             <MemberDashboardComponent

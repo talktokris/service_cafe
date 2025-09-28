@@ -1,7 +1,11 @@
 import React from "react";
 import { Link } from "@inertiajs/react";
 
-export default function AdminHeader({ user = null, onMenuToggle }) {
+export default function AdminHeader({
+    user = null,
+    onMenuToggle,
+    walletBalance = 0,
+}) {
     return (
         <div
             className="bg-white shadow-lg border-b"
@@ -142,7 +146,7 @@ export default function AdminHeader({ user = null, onMenuToggle }) {
                                                 style={{ color: "#DE3032" }}
                                             >
                                                 ₹
-                                                {user?.wallet?.balance ||
+                                                {walletBalance?.toFixed(2) ||
                                                     "0.00"}
                                             </div>
                                         </div>

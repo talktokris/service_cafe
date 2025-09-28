@@ -3,7 +3,13 @@ import { useState, useEffect } from "react";
 import MemberDashboardLayout from "../Components/MemberDashboardLayout";
 import Breadcrumb from "../Components/Breadcrumb";
 
-export default function Transactions({ auth, transactions, summary, filters }) {
+export default function Transactions({
+    auth,
+    transactions,
+    summary,
+    filters,
+    walletBalance,
+}) {
     const memberType = auth.user.member_type || "paid";
     const [searchForm, setSearchForm] = useState({
         transaction_id: filters?.transaction_id || "",
@@ -69,6 +75,7 @@ export default function Transactions({ auth, transactions, summary, filters }) {
             title="Transactions - Serve Cafe"
             user={auth.user}
             memberType={memberType}
+            walletBalance={walletBalance}
         >
             <Head title="Transactions" />
 

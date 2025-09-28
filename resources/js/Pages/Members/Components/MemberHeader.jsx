@@ -1,7 +1,12 @@
 import React, { useState, useEffect, useRef } from "react";
 import { Link } from "@inertiajs/react";
 
-export default function MemberHeader({ user, onMenuToggle, memberType }) {
+export default function MemberHeader({
+    user,
+    onMenuToggle,
+    memberType,
+    walletBalance = 0,
+}) {
     const [walletDropdownOpen, setWalletDropdownOpen] = useState(false);
     const [accountDropdownOpen, setAccountDropdownOpen] = useState(false);
     const walletRef = useRef(null);
@@ -158,7 +163,7 @@ export default function MemberHeader({ user, onMenuToggle, memberType }) {
                                     Wallet
                                 </span>
                                 <span className="text-sm font-bold text-green-600">
-                                    ₹0.00
+                                    ₹{walletBalance.toFixed(2)}
                                 </span>
                                 <svg
                                     className="h-4 w-4"
@@ -179,30 +184,19 @@ export default function MemberHeader({ user, onMenuToggle, memberType }) {
                             {/* Wallet Dropdown Menu */}
                             {walletDropdownOpen && (
                                 <div className="absolute right-0 mt-2 w-48 bg-white rounded-md shadow-lg py-1 z-50">
-                                    <a
-                                        href="#"
+                                    <Link
+                                        href={
+                                            memberType === "free"
+                                                ? "/free-transactions"
+                                                : "/transactions"
+                                        }
                                         className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
+                                        onClick={() =>
+                                            setWalletDropdownOpen(false)
+                                        }
                                     >
                                         View Balance
-                                    </a>
-                                    <a
-                                        href="#"
-                                        className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
-                                    >
-                                        Top Up Wallet
-                                    </a>
-                                    <a
-                                        href="#"
-                                        className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
-                                    >
-                                        Transaction History
-                                    </a>
-                                    <a
-                                        href="#"
-                                        className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
-                                    >
-                                        Withdraw Funds
-                                    </a>
+                                    </Link>
                                 </div>
                             )}
                         </div>
