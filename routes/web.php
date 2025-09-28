@@ -9,6 +9,7 @@ use App\Http\Controllers\MemberDashboardController;
 use App\Http\Controllers\TransactionController;
 use App\Http\Controllers\MemberOrderController;
 use App\Http\Controllers\ShareReferralController;
+use App\Http\Controllers\TreeViewController;
 use App\Models\User;
 use Illuminate\Foundation\Application;
 use Illuminate\Support\Facades\Route;
@@ -817,6 +818,9 @@ Route::get('/support', [SupportController::class, 'index'])->name('support');
 
 // Share Referral Routes
 Route::get('/share-referral', [ShareReferralController::class, 'index'])->name('share.referral');
+
+// Tree View Routes
+Route::get('/tree-view', [TreeViewController::class, 'index'])->name('tree.view');
 
 // Transactions Route (Paid Members Only)
 Route::get('/transactions', [TransactionController::class, 'paidMemberTransactions'])->name('transactions');

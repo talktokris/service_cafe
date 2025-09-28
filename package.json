@@ -23,8 +23,10 @@
     "dependencies": {
         "@inertiajs/react": "^2.1.3",
         "@vitejs/plugin-react": "^5.0.2",
+        "@yfiles/yfiles": "^0.9.0",
         "daisyui": "^5.0.54",
         "react": "^19.1.1",
-        "react-dom": "^19.1.1"
+        "react-dom": "^19.1.1",
+        "react-organizational-chart": "^2.2.1"
     }
 }
