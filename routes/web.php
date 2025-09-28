@@ -8,6 +8,7 @@ use App\Http\Controllers\SupportController;
 use App\Http\Controllers\MemberDashboardController;
 use App\Http\Controllers\TransactionController;
 use App\Http\Controllers\MemberOrderController;
+use App\Http\Controllers\ShareReferralController;
 use App\Models\User;
 use Illuminate\Foundation\Application;
 use Illuminate\Support\Facades\Route;
@@ -813,6 +814,9 @@ Route::get('/member-p-dashboard', [MemberDashboardController::class, 'paidMember
 
 // Support Routes
 Route::get('/support', [SupportController::class, 'index'])->name('support');
+
+// Share Referral Routes
+Route::get('/share-referral', [ShareReferralController::class, 'index'])->name('share.referral');
 
 // Transactions Route (Paid Members Only)
 Route::get('/transactions', [TransactionController::class, 'paidMemberTransactions'])->name('transactions');

@@ -53,8 +53,8 @@ export default function FreeMemberSidebar({ isOpen, onClose, user }) {
             ),
         },
         {
-            title: "Referral Network",
-            href: "/referral-network",
+            title: "Share Referral",
+            href: "/share-referral",
             icon: (
                 <svg
                     xmlns="http://www.w3.org/2000/svg"
@@ -67,7 +67,7 @@ export default function FreeMemberSidebar({ isOpen, onClose, user }) {
                         strokeLinecap="round"
                         strokeLinejoin="round"
                         strokeWidth="2"
-                        d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197m13.5-9a2.5 2.5 0 11-5 0 2.5 2.5 0 015 0z"
+                        d="M8.684 13.342C8.886 12.938 9 12.482 9 12c0-.482-.114-.938-.316-1.342m0 2.684a3 3 0 110-2.684m0 2.684l6.632 3.316m-6.632-6l6.632-3.316m0 0a3 3 0 105.367-2.684 3 3 0 00-5.367 2.684zm0 9.316a3 3 0 105.367 2.684 3 3 0 00-5.367-2.684z"
                     />
                 </svg>
             ),
@@ -179,11 +179,11 @@ export default function FreeMemberSidebar({ isOpen, onClose, user }) {
 
     return (
         <div
-            className={`fixed inset-y-0 left-0 z-50 w-64 bg-gray-900 transform ${
+            className={`fixed inset-y-0 left-0 z-50 w-64 bg-white border-r border-gray-200 transform ${
                 isOpen ? "translate-x-0" : "-translate-x-full"
             } transition-transform duration-300 ease-in-out lg:translate-x-0 lg:static lg:inset-0`}
         >
-            <div className="flex items-center justify-between h-16 px-4 bg-gray-800">
+            <div className="flex items-center justify-between h-16 px-4 bg-gray-50 border-b border-gray-200">
                 <div className="flex items-center">
                     <div className="flex items-center">
                         <div className="w-8 h-8 bg-red-600 rounded flex items-center justify-center">
@@ -192,10 +192,10 @@ export default function FreeMemberSidebar({ isOpen, onClose, user }) {
                             </span>
                         </div>
                         <div className="ml-3">
-                            <h1 className="text-white text-lg font-semibold">
+                            <h1 className="text-gray-900 text-lg font-semibold">
                                 SERVE CAFE
                             </h1>
-                            <p className="text-gray-400 text-xs">
+                            <p className="text-gray-600 text-xs">
                                 Free Member Panel
                             </p>
                         </div>
@@ -203,7 +203,7 @@ export default function FreeMemberSidebar({ isOpen, onClose, user }) {
                 </div>
                 <button
                     onClick={onClose}
-                    className="text-gray-400 hover:text-white lg:hidden"
+                    className="text-gray-600 hover:text-gray-900 lg:hidden"
                 >
                     <svg
                         className="w-6 h-6"
@@ -231,8 +231,8 @@ export default function FreeMemberSidebar({ isOpen, onClose, user }) {
                                 href={item.href}
                                 className={`group flex items-center px-2 py-2 text-sm font-medium rounded-md transition-colors duration-200 ${
                                     isActive
-                                        ? "bg-red-600 text-white"
-                                        : "text-gray-300 hover:bg-gray-700 hover:text-white"
+                                        ? "bg-red-100 text-red-700"
+                                        : "text-gray-700 hover:bg-gray-100 hover:text-gray-900"
                                 }`}
                             >
                                 <span className="mr-3">{item.icon}</span>
@@ -246,10 +246,10 @@ export default function FreeMemberSidebar({ isOpen, onClose, user }) {
                 </nav>
 
                 {/* Settings Section */}
-                <div className="px-2 py-4 border-t border-gray-700">
+                <div className="px-2 py-4 border-t border-gray-200">
                     <button
                         onClick={() => setIsSettingsOpen(!isSettingsOpen)}
-                        className="group flex items-center w-full px-2 py-2 text-sm font-medium text-gray-300 rounded-md hover:bg-gray-700 hover:text-white transition-colors duration-200"
+                        className="group flex items-center w-full px-2 py-2 text-sm font-medium text-gray-700 rounded-md hover:bg-gray-100 hover:text-gray-900 transition-colors duration-200"
                     >
                         <svg
                             xmlns="http://www.w3.org/2000/svg"
@@ -299,8 +299,8 @@ export default function FreeMemberSidebar({ isOpen, onClose, user }) {
                                         href={item.href}
                                         className={`group flex items-center px-6 py-2 text-sm font-medium rounded-md transition-colors duration-200 ${
                                             isActive
-                                                ? "bg-red-600 text-white"
-                                                : "text-gray-300 hover:bg-gray-700 hover:text-white"
+                                                ? "bg-red-100 text-red-700"
+                                                : "text-gray-700 hover:bg-gray-100 hover:text-gray-900"
                                         }`}
                                     >
                                         <span className="mr-3">
@@ -315,7 +315,7 @@ export default function FreeMemberSidebar({ isOpen, onClose, user }) {
                 </div>
 
                 {/* User Profile Section */}
-                <div className="px-2 py-4 border-t border-gray-700">
+                <div className="px-2 py-4 border-t border-gray-200">
                     <div className="flex items-center">
                         <div className="w-8 h-8 bg-red-600 rounded-full flex items-center justify-center">
                             <span className="text-white font-bold text-sm">
@@ -323,10 +323,10 @@ export default function FreeMemberSidebar({ isOpen, onClose, user }) {
                             </span>
                         </div>
                         <div className="ml-3">
-                            <p className="text-sm font-medium text-white">
+                            <p className="text-sm font-medium text-gray-900">
                                 {user?.first_name} {user?.last_name}
                             </p>
-                            <p className="text-xs text-gray-400">Free Member</p>
+                            <p className="text-xs text-gray-600">Free Member</p>
                         </div>
                         <span className="ml-auto w-2 h-2 bg-red-400 rounded-full"></span>
                     </div>

@@ -2,48 +2,79 @@ import React from "react";
 
 export default function AdminFooter() {
     return (
-        <footer
-            className="text-gray-400 mt-auto"
-            style={{ backgroundColor: "#1f2937" }}
-        >
-            <div className="container mx-auto px-4 py-6">
-                <div className="flex flex-col md:flex-row justify-between items-center">
-                    <div className="flex items-center space-x-4 mb-4 md:mb-0">
-                        <img
-                            src="/assets/logo.png"
-                            alt="Serve Cafe Logo"
-                            className="w-8 h-8 object-contain"
-                            style={{ filter: "brightness(0) invert(1)" }}
-                        />
-                        <div className="text-sm text-gray-400">
-                            <span className="font-semibold text-white">
-                                SERVE CAFE
+        <footer className="bg-gray-900 text-gray-300 mt-auto">
+            <div className="max-w-7xl mx-auto px-4 py-6 sm:px-6 lg:px-8">
+                <div className="flex flex-col lg:flex-row justify-between items-center space-y-4 lg:space-y-0">
+                    {/* Left side - Branding and Copyright */}
+                    <div className="flex flex-col sm:flex-row items-center space-y-2 sm:space-y-0 sm:space-x-4">
+                        <div className="flex items-center space-x-3">
+                            {/* Circular logo with 't' */}
+                            <div className="w-8 h-8 bg-red-600 rounded-full flex items-center justify-center">
+                                <span className="text-white font-bold text-sm">
+                                    t
+                                </span>
+                            </div>
+                            {/* Square logo with 'sC' */}
+                            <div className="w-8 h-8 bg-red-600 rounded flex items-center justify-center">
+                                <span className="text-white font-bold text-sm">
+                                    sC
+                                </span>
+                            </div>
+                        </div>
+                        <div className="flex flex-col sm:flex-row items-center space-y-1 sm:space-y-0 sm:space-x-2">
+                            <span className="text-white font-medium">
+                                Admin Dashboard
                             </span>
-                            <span className="ml-2">Admin Dashboard</span>
+                            <span className="text-gray-400 text-sm hidden sm:inline">
+                                •
+                            </span>
+                            <span className="text-gray-400 text-sm">
+                                © 2025 Serve Cafe. All rights reserved.
+                            </span>
                         </div>
                     </div>
 
-                    <div className="flex items-center space-x-6 text-sm text-gray-400">
-                        <span>© 2024 Serve Cafe. All rights reserved.</span>
-                        {/* <div className="flex items-center space-x-4">
-                            <span className="flex items-center">
+                    {/* Right side - Navigation Links */}
+                    <div className="flex flex-col sm:flex-row items-center space-y-2 sm:space-y-0 sm:space-x-6">
+                        {/* Cursor button */}
+                        <div className="relative">
+                            <button className="bg-gray-700 hover:bg-gray-600 text-white px-3 py-1 rounded-md text-sm transition-colors duration-200 flex items-center space-x-1">
+                                <span>Cursor</span>
                                 <svg
-                                    xmlns="http://www.w3.org/2000/svg"
-                                    className="h-4 w-4 mr-1"
-                                    fill="none"
-                                    viewBox="0 0 24 24"
-                                    stroke="currentColor"
+                                    className="w-3 h-3"
+                                    fill="currentColor"
+                                    viewBox="0 0 20 20"
                                 >
                                     <path
-                                        strokeLinecap="round"
-                                        strokeLinejoin="round"
-                                        strokeWidth="2"
-                                        d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"
+                                        fillRule="evenodd"
+                                        d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z"
+                                        clipRule="evenodd"
                                     />
                                 </svg>
-                                Last updated: {new Date().toLocaleDateString()}
-                            </span>
-                        </div> */}
+                            </button>
+                        </div>
+
+                        {/* Navigation Links */}
+                        <div className="flex flex-wrap justify-center items-center space-x-4 sm:space-x-6">
+                            <a
+                                href="#"
+                                className="text-gray-400 hover:text-white text-sm transition-colors duration-200"
+                            >
+                                Privacy Policy
+                            </a>
+                            <a
+                                href="#"
+                                className="text-gray-400 hover:text-white text-sm transition-colors duration-200"
+                            >
+                                Terms of Service
+                            </a>
+                            <a
+                                href="#"
+                                className="text-gray-400 hover:text-white text-sm transition-colors duration-200"
+                            >
+                                Support
+                            </a>
+                        </div>
                     </div>
                 </div>
             </div>
