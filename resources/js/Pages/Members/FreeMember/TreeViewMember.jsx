@@ -204,11 +204,50 @@ export default function TreeViewMember({ auth, memberType }) {
             <Head title="Tree View" />
 
             <style jsx>{`
+                /* Simple and clean tree view styles */
+                .org-chart-wrapper {
+                    width: 80vw;
+                    overflow: hidden;
+                    border-radius: 8px;
+                }
+
                 .org-chart-container {
-                    position: relative;
-                    min-height: 400px;
-                    padding: 20px;
+                    width: 100%;
+                    height: 500px;
                     overflow: auto;
+                    border: 1px solid #e5e7eb;
+                    border-radius: 8px;
+                    background: #fafafa;
+                }
+
+                .org-tree-container {
+                    // width: 100%;
+                    min-width: 800px;
+                    // max-width: 80vw;
+                    width: 1700px;
+                    overflow-x: scroll;
+                    overflow-y: scroll;
+                    padding: 20px;
+                    display: flex;
+                    justify-content: center;
+                    align-items: flex-start;
+                }
+
+                .org-tree-container .org-tree-node {
+                    display: flex;
+                    flex-direction: column;
+                    align-items: center;
+                    min-width: 120px;
+                    max-width: 150px;
+                    flex-shrink: 0;
+                }
+
+                .org-tree-container .org-tree-children {
+                    display: flex;
+                    justify-content: center;
+                    gap: 15px;
+                    margin-top: 20px;
+                    width: 100%;
                 }
 
                 .custom-node {
@@ -216,28 +255,30 @@ export default function TreeViewMember({ auth, memberType }) {
                     justify-content: center;
                 }
 
-                /* Override react-organizational-chart styles */
-                .org-tree-container {
-                    max-width: 100%;
-                    overflow-x: auto;
+                /* Simple scrollbar styling */
+                .org-chart-container::-webkit-scrollbar {
+                    width: 8px;
+                    height: 8px;
                 }
 
-                .org-tree-container .org-tree-node {
-                    display: flex;
-                    flex-direction: column;
-                    align-items: center;
+                .org-chart-container::-webkit-scrollbar-track {
+                    background: #f1f1f1;
+                    border-radius: 4px;
                 }
 
-                .org-tree-container .org-tree-children {
-                    display: flex;
-                    justify-content: center;
-                    gap: 20px;
+                .org-chart-container::-webkit-scrollbar-thumb {
+                    background: #c1c1c1;
+                    border-radius: 4px;
+                }
+
+                .org-chart-container::-webkit-scrollbar-thumb:hover {
+                    background: #a1a1a1;
                 }
             `}</style>
 
             <div>
                 {/* Breadcrumb */}
-                <Breadcrumb
+                {/* <Breadcrumb
                     title="Referral Tree View"
                     links={["Home", "Tree View"]}
                     icon={
@@ -255,7 +296,7 @@ export default function TreeViewMember({ auth, memberType }) {
                             />
                         </svg>
                     }
-                />
+                /> */}
 
                 {/* Main Content */}
                 <div className="p-3 sm:p-4 lg:p-6">
@@ -272,16 +313,21 @@ export default function TreeViewMember({ auth, memberType }) {
 
                     {/* Tree Map Container */}
                     <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-4 sm:p-6">
-                        <div className="org-chart-container">
-                            <div className="org-tree-container">
-                                <Tree
-                                    lineWidth="2px"
-                                    lineColor="#6b7280"
-                                    lineBorderRadius="10px"
-                                    nodePadding="20px"
-                                >
-                                    {renderTreeNode(orgChartData)}
-                                </Tree>
+                        <div className="w-full">
+                            <div className="org-chart-wrapper">
+                                <div className="org-chart-container">
+                                    <div className="org-tree-container">
+                                        <Tree
+                                            lineWidth="2px"
+                                            lineColor="#6b7280"
+                                            lineBorderRadius="10px"
+                                            nodePadding="20px"
+                                            orientation="vertical"
+                                        >
+                                            {renderTreeNode(orgChartData)}
+                                        </Tree>
+                                    </div>
+                                </div>
                             </div>
                         </div>
                     </div>
