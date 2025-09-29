@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import { Head } from "@inertiajs/react";
 import MemberDashboardLayout from "../Components/MemberDashboardLayout";
 import Breadcrumb from "../Components/Breadcrumb";
@@ -129,6 +129,9 @@ export default function TreeViewMember({ auth, memberType }) {
     // State for managing expanded/collapsed nodes
     const [expandedNodes, setExpandedNodes] = useState(new Set());
 
+    // Ref for the tree container
+    const treeContainerRef = useRef(null);
+
     const toggleNode = (nodeId) => {
         setExpandedNodes((prev) => {
             const newSet = new Set(prev);
@@ -140,6 +143,52 @@ export default function TreeViewMember({ auth, memberType }) {
             return newSet;
         });
     };
+
+    // Center the tree view on component mount
+    useEffect(() => {
+        const centerTree = () => {
+            if (treeContainerRef.current) {
+                // Calculate center position: (container width - viewport width) / 2
+                const containerWidth = 1700; // Fixed width we set
+                const viewportWidth = treeContainerRef.current.clientWidth;
+                const centerPosition = Math.max(
+                    0,
+                    (containerWidth - viewportWidth) / 2
+                );
+
+                console.log("Centering tree:", {
+                    containerWidth,
+                    viewportWidth,
+                    centerPosition,
+                    currentScrollLeft: treeContainerRef.current.scrollLeft,
+                });
+
+                // Scroll to center position
+                treeContainerRef.current.scrollLeft = centerPosition;
+
+                // Mark as scrolled to prevent CSS override
+                treeContainerRef.current.setAttribute("data-scrolled", "true");
+            }
+        };
+
+        // Center immediately
+        centerTree();
+
+        // Also center after delays to ensure DOM is fully rendered
+        const timeoutId1 = setTimeout(centerTree, 100);
+        const timeoutId2 = setTimeout(centerTree, 500);
+        const timeoutId3 = setTimeout(centerTree, 1000);
+
+        // Add window resize listener
+        window.addEventListener("resize", centerTree);
+
+        return () => {
+            clearTimeout(timeoutId1);
+            clearTimeout(timeoutId2);
+            clearTimeout(timeoutId3);
+            window.removeEventListener("resize", centerTree);
+        };
+    }, []);
 
     // Custom node component for react-organizational-chart
     const CustomNode = ({ node }) => {
@@ -221,9 +270,7 @@ export default function TreeViewMember({ auth, memberType }) {
                 }
 
                 .org-tree-container {
-                    // width: 100%;
                     min-width: 800px;
-                    // max-width: 80vw;
                     width: 1700px;
                     overflow-x: scroll;
                     overflow-y: scroll;
@@ -231,6 +278,14 @@ export default function TreeViewMember({ auth, memberType }) {
                     display: flex;
                     justify-content: center;
                     align-items: flex-start;
+                    scroll-behavior: smooth;
+                    /* Force initial scroll position to center */
+                    scroll-snap-type: x mandatory;
+                }
+
+                /* Force initial scroll to center */
+                .org-tree-container:not([data-scrolled]) {
+                    scroll-left: 50%;
                 }
 
                 .org-tree-container .org-tree-node {
@@ -300,23 +355,15 @@ export default function TreeViewMember({ auth, memberType }) {
 
                 {/* Main Content */}
                 <div className="p-3 sm:p-4 lg:p-6 max-w-[1200px] sm:max-w-[1400px] lg:max-w-[1500px] overflow-x-scroll overflow-y-scroll">
-                    {/* Header */}
-                    <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-4 sm:p-6 mb-6">
-                        <h1 className="text-2xl font-bold text-gray-900 mb-2">
-                            Referral Network Tree
-                        </h1>
-                        <p className="text-gray-600">
-                            Visual representation of your referral network
-                            hierarchy
-                        </p>
-                    </div>
-
                     {/* Tree Map Container */}
                     <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-4 sm:p-6">
                         <div className="w-full overflow-hidden">
                             <div className="org-chart-wrapper">
                                 <div className="org-chart-container">
-                                    <div className="org-tree-container">
+                                    <div
+                                        className="org-tree-container"
+                                        ref={treeContainerRef}
+                                    >
                                         <Tree
                                             lineWidth="2px"
                                             lineColor="#6b7280"
