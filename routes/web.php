@@ -814,6 +814,9 @@ Route::get('/member-f-dashboard', [MemberDashboardController::class, 'freeMember
 // Paid Member Dashboard Route
 Route::get('/member-p-dashboard', [MemberDashboardController::class, 'paidMemberDashboard'])->name('member.p.dashboard');
 
+// Member Badges Route (Paid Members Only)
+Route::get('/member-badges', [MemberDashboardController::class, 'memberBadges'])->name('member.badges');
+
 // Support Routes
 Route::get('/support', [SupportController::class, 'index'])->name('support');
 
