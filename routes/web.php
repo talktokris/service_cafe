@@ -10,6 +10,7 @@ use App\Http\Controllers\TransactionController;
 use App\Http\Controllers\MemberOrderController;
 use App\Http\Controllers\ShareReferralController;
 use App\Http\Controllers\TreeViewController;
+use App\Http\Controllers\CronController;
 use App\Models\User;
 use Illuminate\Foundation\Application;
 use Illuminate\Support\Facades\Route;
@@ -909,5 +910,9 @@ Route::middleware(['auth'])->group(function () {
 // Registration with referral code support
 Route::get('/join/{referral_code}', [RegisterController::class, 'showRegistrationForm'])->name('register.with.referral');
 Route::post('/join/{referral_code}', [RegisterController::class, 'register'])->name('register.submit');
+
+// Cron Routes
+Route::get('/cron/activate-member-package', [CronController::class, 'activateMemberPackage'])->name('cron.activate.member.package');
+Route::get('/api/latest-active-package', [CronController::class, 'getLatestActivePackage'])->name('api.latest.active.package');
 
 require __DIR__.'/auth.php';

@@ -37,6 +37,9 @@ class User extends Authenticatable
         'branchId',
         'createUserId',
         'activeStatus',
+        'rankFindStatus',
+        'promotionRunStatus',
+        'referral_count',
         'deleteStatus',
     ];
 
@@ -368,5 +371,101 @@ class User extends Authenticatable
     public function getCurrentWalletBalanceAttribute()
     {
         return $this->getCurrentWalletBalance();
+    }
+
+    /**
+     * Get rank find status text
+     */
+    public function getRankFindStatusTextAttribute(): string
+    {
+        return match($this->rankFindStatus) {
+            0 => 'Rank Find Not Done',
+            1 => 'Rank Find Done',
+            default => 'Unknown'
+        };
+    }
+
+    /**
+     * Get promotion run status text
+     */
+    public function getPromotionRunStatusTextAttribute(): string
+    {
+        return match($this->promotionRunStatus) {
+            0 => 'Promotion Run Not Done',
+            1 => 'Promotion Run Done',
+            default => 'Unknown'
+        };
+    }
+
+    /**
+     * Check if rank find is done
+     */
+    public function isRankFindDone(): bool
+    {
+        return $this->rankFindStatus === 1;
+    }
+
+    /**
+     * Check if promotion run is done
+     */
+    public function isPromotionRunDone(): bool
+    {
+        return $this->promotionRunStatus === 1;
+    }
+
+    /**
+     * Mark rank find as done
+     */
+    public function markRankFindDone(): void
+    {
+        $this->update(['rankFindStatus' => 1]);
+    }
+
+    /**
+     * Mark promotion run as done
+     */
+    public function markPromotionRunDone(): void
+    {
+        $this->update(['promotionRunStatus' => 1]);
+    }
+
+    /**
+     * Get referral count text
+     */
+    public function getReferralCountTextAttribute(): string
+    {
+        return $this->referral_count . ' referrals';
+    }
+
+    /**
+     * Check if user has referrals
+     */
+    public function hasReferrals(): bool
+    {
+        return $this->referral_count > 0;
+    }
+
+    /**
+     * Increment referral count
+     */
+    public function incrementReferralCount(): void
+    {
+        $this->increment('referral_count');
+    }
+
+    /**
+     * Decrement referral count
+     */
+    public function decrementReferralCount(): void
+    {
+        $this->decrement('referral_count');
+    }
+
+    /**
+     * Reset referral count to zero
+     */
+    public function resetReferralCount(): void
+    {
+        $this->update(['referral_count' => 0]);
     }
 }
