@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use App\Models\User;
 use Inertia\Inertia;
 
 class TreeViewController extends Controller
@@ -11,7 +12,7 @@ class TreeViewController extends Controller
     /**
      * Display the tree view for members
      */
-    public function index()
+    public function index(Request $request)
     {
         $user = Auth::user();
 
@@ -23,69 +24,144 @@ class TreeViewController extends Controller
             return redirect()->route('login')->with('error', 'Access denied. This page is for members only.');
         }
 
-        // For now, we'll use dummy data. Later this can be replaced with real referral data
-        $treeData = [
-            'name' => 'Francisco Haas',
-            'role' => 'Job Role Here',
-            'level' => 1,
-            'children' => [
-                [
-                    'name' => 'Emmitt Wilkinson',
-                    'role' => 'Job Role Here',
-                    'level' => 2,
-                    'children' => [
-                        [
-                            'name' => 'Erick Clay',
-                            'role' => 'Job Role Here',
-                            'level' => 3,
-                            'children' => [
-                                ['name' => 'Willie Page', 'role' => 'Job Role Here', 'level' => 4, 'children' => []],
-                                ['name' => 'Bud Bowen', 'role' => 'Job Role Here', 'level' => 4, 'children' => []]
-                            ]
-                        ],
-                        [
-                            'name' => 'Duncan Carrol',
-                            'role' => 'Job Role Here',
-                            'level' => 3,
-                            'children' => [
-                                ['name' => 'Gabrielle Holden', 'role' => 'Job Role Here', 'level' => 4, 'children' => []],
-                                ['name' => 'Elena Stafford', 'role' => 'Job Role Here', 'level' => 4, 'children' => []]
-                            ]
-                        ]
-                    ]
-                ],
-                [
-                    'name' => 'Truman Freeman',
-                    'role' => 'Job Role Here',
-                    'level' => 2,
-                    'children' => [
-                        [
-                            'name' => 'Lamont Cummings',
-                            'role' => 'Job Role Here',
-                            'level' => 3,
-                            'children' => [
-                                ['name' => 'Kory Keller', 'role' => 'Job Role Here', 'level' => 4, 'children' => []],
-                                ['name' => 'Vicky Pham', 'role' => 'Job Role Here', 'level' => 4, 'children' => []]
-                            ]
-                        ],
-                        [
-                            'name' => 'Andre Scott',
-                            'role' => 'Job Role Here',
-                            'level' => 3,
-                            'children' => [
-                                ['name' => 'Noah Schmitt', 'role' => 'Job Role Here', 'level' => 4, 'children' => []],
-                                ['name' => 'Nick Hobbs', 'role' => 'Job Role Here', 'level' => 4, 'children' => []]
-                            ]
-                        ]
-                    ]
-                ]
-            ]
-        ];
+        // Get the starting user ID (from query param or default to logged-in user)
+        $startUserId = $request->input('start_user_id', $user->id);
+        
+        // Ensure user can't view tree above their own level (security check)
+        if (!$this->canViewUser($user->id, $startUserId)) {
+            $startUserId = $user->id;
+        }
+
+        // Build tree data starting from specified user (5 levels deep)
+        $treeData = $this->buildReferralTree($startUserId, 1, 5);
+        
+        // Get parent information for upward navigation
+        $startUser = User::find($startUserId);
+        $parentInfo = null;
+        if ($startUser && $startUser->referred_by && $startUser->referred_by != $user->id) {
+            $parentUser = User::find($startUser->referred_by);
+            if ($parentUser && $this->canViewUser($user->id, $parentUser->id)) {
+                $parentInfo = [
+                    'id' => $parentUser->id,
+                    'name' => $parentUser->name,
+                    'can_navigate_up' => true
+                ];
+            }
+        }
 
         return Inertia::render('Members/' . ($user->member_type === 'free' ? 'FreeMember' : 'PaidMember') . '/TreeViewMember', [
             'auth' => ['user' => $user],
             'memberType' => $user->member_type,
-            'treeData' => $treeData
+            'treeData' => $treeData,
+            'currentRootUserId' => (int)$startUserId,
+            'parentInfo' => $parentInfo,
+            'loggedInUserId' => $user->id
+        ]);
+    }
+    
+    /**
+     * Check if user can view another user's tree (must be in their downline or themselves)
+     */
+    private function canViewUser($loggedInUserId, $targetUserId)
+    {
+        if ($loggedInUserId == $targetUserId) {
+            return true;
+        }
+        
+        // Check if target user is in the downline of logged-in user
+        return $this->isInDownline($loggedInUserId, $targetUserId);
+    }
+    
+    /**
+     * Check if target user is in the downline of source user
+     */
+    private function isInDownline($sourceUserId, $targetUserId, $maxDepth = 100)
+    {
+        $currentUserId = $targetUserId;
+        $depth = 0;
+        
+        while ($currentUserId && $depth < $maxDepth) {
+            $user = User::find($currentUserId);
+            if (!$user || !$user->referred_by) {
+                return false;
+            }
+            
+            if ($user->referred_by == $sourceUserId) {
+                return true;
+            }
+            
+            $currentUserId = $user->referred_by;
+            $depth++;
+        }
+        
+        return false;
+    }
+
+    /**
+     * Build referral tree recursively up to specified levels
+     */
+    private function buildReferralTree($userId, $currentLevel, $maxLevels)
+    {
+        $user = User::find($userId);
+
+        if (!$user) {
+            return null;
+        }
+
+        $treeNode = [
+            'id' => $user->id,
+            'name' => $user->name ?? 'Unknown',
+            'email' => $user->email ?? '',
+            'phone' => $user->phone ?? '',
+            'member_type' => $user->member_type ?? 'free',
+            'referral_code' => $user->referral_code ?? '',
+            'level' => $currentLevel,
+            'children' => [],
+            'hasMoreLevels' => false
+        ];
+
+        // If we haven't reached max levels, fetch children
+        if ($currentLevel < $maxLevels) {
+            $children = User::where('referred_by', $userId)
+                ->orderBy('id', 'asc')
+                ->get();
+
+            foreach ($children as $child) {
+                $childNode = $this->buildReferralTree($child->id, $currentLevel + 1, $maxLevels);
+                if ($childNode) {
+                    $treeNode['children'][] = $childNode;
+                }
+            }
+        } else {
+            // Check if there are more levels beyond max
+            $hasChildren = User::where('referred_by', $userId)->exists();
+            $treeNode['hasMoreLevels'] = $hasChildren;
+        }
+
+        return $treeNode;
+    }
+
+    /**
+     * Fetch children for a specific user (API endpoint for dynamic loading)
+     */
+    public function getChildren(Request $request)
+    {
+        $userId = $request->input('user_id');
+        $currentLevel = $request->input('current_level', 1);
+        $maxLevels = 5; // Load 5 more levels from this point
+
+        if (!$userId) {
+            return response()->json([
+                'success' => false,
+                'message' => 'User ID is required'
+            ], 400);
+        }
+
+        $treeData = $this->buildReferralTree($userId, $currentLevel, $currentLevel + $maxLevels - 1);
+
+        return response()->json([
+            'success' => true,
+            'data' => $treeData
         ]);
     }
 }

@@ -822,6 +822,7 @@ Route::get('/share-referral', [ShareReferralController::class, 'index'])->name('
 
 // Tree View Routes
 Route::get('/tree-view', [TreeViewController::class, 'index'])->name('tree.view');
+Route::post('/api/tree-view/get-children', [TreeViewController::class, 'getChildren'])->name('tree.view.get.children');
 
 // Transactions Route (Paid Members Only)
 Route::get('/transactions', [TransactionController::class, 'paidMemberTransactions'])->name('transactions');
