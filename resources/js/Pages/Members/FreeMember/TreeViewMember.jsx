@@ -12,28 +12,26 @@ export default function TreeViewMember({
     parentInfo,
     loggedInUserId,
 }) {
-    const getLevelColor = (level) => {
-        switch (level) {
-            case 1:
-                return "bg-red-500";
-            case 2:
-                return "bg-blue-500";
-            case 3:
-                return "bg-orange-500";
-            case 4:
-                return "bg-green-500";
-            case 5:
-                return "bg-purple-500";
-            default:
-                return "bg-gray-500";
+    const getBoxColor = (node) => {
+        // Check if user is active (paid and activeStatus = 1)
+        const isActive = node.member_type === "paid" && node.activeStatus === 1;
+
+        if (!isActive) {
+            // Inactive users - faded gray
+            return "bg-gray-300 opacity-60";
         }
+
+        // Active users - attractive gradient color
+        return "bg-gradient-to-br from-teal-500 to-cyan-600";
+    };
+
+    const getBadgeColor = (badgeInfo) => {
+        if (!badgeInfo) return null;
+        return badgeInfo.color;
     };
 
     // State for managing expanded/collapsed nodes
     const [expandedNodes, setExpandedNodes] = useState(new Set());
-
-    // Ref for the tree container
-    const treeContainerRef = useRef(null);
 
     const toggleNode = (nodeId) => {
         setExpandedNodes((prev) => {
@@ -73,57 +71,100 @@ export default function TreeViewMember({
         });
     };
 
-    // Center the tree view on component mount
-    useEffect(() => {
-        const centerTree = () => {
-            if (treeContainerRef.current) {
-                const containerWidth = 1700;
-                const viewportWidth = treeContainerRef.current.clientWidth;
-                const centerPosition = Math.max(
-                    0,
-                    (containerWidth - viewportWidth) / 2
-                );
-
-                treeContainerRef.current.scrollLeft = centerPosition;
-                treeContainerRef.current.setAttribute("data-scrolled", "true");
-            }
-        };
-
-        centerTree();
-        const timeoutId1 = setTimeout(centerTree, 100);
-        const timeoutId2 = setTimeout(centerTree, 500);
-        const timeoutId3 = setTimeout(centerTree, 1000);
-
-        window.addEventListener("resize", centerTree);
-
-        return () => {
-            clearTimeout(timeoutId1);
-            clearTimeout(timeoutId2);
-            clearTimeout(timeoutId3);
-            window.removeEventListener("resize", centerTree);
-        };
-    }, []);
+    // No centering needed since width is 100%
 
     // Custom node component
     const CustomNode = ({ node }) => {
         const hasChildren = node.children && node.children.length > 0;
         const isExpanded = expandedNodes.has(node.id);
+        const isActive = node.member_type === "paid" && node.activeStatus === 1;
 
         return (
             <div className="custom-node">
                 <div
-                    className={`${getLevelColor(
-                        node.level
-                    )} text-white px-2 py-1.5 rounded shadow-sm min-w-[100px] text-center border border-white relative`}
+                    className={`${getBoxColor(
+                        node
+                    )} text-white px-3 py-2 rounded-lg shadow-md min-w-[160px] text-left border border-white relative`}
                 >
-                    <div className="font-semibold text-xs leading-tight">
+                    {/* Badge Icon on Left Side */}
+                    {node.highestBadge && (
+                        <div
+                            className={`absolute -left-3 top-1/2 transform -translate-y-1/2 w-7 h-7 rounded-full bg-gradient-to-br ${node.highestBadge.color} border-2 border-white shadow-lg flex items-center justify-center`}
+                            title={node.highestBadge.name}
+                        >
+                            <span className="text-white text-[10px] font-bold">
+                                {node.highestBadge.initial}
+                            </span>
+                        </div>
+                    )}
+
+                    <div
+                        className={`font-bold text-sm leading-tight mb-1 ml-5 ${
+                            !isActive ? "text-gray-600" : ""
+                        }`}
+                    >
                         {node.name}
                     </div>
-                    <div className="text-[10px] opacity-90 leading-tight">
-                        {node.member_type === "paid" ? "Paid" : "Free"}
+                    <div
+                        className={`text-xs font-medium leading-tight mb-2 ml-5 ${
+                            !isActive
+                                ? "text-gray-600 opacity-80"
+                                : "text-white opacity-90"
+                        }`}
+                    >
+                        <span className="inline-flex items-center gap-1">
+                            <svg
+                                xmlns="http://www.w3.org/2000/svg"
+                                className="h-3 w-3"
+                                fill="currentColor"
+                                viewBox="0 0 24 24"
+                            >
+                                {node.member_type === "paid" ? (
+                                    <path d="M20 4H4c-1.11 0-1.99.89-1.99 2L2 18c0 1.11.89 2 2 2h16c1.11 0 2-.89 2-2V6c0-1.11-.89-2-2-2zm0 14H4v-6h16v6zm0-10H4V6h16v2z" />
+                                ) : (
+                                    <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 15l-5-5 1.41-1.41L10 14.17l7.59-7.59L19 8l-9 9z" />
+                                )}
+                            </svg>
+                            {node.member_type === "paid" ? "Paid" : "Free"}
+                        </span>
                     </div>
-                    <div className="text-[9px] opacity-75 leading-tight">
-                        ID: {node.id}
+                    <div
+                        className={`text-[11px] leading-snug flex items-center gap-1.5 ml-5 ${
+                            !isActive
+                                ? "text-gray-700 opacity-80"
+                                : "text-white opacity-90"
+                        }`}
+                    >
+                        <svg
+                            xmlns="http://www.w3.org/2000/svg"
+                            className="h-3.5 w-3.5 flex-shrink-0"
+                            fill="currentColor"
+                            viewBox="0 0 24 24"
+                        >
+                            <path d="M6.62 10.79c1.44 2.83 3.76 5.14 6.59 6.59l2.2-2.2c.27-.27.67-.36 1.02-.24 1.12.37 2.33.57 3.57.57.55 0 1 .45 1 1V20c0 .55-.45 1-1 1-9.39 0-17-7.61-17-17 0-.55.45-1 1-1h3.5c.55 0 1 .45 1 1 0 1.25.2 2.45.57 3.57.11.35.03.74-.25 1.02l-2.2 2.2z" />
+                        </svg>
+                        <span className="truncate">
+                            {node.phone || "No phone"}
+                        </span>
+                    </div>
+                    <div
+                        className={`text-[11px] leading-snug flex items-center gap-1.5 ml-5 ${
+                            !isActive
+                                ? "text-gray-700 opacity-80"
+                                : "text-white opacity-90"
+                        }`}
+                    >
+                        <svg
+                            xmlns="http://www.w3.org/2000/svg"
+                            className="h-3.5 w-3.5 flex-shrink-0"
+                            fill="currentColor"
+                            viewBox="0 0 24 24"
+                        >
+                            <path d="M20 4H4c-1.1 0-1.99.9-1.99 2L2 18c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V6c0-1.1-.9-2-2-2zm0 4l-8 5-8-5V6l8 5 8-5v2z" />
+                        </svg>
+                        <span className="truncate">
+                            {node.email || "No email"}
+                        </span>
                     </div>
 
                     {/* Toggle button for existing children */}
@@ -200,36 +241,27 @@ export default function TreeViewMember({
                 }
 
                 .org-tree-container {
-                    min-width: 800px;
-                    width: 1700px;
-                    overflow-x: scroll;
-                    overflow-y: scroll;
+                    width: 100%;
                     padding: 20px;
                     display: flex;
                     justify-content: center;
-                    align-items: flex-start;
-                    scroll-behavior: smooth;
-                    scroll-snap-type: x mandatory;
-                }
-
-                .org-tree-container:not([data-scrolled]) {
-                    scroll-left: 50%;
+                    align-items: center;
                 }
 
                 .org-tree-container .org-tree-node {
                     display: flex;
                     flex-direction: column;
                     align-items: center;
-                    min-width: 80px;
-                    max-width: 100px;
+                    min-width: 160px;
+                    max-width: 180px;
                     flex-shrink: 0;
                 }
 
                 .org-tree-container .org-tree-children {
                     display: flex;
                     justify-content: center;
-                    gap: 10px;
-                    margin-top: 15px;
+                    gap: 15px;
+                    margin-top: 20px;
                     width: 100%;
                 }
 
@@ -354,10 +386,7 @@ export default function TreeViewMember({
                         <div className="w-full">
                             <div className="org-chart-wrapper">
                                 <div className="org-chart-container">
-                                    <div
-                                        className="org-tree-container"
-                                        ref={treeContainerRef}
-                                    >
+                                    <div className="org-tree-container">
                                         {treeData ? (
                                             <Tree
                                                 lineWidth="1px"
@@ -384,38 +413,87 @@ export default function TreeViewMember({
                     {/* Legend */}
                     <div className="mt-6 bg-white rounded-lg shadow-sm border border-gray-200 p-4 sm:p-6">
                         <h3 className="text-lg font-semibold text-gray-900 mb-4">
-                            Level Legend
+                            Legend
                         </h3>
-                        <div className="grid grid-cols-2 sm:grid-cols-5 gap-4">
+                        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-4">
                             <div className="flex items-center space-x-2">
-                                <div className="w-4 h-4 bg-red-500 rounded"></div>
+                                <div className="w-6 h-6 bg-gradient-to-br from-teal-500 to-cyan-600 rounded"></div>
                                 <span className="text-sm text-gray-700">
-                                    Level 1 (Root)
+                                    Active Member
                                 </span>
                             </div>
                             <div className="flex items-center space-x-2">
-                                <div className="w-4 h-4 bg-blue-500 rounded"></div>
+                                <div className="w-6 h-6 bg-gray-300 rounded opacity-60"></div>
                                 <span className="text-sm text-gray-700">
-                                    Level 2
+                                    Inactive Member
                                 </span>
                             </div>
-                            <div className="flex items-center space-x-2">
-                                <div className="w-4 h-4 bg-orange-500 rounded"></div>
-                                <span className="text-sm text-gray-700">
-                                    Level 3
-                                </span>
-                            </div>
-                            <div className="flex items-center space-x-2">
-                                <div className="w-4 h-4 bg-green-500 rounded"></div>
-                                <span className="text-sm text-gray-700">
-                                    Level 4
-                                </span>
-                            </div>
-                            <div className="flex items-center space-x-2">
-                                <div className="w-4 h-4 bg-purple-500 rounded"></div>
-                                <span className="text-sm text-gray-700">
-                                    Level 5
-                                </span>
+                        </div>
+                        <div className="border-t pt-4">
+                            <h4 className="text-sm font-semibold text-gray-800 mb-3">
+                                Badge Ranks (Highest to Lowest):
+                            </h4>
+                            <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
+                                <div className="flex items-center space-x-2">
+                                    <div className="w-6 h-6 bg-gradient-to-br from-indigo-500 to-indigo-700 rounded-full flex items-center justify-center border border-white shadow-sm">
+                                        <span className="text-white text-[9px] font-bold">
+                                            E
+                                        </span>
+                                    </div>
+                                    <span className="text-xs text-gray-700">
+                                        Mount Everest
+                                    </span>
+                                </div>
+                                <div className="flex items-center space-x-2">
+                                    <div className="w-6 h-6 bg-gradient-to-br from-red-500 to-red-700 rounded-full flex items-center justify-center border border-white shadow-sm">
+                                        <span className="text-white text-[9px] font-bold">
+                                            K
+                                        </span>
+                                    </div>
+                                    <span className="text-xs text-gray-700">
+                                        Kanchenjunga
+                                    </span>
+                                </div>
+                                <div className="flex items-center space-x-2">
+                                    <div className="w-6 h-6 bg-gradient-to-br from-purple-500 to-purple-700 rounded-full flex items-center justify-center border border-white shadow-sm">
+                                        <span className="text-white text-[9px] font-bold">
+                                            M
+                                        </span>
+                                    </div>
+                                    <span className="text-xs text-gray-700">
+                                        Makalu
+                                    </span>
+                                </div>
+                                <div className="flex items-center space-x-2">
+                                    <div className="w-6 h-6 bg-gradient-to-br from-yellow-500 to-yellow-700 rounded-full flex items-center justify-center border border-white shadow-sm">
+                                        <span className="text-white text-[9px] font-bold">
+                                            D
+                                        </span>
+                                    </div>
+                                    <span className="text-xs text-gray-700">
+                                        Dhaulagiri
+                                    </span>
+                                </div>
+                                <div className="flex items-center space-x-2">
+                                    <div className="w-6 h-6 bg-gradient-to-br from-green-500 to-green-700 rounded-full flex items-center justify-center border border-white shadow-sm">
+                                        <span className="text-white text-[9px] font-bold">
+                                            M
+                                        </span>
+                                    </div>
+                                    <span className="text-xs text-gray-700">
+                                        Manaslu
+                                    </span>
+                                </div>
+                                <div className="flex items-center space-x-2">
+                                    <div className="w-6 h-6 bg-gradient-to-br from-blue-500 to-blue-700 rounded-full flex items-center justify-center border border-white shadow-sm">
+                                        <span className="text-white text-[9px] font-bold">
+                                            A
+                                        </span>
+                                    </div>
+                                    <span className="text-xs text-gray-700">
+                                        Annapurna
+                                    </span>
+                                </div>
                             </div>
                         </div>
                         <div className="mt-4 grid grid-cols-1 gap-2">
