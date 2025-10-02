@@ -30,7 +30,10 @@ class Order extends Model
         'paymentReference',
         'notes',
         'paymentStatus',
-        'deleteStatus'
+        'deleteStatus',
+        'leadershipStatus',
+        'chaqueMatchStatus',
+        'taxStatus'
     ];
 
     protected $casts = [
