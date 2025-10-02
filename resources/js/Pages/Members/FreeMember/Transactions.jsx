@@ -71,6 +71,13 @@ export default function Transactions({
         });
     };
 
+    // Sort transactions by ID (latest ID to oldest ID)
+    const sortedTransactions = transactions
+        ? [...transactions].sort((a, b) => {
+              return b.id - a.id; // Descending order (latest ID first)
+          })
+        : [];
+
     return (
         <MemberDashboardLayout
             title="Transactions - Serve Cafe"
@@ -294,82 +301,93 @@ export default function Transactions({
                                 Transaction Statement
                             </h3>
                             <p className="text-xs sm:text-sm text-gray-500 mt-1">
-                                Showing {transactions?.length || 0} transactions
+                                Showing {sortedTransactions.length || 0}{" "}
+                                transactions
                             </p>
                         </div>
 
                         {/* Mobile Card View */}
                         <div className="block lg:hidden">
-                            {transactions && transactions.length > 0 ? (
+                            {sortedTransactions.length > 0 ? (
                                 <div className="divide-y divide-gray-200">
-                                    {transactions.map((transaction, index) => (
-                                        <div
-                                            key={transaction.id}
-                                            className="p-4"
-                                        >
-                                            <div className="flex justify-between items-start mb-2">
-                                                <div className="flex-1">
+                                    {sortedTransactions.map(
+                                        (transaction, index) => (
+                                            <div
+                                                key={transaction.id}
+                                                className="p-4"
+                                            >
+                                                <div className="flex justify-between items-start mb-2">
+                                                    <div className="flex-1">
+                                                        <div className="text-sm font-medium text-gray-900">
+                                                            #{transaction.id}
+                                                        </div>
+                                                        <div className="text-xs text-gray-500">
+                                                            {formatDateTime(
+                                                                transaction.transaction_date ||
+                                                                    transaction.created_at
+                                                            )}
+                                                        </div>
+                                                    </div>
+                                                    <span
+                                                        className={`inline-flex px-2 py-1 text-xs font-semibold rounded-full ${
+                                                            transaction.debit_credit ===
+                                                            1
+                                                                ? "bg-red-100 text-red-800"
+                                                                : "bg-green-100 text-green-800"
+                                                        }`}
+                                                    >
+                                                        {transaction.debit_credit ===
+                                                        1
+                                                            ? "Debit"
+                                                            : "Credit"}
+                                                    </span>
+                                                </div>
+
+                                                <div className="mb-2">
                                                     <div className="text-sm font-medium text-gray-900">
-                                                        #{transaction.id}
+                                                        {transaction.transaction_nature ||
+                                                            "Transaction"}
                                                     </div>
                                                     <div className="text-xs text-gray-500">
-                                                        {formatDateTime(
-                                                            transaction.transaction_date ||
-                                                                transaction.created_at
-                                                        )}
+                                                        {
+                                                            transaction.transaction_type
+                                                        }
                                                     </div>
+                                                    {transaction.order_id && (
+                                                        <div className="text-xs text-blue-600 font-mono mt-1">
+                                                            Order #
+                                                            {
+                                                                transaction.order_id
+                                                            }
+                                                        </div>
+                                                    )}
                                                 </div>
-                                                <span
-                                                    className={`inline-flex px-2 py-1 text-xs font-semibold rounded-full ${
-                                                        transaction.debit_credit ===
-                                                        1
-                                                            ? "bg-red-100 text-red-800"
-                                                            : "bg-green-100 text-green-800"
-                                                    }`}
-                                                >
-                                                    {transaction.debit_credit ===
-                                                    1
-                                                        ? "Debit"
-                                                        : "Credit"}
-                                                </span>
-                                            </div>
 
-                                            <div className="mb-2">
-                                                <div className="text-sm font-medium text-gray-900">
-                                                    {transaction.transaction_nature ||
-                                                        "Transaction"}
-                                                </div>
-                                                <div className="text-xs text-gray-500">
-                                                    {
-                                                        transaction.transaction_type
-                                                    }
-                                                </div>
-                                            </div>
-
-                                            <div className="grid grid-cols-2 gap-4 text-sm">
-                                                <div>
-                                                    <span className="text-gray-500">
-                                                        Amount:
-                                                    </span>
-                                                    <div className="font-medium">
-                                                        {formatCurrency(
-                                                            transaction.amount
-                                                        )}
+                                                <div className="grid grid-cols-2 gap-4 text-sm">
+                                                    <div>
+                                                        <span className="text-gray-500">
+                                                            Amount:
+                                                        </span>
+                                                        <div className="font-medium">
+                                                            {formatCurrency(
+                                                                transaction.amount
+                                                            )}
+                                                        </div>
                                                     </div>
-                                                </div>
-                                                <div>
-                                                    <span className="text-gray-500">
-                                                        Balance:
-                                                    </span>
-                                                    <div className="font-bold">
-                                                        {formatCurrency(
-                                                            transaction.balance
-                                                        )}
+                                                    <div>
+                                                        <span className="text-gray-500">
+                                                            Balance:
+                                                        </span>
+                                                        <div className="font-bold">
+                                                            {formatCurrency(
+                                                                transaction.balance
+                                                            )}
+                                                        </div>
                                                     </div>
                                                 </div>
                                             </div>
-                                        </div>
-                                    ))}
+                                        )
+                                    )}
                                 </div>
                             ) : (
                                 <div className="p-8 text-center text-sm text-gray-500">
@@ -390,6 +408,9 @@ export default function Transactions({
                                             Transaction ID
                                         </th>
                                         <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                            Order ID
+                                        </th>
+                                        <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                                             Description
                                         </th>
                                         <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
@@ -407,8 +428,8 @@ export default function Transactions({
                                     </tr>
                                 </thead>
                                 <tbody className="bg-white divide-y divide-gray-200">
-                                    {transactions && transactions.length > 0 ? (
-                                        transactions.map(
+                                    {sortedTransactions.length > 0 ? (
+                                        sortedTransactions.map(
                                             (transaction, index) => (
                                                 <tr
                                                     key={transaction.id}
@@ -426,6 +447,20 @@ export default function Transactions({
                                                     </td>
                                                     <td className="px-6 py-4 whitespace-nowrap text-sm font-mono text-gray-900">
                                                         #{transaction.id}
+                                                    </td>
+                                                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+                                                        {transaction.order_id ? (
+                                                            <span className="text-blue-600 font-mono">
+                                                                #
+                                                                {
+                                                                    transaction.order_id
+                                                                }
+                                                            </span>
+                                                        ) : (
+                                                            <span className="text-gray-400">
+                                                                -
+                                                            </span>
+                                                        )}
                                                     </td>
                                                     <td className="px-6 py-4 text-sm text-gray-900">
                                                         <div>
@@ -482,7 +517,7 @@ export default function Transactions({
                                     ) : (
                                         <tr>
                                             <td
-                                                colSpan="7"
+                                                colSpan="8"
                                                 className="px-6 py-12 text-center text-sm text-gray-500"
                                             >
                                                 No transactions found

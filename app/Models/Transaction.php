@@ -15,6 +15,7 @@ class Transaction extends Model
         'transaction_from_id',
         'transaction_to_id',
         'trigger_id',
+        'order_id',
         'created_user_id',
         'amount',
         'transaction_date',
@@ -58,6 +59,14 @@ class Transaction extends Model
     public function createdUser(): BelongsTo
     {
         return $this->belongsTo(User::class, 'created_user_id');
+    }
+
+    /**
+     * Get the order associated with the transaction
+     */
+    public function order(): BelongsTo
+    {
+        return $this->belongsTo(Order::class, 'order_id');
     }
 
     /**

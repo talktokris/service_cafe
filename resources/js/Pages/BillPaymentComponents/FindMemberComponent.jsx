@@ -13,7 +13,6 @@ export default function FindMemberComponent({ onClose, onSelectMember }) {
 
     // Fetch members on component mount
     useEffect(() => {
-        console.log("FindMemberComponent mounted, fetching members...");
         fetchMembers();
     }, []);
 
@@ -33,6 +32,8 @@ export default function FindMemberComponent({ onClose, onSelectMember }) {
                         member.first_name
                             .toLowerCase()
                             .includes(searchLower)) ||
+                    (member.name &&
+                        member.name.toLowerCase().includes(searchLower)) ||
                     (member.last_name &&
                         member.last_name.toLowerCase().includes(searchLower)) ||
                     (member.email &&
@@ -52,7 +53,6 @@ export default function FindMemberComponent({ onClose, onSelectMember }) {
                 document
                     .querySelector('meta[name="csrf-token"]')
                     ?.getAttribute("content") || "";
-            console.log("CSRF Token:", csrfToken);
 
             const response = await fetch("/api/members", {
                 method: "GET",
@@ -66,21 +66,13 @@ export default function FindMemberComponent({ onClose, onSelectMember }) {
 
             if (response.ok) {
                 const data = await response.json();
-                console.log("Members fetched successfully:", data);
                 setMembers(data.members || []);
                 setFilteredMembers(data.members || []);
             } else {
-                console.error(
-                    "Failed to fetch members. Status:",
-                    response.status
-                );
-                const errorData = await response.text();
-                console.error("Error response:", errorData);
                 setMembers([]);
                 setFilteredMembers([]);
             }
         } catch (error) {
-            console.error("Error fetching members:", error);
             setMembers([]);
             setFilteredMembers([]);
         } finally {
@@ -140,7 +132,7 @@ export default function FindMemberComponent({ onClose, onSelectMember }) {
                             placeholder="Search by referral code, name, or email..."
                         />
                         <svg
-                            className="w-5 h-5 absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400"
+                            className="w-5 h-5 absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 pointer-events-none"
                             fill="none"
                             stroke="currentColor"
                             viewBox="0 0 24 24"
@@ -190,18 +182,32 @@ export default function FindMemberComponent({ onClose, onSelectMember }) {
                             {filteredMembers.map((member) => (
                                 <div
                                     key={member.id}
-                                    className={`border rounded-lg p-4 cursor-pointer transition-all ${
+                                    className={`border rounded-lg p-4 cursor-pointer transition-all border-l-4 ${
                                         selectedMember?.id === member.id
                                             ? "border-blue-500 bg-blue-50 ring-2 ring-blue-200"
-                                            : "border-gray-200 hover:border-gray-300 hover:shadow-md"
+                                            : member.member_type === "paid"
+                                            ? "border-l-emerald-500 bg-emerald-50 hover:bg-emerald-100 border-gray-200 hover:border-emerald-300 hover:shadow-md"
+                                            : "border-l-gray-300 bg-gray-50 hover:bg-gray-100 opacity-75 border-gray-200 hover:border-gray-300 hover:shadow-sm"
                                     }`}
                                     onClick={() => handleSelectMember(member)}
                                 >
                                     <div className="flex items-start justify-between mb-3">
                                         <div className="flex items-center">
-                                            <div className="w-10 h-10 bg-purple-100 rounded-full flex items-center justify-center">
+                                            <div
+                                                className={`w-10 h-10 rounded-full flex items-center justify-center ${
+                                                    member.member_type ===
+                                                    "paid"
+                                                        ? "bg-emerald-100"
+                                                        : "bg-gray-100"
+                                                }`}
+                                            >
                                                 <svg
-                                                    className="w-6 h-6 text-purple-600"
+                                                    className={`w-6 h-6 ${
+                                                        member.member_type ===
+                                                        "paid"
+                                                            ? "text-emerald-600"
+                                                            : "text-gray-600"
+                                                    }`}
                                                     fill="none"
                                                     stroke="currentColor"
                                                     viewBox="0 0 24 24"
@@ -215,10 +221,32 @@ export default function FindMemberComponent({ onClose, onSelectMember }) {
                                                 </svg>
                                             </div>
                                             <div className="ml-3">
-                                                <h3 className="font-semibold text-gray-900">
-                                                    {member.first_name}{" "}
-                                                    {member.last_name}
-                                                </h3>
+                                                <div className="flex items-center">
+                                                    <h3
+                                                        className={`font-semibold ${
+                                                            member.member_type ===
+                                                            "paid"
+                                                                ? "text-emerald-900"
+                                                                : "text-gray-700"
+                                                        }`}
+                                                    >
+                                                        {member.name ||
+                                                            `${member.first_name} ${member.last_name}`.trim()}
+                                                    </h3>
+                                                    <span
+                                                        className={`ml-2 inline-flex items-center px-2 py-1 rounded-full text-xs font-medium ${
+                                                            member.member_type ===
+                                                            "paid"
+                                                                ? "bg-emerald-100 text-emerald-800"
+                                                                : "bg-gray-200 text-gray-600"
+                                                        }`}
+                                                    >
+                                                        {member.member_type ===
+                                                        "paid"
+                                                            ? "💎 Paid"
+                                                            : "🆓 Free"}
+                                                    </span>
+                                                </div>
                                                 <p className="text-sm text-gray-500">
                                                     {member.referral_code}
                                                 </p>
@@ -272,8 +300,20 @@ export default function FindMemberComponent({ onClose, onSelectMember }) {
                                             <span className="text-gray-500">
                                                 Member Type:
                                             </span>
-                                            <span className="font-medium text-green-600">
-                                                {member.member_type || "N/A"}
+                                            <span
+                                                className={`font-medium ${
+                                                    member.member_type ===
+                                                    "paid"
+                                                        ? "text-emerald-600"
+                                                        : "text-gray-600"
+                                                }`}
+                                            >
+                                                {member.member_type === "paid"
+                                                    ? "💎 Paid Member"
+                                                    : member.member_type ===
+                                                      "free"
+                                                    ? "🆓 Free Member"
+                                                    : "N/A"}
                                             </span>
                                         </div>
                                     </div>

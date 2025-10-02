@@ -1,4 +1,5 @@
 import React from "react";
+import { Link } from "@inertiajs/react";
 
 export default function MemberFooter() {
     return (
@@ -29,25 +30,25 @@ export default function MemberFooter() {
                     {/* Right side - Navigation Links */}
                     <div className="flex flex-col sm:flex-row items-center space-y-2 sm:space-y-0 sm:space-x-6">
                         {/* Navigation Links */}
-                        <div className="flex flex-wrap justify-center items-center space-x-4 sm:space-x-6">
-                            <a
-                                href="#"
-                                className="text-gray-400 hover:text-white text-sm transition-colors duration-200"
+                        <div className="flex flex-wrap justify-center items-center space-x-3 sm:space-x-6">
+                            <Link
+                                href="/privacy-policy"
+                                className="text-gray-400 hover:text-white text-xs sm:text-sm transition-colors duration-200 hover:underline"
                             >
                                 Privacy Policy
-                            </a>
-                            <a
-                                href="#"
-                                className="text-gray-400 hover:text-white text-sm transition-colors duration-200"
+                            </Link>
+                            <Link
+                                href="/terms-of-service"
+                                className="text-gray-400 hover:text-white text-xs sm:text-sm transition-colors duration-200 hover:underline"
                             >
                                 Terms of Service
-                            </a>
-                            <a
-                                href="#"
-                                className="text-gray-400 hover:text-white text-sm transition-colors duration-200"
+                            </Link>
+                            <Link
+                                href="/support"
+                                className="text-gray-400 hover:text-white text-xs sm:text-sm transition-colors duration-200 hover:underline"
                             >
                                 Support
-                            </a>
+                            </Link>
                         </div>
                     </div>
                 </div>

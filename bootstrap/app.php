@@ -18,6 +18,12 @@ return Application::configure(basePath: dirname(__DIR__))
         $middleware->web(append: [
             \App\Http\Middleware\HandleInertiaRequests::class,
         ]);
+
+        // Register custom middleware
+        $middleware->alias([
+            'role' => \App\Http\Middleware\CheckRole::class,
+            'user.type' => \App\Http\Middleware\CheckUserType::class,
+        ]);
     })
     ->withExceptions(function (Exceptions $exceptions) {
         //

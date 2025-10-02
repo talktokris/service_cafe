@@ -24,6 +24,11 @@ class Order extends Model
         'userCommissionAmount',
         'customerType',
         'memberUserId',
+        'txn_otp',
+        'free_paid_member_status',
+        'leadership_status',
+        'chaque_match_status',
+        'tax_status',
         'orderStaredDateTime',
         'orderEndDateTime',
         'paymentType',
@@ -41,6 +46,10 @@ class Order extends Model
         'adminProfitAmount' => 'decimal:2',
         'adminNetProfitAmount' => 'decimal:2',
         'userCommissionAmount' => 'decimal:2',
+        'free_paid_member_status' => 'integer',
+        'leadership_status' => 'integer',
+        'chaque_match_status' => 'integer',
+        'tax_status' => 'integer',
         'orderStaredDateTime' => 'datetime',
         'orderEndDateTime' => 'datetime',
     ];
@@ -85,5 +94,123 @@ class Order extends Model
     public function orderItems(): HasMany
     {
         return $this->hasMany(OrderItem::class, 'orderId');
+    }
+
+    /**
+     * Get all transactions associated with this order
+     */
+    public function transactions(): HasMany
+    {
+        return $this->hasMany(Transaction::class, 'order_id');
+    }
+
+    /**
+     * Get member status as text
+     */
+    public function getMemberStatusTextAttribute(): string
+    {
+        return match($this->free_paid_member_status) {
+            0 => 'Free Member',
+            1 => 'Paid Member',
+            default => 'Unknown'
+        };
+    }
+
+    /**
+     * Check if order is for a free member
+     */
+    public function isFreeMember(): bool
+    {
+        return $this->free_paid_member_status === 0;
+    }
+
+    /**
+     * Check if order is for a paid member
+     */
+    public function isPaidMember(): bool
+    {
+        return $this->free_paid_member_status === 1;
+    }
+
+    /**
+     * Check if leadership status is done
+     */
+    public function isLeadershipStatusDone(): bool
+    {
+        return $this->leadership_status === 1;
+    }
+
+    /**
+     * Mark leadership status as done
+     */
+    public function markLeadershipStatusDone(): void
+    {
+        $this->update(['leadership_status' => 1]);
+    }
+
+    /**
+     * Check if chaque match status is done
+     */
+    public function isChaqueMatchStatusDone(): bool
+    {
+        return $this->chaque_match_status === 1;
+    }
+
+    /**
+     * Mark chaque match status as done
+     */
+    public function markChaqueMatchStatusDone(): void
+    {
+        $this->update(['chaque_match_status' => 1]);
+    }
+
+    /**
+     * Check if tax status is done
+     */
+    public function isTaxStatusDone(): bool
+    {
+        return $this->tax_status === 1;
+    }
+
+    /**
+     * Mark tax status as done
+     */
+    public function markTaxStatusDone(): void
+    {
+        $this->update(['tax_status' => 1]);
+    }
+
+    /**
+     * Check if all statuses are done
+     */
+    public function areAllStatusesDone(): bool
+    {
+        return $this->isLeadershipStatusDone() && 
+               $this->isChaqueMatchStatusDone() && 
+               $this->isTaxStatusDone();
+    }
+
+    /**
+     * Get status summary as array
+     */
+    public function getStatusSummary(): array
+    {
+        return [
+            'leadership_status' => [
+                'value' => $this->leadership_status,
+                'is_done' => $this->isLeadershipStatusDone(),
+                'text' => $this->isLeadershipStatusDone() ? 'Done' : 'Not Done'
+            ],
+            'chaque_match_status' => [
+                'value' => $this->chaque_match_status,
+                'is_done' => $this->isChaqueMatchStatusDone(),
+                'text' => $this->isChaqueMatchStatusDone() ? 'Done' : 'Not Done'
+            ],
+            'tax_status' => [
+                'value' => $this->tax_status,
+                'is_done' => $this->isTaxStatusDone(),
+                'text' => $this->isTaxStatusDone() ? 'Done' : 'Not Done'
+            ]
+        ];
     }
 }

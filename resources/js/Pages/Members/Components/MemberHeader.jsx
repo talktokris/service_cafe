@@ -88,7 +88,7 @@ export default function MemberHeader({
                                             SERVE CAFE
                                         </h1>
                                         <p
-                                            className="text-xs font-medium"
+                                            className="text-xs font-medium hidden sm:block"
                                             style={{ color: "#DE3032" }}
                                         >
                                             Member Panel
@@ -280,7 +280,7 @@ export default function MemberHeader({
                                             SERVE CAFE
                                         </h1>
                                         <p
-                                            className="text-xs font-medium"
+                                            className="text-xs font-medium hidden sm:block"
                                             style={{ color: "#DE3032" }}
                                         >
                                             Member Panel

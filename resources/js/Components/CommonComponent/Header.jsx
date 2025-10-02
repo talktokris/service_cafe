@@ -50,6 +50,22 @@ export default function Header({ user = null }) {
                                 </li>
                                 <li>
                                     <Link
+                                        href="/services"
+                                        className="text-gray-700 hover:bg-red-50 hover:text-red-600"
+                                    >
+                                        Services
+                                    </Link>
+                                </li>
+                                <li>
+                                    <Link
+                                        href="/faq"
+                                        className="text-gray-700 hover:bg-red-50 hover:text-red-600"
+                                    >
+                                        FAQ
+                                    </Link>
+                                </li>
+                                <li>
+                                    <Link
                                         href="/contact"
                                         className="text-gray-700 hover:bg-red-50 hover:text-red-600"
                                     >
@@ -92,6 +108,22 @@ export default function Header({ user = null }) {
                                     className="text-gray-700 hover:text-red-600 hover:bg-red-50 rounded-lg px-4 py-2 transition-all duration-200"
                                 >
                                     About
+                                </Link>
+                            </li>
+                            <li>
+                                <Link
+                                    href="/services"
+                                    className="text-gray-700 hover:text-red-600 hover:bg-red-50 rounded-lg px-4 py-2 transition-all duration-200"
+                                >
+                                    Services
+                                </Link>
+                            </li>
+                            <li>
+                                <Link
+                                    href="/faq"
+                                    className="text-gray-700 hover:text-red-600 hover:bg-red-50 rounded-lg px-4 py-2 transition-all duration-200"
+                                >
+                                    FAQ
                                 </Link>
                             </li>
                             <li>

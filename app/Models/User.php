@@ -83,6 +83,7 @@ class User extends Authenticatable
         return $this->belongsToMany(Role::class, 'user_roles');
     }
 
+
     /**
      * Get the branch that the user belongs to.
      */

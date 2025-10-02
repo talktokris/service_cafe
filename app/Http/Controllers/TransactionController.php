@@ -31,7 +31,8 @@ class TransactionController extends Controller
         $toDate = $request->get('to_date');
         
         // Build query for transactions where user is the recipient
-        $query = \App\Models\Transaction::where('transaction_to_id', $user->id)
+        $query = \App\Models\Transaction::with('order')
+            ->where('transaction_to_id', $user->id)
             ->orderBy('created_at', 'desc')
             ->limit(100);
         
@@ -92,7 +93,7 @@ class TransactionController extends Controller
     /**
      * Display transactions for free members
      */
-    public function freeMemberTransactions(Request $request)
+public function freeMemberTransactions(Request $request)
     {
         $user = Auth::user();
         
@@ -111,7 +112,8 @@ class TransactionController extends Controller
         $toDate = $request->get('to_date');
         
         // Build query for transactions where user is the recipient
-        $query = \App\Models\Transaction::where('transaction_to_id', $user->id)
+        $query = \App\Models\Transaction::with('order')
+            ->where('transaction_to_id', $user->id)
             ->orderBy('created_at', 'desc')
             ->limit(100);
         
@@ -203,7 +205,8 @@ class TransactionController extends Controller
         $toDate = $request->get('to_date');
         
         // Build query for transactions where user is the recipient
-        $query = \App\Models\Transaction::where('transaction_to_id', $userId)
+        $query = \App\Models\Transaction::with('order')
+            ->where('transaction_to_id', $userId)
             ->orderBy('created_at', 'desc')
             ->limit(100);
         

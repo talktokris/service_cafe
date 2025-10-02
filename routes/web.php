@@ -11,6 +11,8 @@ use App\Http\Controllers\MemberOrderController;
 use App\Http\Controllers\ShareReferralController;
 use App\Http\Controllers\TreeViewController;
 use App\Http\Controllers\CronController;
+use App\Http\Controllers\PrivacyPolicyController;
+use App\Http\Controllers\TermsOfServiceController;
 use App\Models\User;
 use Illuminate\Foundation\Application;
 use Illuminate\Support\Facades\Route;
@@ -27,6 +29,23 @@ Route::get('/', function () {
     ]);
 });
 
+// Public Pages Routes
+Route::get('/about', function () {
+    return Inertia::render('About');
+})->name('about');
+
+Route::get('/services', function () {
+    return Inertia::render('Services');
+})->name('services');
+
+Route::get('/faq', function () {
+    return Inertia::render('FAQ');
+})->name('faq');
+
+Route::get('/contact', function () {
+    return Inertia::render('Contact');
+})->name('contact');
+
 // Test Users Page
 Route::get('/test-users', [UserController::class, 'testUsers'])->name('test-users');
 
@@ -36,8 +55,8 @@ Route::post('/create-test-users', [UserController::class, 'createTestUsers'])->n
 // Dashboard with role-based routing
 Route::get('/dashboard', [DashboardController::class, 'index'])->middleware(['auth', 'verified'])->name('dashboard');
 
-// Head Office Super User Routes
-Route::middleware(['auth', 'verified'])->group(function () {
+// Head Office Super User Routes - PROTECTED
+Route::middleware(['auth', 'verified', 'user.type:headoffice', 'role:super_user,admin_user'])->group(function () {
     // Menu Management
     Route::get('/menu', function () {
         $menuItems = \App\Models\MenuItem::where('deleteStatus', 0)
@@ -492,6 +511,8 @@ Route::middleware(['auth', 'verified'])->group(function () {
     // Users Tracking
     Route::get('/users-tracking', [UserController::class, 'index'])->name('users-tracking');
     
+    
+    
     // Manage Payments
     Route::get('/manage-payments', function () {
         return Inertia::render('HeadOffice/Super/ManagePayments');
@@ -800,6 +821,109 @@ Route::get('/debug-csrf', function () {
     ]);
 });
 
+// API Routes - PROTECTED (accessible to authenticated users only)
+Route::middleware(['auth'])->group(function () {
+    // API endpoint to search for members
+    Route::get('/api/search-members', function (\Illuminate\Http\Request $request) {
+        try {
+            $term = $request->get('term');
+            
+            if (!$term || strlen($term) < 2) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Search term must be at least 2 characters',
+                    'members' => []
+                ]);
+            }
+            
+            // Simple search query - just get all members matching the search term
+            $members = \App\Models\User::where('user_type', 'member')
+                ->where(function ($query) use ($term) {
+                    $query->where('name', 'like', '%' . $term . '%')
+                        ->orWhere('email', 'like', '%' . $term . '%')
+                        ->orWhere('phone', 'like', '%' . $term . '%')
+                        ->orWhere('referral_code', 'like', '%' . $term . '%');
+                })
+                ->select(['id', 'name', 'email', 'phone', 'member_type', 'referral_code', 'created_at', 'user_type'])
+                ->orderByRaw("
+                    CASE 
+                        WHEN member_type = 'paid' THEN 1 
+                        WHEN member_type = 'free' THEN 2
+                        ELSE 3
+                    END, 
+                    name ASC
+                ")
+                ->limit(20)
+                ->get();
+            
+            return response()->json([
+                'success' => true,
+                'members' => $members,
+                'total' => $members->count(),
+                'breakdown' => [
+                    'paid' => $members->where('member_type', 'paid')->count(),
+                    'free' => $members->where('member_type', 'free')->count(),
+                ]
+            ]);
+            
+        } catch (\Exception $e) {
+            \Illuminate\Support\Facades\Log::error('Member search API error: ' . $e->getMessage());
+            
+            return response()->json([
+                'success' => false,
+                'message' => 'An error occurred while searching for members',
+                'members' => []
+            ], 500);
+        }
+    })->name('api.search-members');
+    
+    // API endpoint to get all members (for modal component)
+    Route::get('/api/members', function () {
+        try {
+            // Get all members for the modal component  
+            $members = \App\Models\User::where('user_type', 'member')
+                ->select([
+                    'id', 'name', 'email', 'phone', 'member_type', 'referral_code', 
+                    'created_at', 'user_type'
+                ])
+                ->orderByRaw("
+                    CASE 
+                        WHEN member_type = 'paid' THEN 1 
+                        WHEN member_type = 'free' THEN 2
+                        ELSE 3
+                    END, 
+                    name ASC
+                ")
+                ->get()
+                ->map(function ($member) {
+                    // Add first_name and last_name fields for compatibility with modal component
+                    $member->first_name = $member->name;
+                    $member->last_name = '';
+                    return $member;
+                });
+            
+            return response()->json([
+                'success' => true,
+                'members' => $members,
+                'total' => $members->count(),
+                'breakdown' => [
+                    'paid' => $members->where('member_type', 'paid')->count(),
+                    'free' => $members->where('member_type', 'free')->count(),
+                ]
+            ]);
+            
+        } catch (\Exception $e) {
+            \Illuminate\Support\Facades\Log::error('Members API error: ' . $e->getMessage());
+            
+            return response()->json([
+                'success' => false,
+                'message' => 'An error occurred while fetching members',
+                'members' => []
+            ], 500);
+        }
+    })->name('api.members');
+});
+
 // Simple test route to bypass any redirect issues
 Route::get('/test-login', function () {
     return Inertia::render('Auth/Login', [
@@ -808,42 +932,63 @@ Route::get('/test-login', function () {
     ]);
 });
 
-// Free Member Dashboard Route
-Route::get('/member-f-dashboard', [MemberDashboardController::class, 'freeMemberDashboard'])->name('member.f.dashboard');
+// Member Dashboard Routes - PROTECTED
+Route::middleware(['auth', 'user.type:member'])->group(function () {
+    // Free Member Dashboard Route
+    Route::get('/member-f-dashboard', [MemberDashboardController::class, 'freeMemberDashboard'])
+        ->name('member.f.dashboard');
 
-// Paid Member Dashboard Route
-Route::get('/member-p-dashboard', [MemberDashboardController::class, 'paidMemberDashboard'])->name('member.p.dashboard');
+    // Paid Member Dashboard Route
+    Route::get('/member-p-dashboard', [MemberDashboardController::class, 'paidMemberDashboard'])
+        ->name('member.p.dashboard');
+});
 
-// Member Badges Route (Paid Members Only)
-Route::get('/member-badges', [MemberDashboardController::class, 'memberBadges'])->name('member.badges');
+// Member-Only Routes - PROTECTED
+Route::middleware(['auth', 'user.type:member'])->group(function () {
+    // Member Badges Route (Paid Members Only)
+    Route::get('/member-badges', [MemberDashboardController::class, 'memberBadges'])
+        ->name('member.badges');
 
-// Support Routes
-Route::get('/support', [SupportController::class, 'index'])->name('support');
+    // Support Routes
+    Route::get('/support', [SupportController::class, 'index'])->name('support');
 
-// Share Referral Routes
-Route::get('/share-referral', [ShareReferralController::class, 'index'])->name('share.referral');
+    // Privacy Policy and Terms Routes
+    Route::get('/privacy-policy', [PrivacyPolicyController::class, 'index'])->name('privacy.policy');
+    Route::get('/terms-of-service', [TermsOfServiceController::class, 'index'])->name('terms.service');
 
-// Tree View Routes
-Route::get('/tree-view', [TreeViewController::class, 'index'])->name('tree.view');
-Route::post('/api/tree-view/get-children', [TreeViewController::class, 'getChildren'])->name('tree.view.get.children');
+    // Share Referral Routes
+    Route::get('/share-referral', [ShareReferralController::class, 'index'])->name('share.referral');
 
-// Transactions Route (Paid Members Only)
-Route::get('/transactions', [TransactionController::class, 'paidMemberTransactions'])->name('transactions');
+    // Tree View Routes
+    Route::get('/tree-view', [TreeViewController::class, 'index'])->name('tree.view');
+    Route::post('/api/tree-view/get-children', [TreeViewController::class, 'getChildren'])->name('tree.view.get.children');
 
-// Free Member Transactions Route (Free Members Only)
-Route::get('/free-transactions', [TransactionController::class, 'freeMemberTransactions'])->name('free.transactions');
+    // Transactions Route (Paid Members Only)
+    Route::get('/transactions', [TransactionController::class, 'paidMemberTransactions'])
+        ->name('transactions');
 
-// Free Member Orders Route (Free Members Only)
-Route::get('/free-orders', [MemberOrderController::class, 'freeMemberOrders'])->name('free.orders');
+    // Free Member Transactions Route (Free Members Only)
+    Route::get('/free-transactions', [TransactionController::class, 'freeMemberTransactions'])
+        ->name('free.transactions');
 
-// Paid Member Orders Route (Paid Members Only)
-Route::get('/paid-orders', [MemberOrderController::class, 'paidMemberOrders'])->name('paid.orders');
+    // Free Member Orders Route (Free Members Only)
+    Route::get('/free-orders', [MemberOrderController::class, 'freeMemberOrders'])
+        ->name('free.orders');
 
-// Member Transactions Route (Super Admin Only)
-Route::get('/member-transactions/{encodedUserId}', [TransactionController::class, 'memberTransactions'])->name('member.transactions');
+    // Paid Member Orders Route (Paid Members Only)
+    Route::get('/paid-orders', [MemberOrderController::class, 'paidMemberOrders'])
+        ->name('paid.orders');
+});
 
-// Fund Topup Route (Super Admin Only)
-Route::post('/fund-topup/{encodedUserId}', [TransactionController::class, 'fundTopup'])->name('fund.topup');
+// Member Transactions Route (Super Admin Only) - PROTECTED
+Route::get('/member-transactions/{encodedUserId}', [TransactionController::class, 'memberTransactions'])
+    ->middleware(['auth', 'user.type:headoffice', 'role:super_user,admin_user'])
+    ->name('member.transactions');
+
+// Fund Topup Route (Super Admin Only) - PROTECTED
+Route::post('/fund-topup/{encodedUserId}', [TransactionController::class, 'fundTopup'])
+    ->middleware(['auth', 'user.type:headoffice', 'role:super_user,admin_user'])
+    ->name('fund.topup');
 
 // Test dashboard route with proper Inertia response (keeping for backward compatibility)
 Route::get('/test-dashboard', function () {
