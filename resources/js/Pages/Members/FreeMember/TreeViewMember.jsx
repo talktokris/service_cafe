@@ -244,7 +244,7 @@ export default function TreeViewMember({
                     width: 100%;
                     padding: 20px;
                     display: flex;
-                    justify-content: center;
+
                     align-items: center;
                 }
 
