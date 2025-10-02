@@ -713,6 +713,84 @@ class CronController extends Controller
     }
 
     /**
+     * Cron job to process leadership chaque match
+     * Fetches orders from orders table with specific criteria
+     */
+    public function cronLeadershipChaqueMatch()
+    {
+        try {
+            // Note: The following fields need to be added to the orders table structure:
+            // - free_paid_member_status (tinyInteger)
+            // - leadership_status (tinyInteger)  
+            // - chaque_match_status (tinyInteger)
+            // - tax_status (tinyInteger)
+            
+            // Fetch orders with specified conditions
+            $orders = DB::table('orders')
+                ->where('customerType', 'member')
+                ->where('free_paid_member_status', 1)
+                ->where('paymentStatus', 1)
+                ->where('leadership_status', 0)
+                ->where('chaque_match_status', 0)
+                ->where('tax_status', 0)
+                ->where('deleteStatus', 0) // Exclude deleted records
+                ->orderBy('id', 'asc') // Order by ID ascending
+                ->get();
+
+            // Log the cron job execution
+            Log::info('Leadership Chaque Match Cron executed', [
+                'total_orders_found' => $orders->count(),
+                'execution_time' => now()->toDateTimeString()
+            ]);
+
+            // Process each order (placeholder for future processing logic)
+            $processedOrders = [];
+            foreach ($orders as $order) {
+                // Add your processing logic here
+                // For example:
+                // - Update leadership_status
+                // - Update chaque_match_status
+                // - Process commissions
+                // - Create related records
+                
+                $processedOrders[] = [
+                    'order_id' => $order->id,
+                    'customer_type' => $order->customerType,
+                    'member_user_id' => $order->memberUserId,
+                    'payment_status' => $order->paymentStatus,
+                    'order_total' => $order->sellingPrice ?? 0,
+                    'processed_at' => now()->toDateTimeString()
+                ];
+            }
+
+            return response()->json([
+                'success' => true,
+                'message' => 'Leadership Chaque Match cron job executed successfully',
+                'data' => [
+                    'total_orders_found' => $orders->count(),
+                    'processed_orders_count' => count($processedOrders),
+                    'processed_orders' => $processedOrders,
+                    'execution_timestamp' => now()->toDateTimeString()
+                ]
+            ]);
+
+        } catch (\Exception $e) {
+            // Log the error
+            Log::error('Leadership Chaque Match Cron job failed', [
+                'error' => $e->getMessage(),
+                'trace' => $e->getTraceAsString(),
+                'execution_time' => now()->toDateTimeString()
+            ]);
+
+            return response()->json([
+                'success' => false,
+                'message' => 'Leadership Chaque Match cron job failed: ' . $e->getMessage(),
+                'data' => null
+            ], 500);
+        }
+    }
+
+    /**
      * Get latest active package (API endpoint for LatestActivePackageCard.jsx)
      */
     public function getLatestActivePackage()

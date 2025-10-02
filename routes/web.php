@@ -917,6 +917,7 @@ Route::post('/join/{referral_code}', [RegisterController::class, 'register'])->n
 
 // Cron Routes
 Route::get('/cron/activate-member-package', [CronController::class, 'activateMemberPackage'])->name('cron.activate.member.package');
+Route::get('/cron/leadership-chaque-match', [CronController::class, 'cronLeadershipChaqueMatch'])->name('cron.leadership.chaque.match');
 Route::get('/api/latest-active-package', [CronController::class, 'getLatestActivePackage'])->name('api.latest.active.package');
 
 require __DIR__.'/auth.php';
