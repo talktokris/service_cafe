@@ -27,6 +27,23 @@ Route::get('/', function () {
     ]);
 });
 
+// Public Pages Routes
+Route::get('/about', function () {
+    return Inertia::render('About');
+})->name('about');
+
+Route::get('/services', function () {
+    return Inertia::render('Services');
+})->name('services');
+
+Route::get('/faq', function () {
+    return Inertia::render('FAQ');
+})->name('faq');
+
+Route::get('/contact', function () {
+    return Inertia::render('Contact');
+})->name('contact');
+
 // Test Users Page
 Route::get('/test-users', [UserController::class, 'testUsers'])->name('test-users');
 

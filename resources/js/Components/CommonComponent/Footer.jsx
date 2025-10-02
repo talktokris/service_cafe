@@ -38,10 +38,26 @@ export default function Footer() {
                             </li>
                             <li>
                                 <a
-                                    href="/subscribe"
+                                    href="/about"
                                     className="hover:text-primary transition-colors"
                                 >
-                                    Subscribe
+                                    About
+                                </a>
+                            </li>
+                            <li>
+                                <a
+                                    href="/services"
+                                    className="hover:text-primary transition-colors"
+                                >
+                                    Services
+                                </a>
+                            </li>
+                            <li>
+                                <a
+                                    href="/faq"
+                                    className="hover:text-primary transition-colors"
+                                >
+                                    FAQ
                                 </a>
                             </li>
                             <li>
@@ -55,32 +71,40 @@ export default function Footer() {
                         </ul>
                     </div>
 
-                    {/* About */}
+                    {/* Support & Help */}
                     <div>
-                        <h3 className="text-lg text-white mb-4">About</h3>
+                        <h3 className="text-lg text-white mb-4">Support & Help</h3>
                         <ul className="space-y-2">
                             <li>
                                 <a
-                                    href="/our-story"
+                                    href="/faq"
                                     className="hover:text-primary transition-colors"
                                 >
-                                    Our Story
+                                    FAQ
                                 </a>
                             </li>
                             <li>
                                 <a
-                                    href="/get-in-touch"
+                                    href="/contact"
                                     className="hover:text-primary transition-colors"
                                 >
-                                    Get In Touch
+                                    Help Center
                                 </a>
                             </li>
                             <li>
                                 <a
-                                    href="/stay-updated"
+                                    href="/register"
                                     className="hover:text-primary transition-colors"
                                 >
-                                    Stay Updated
+                                    Join Now
+                                </a>
+                            </li>
+                            <li>
+                                <a
+                                    href="/login"
+                                    className="hover:text-primary transition-colors"
+                                >
+                                    Sign In
                                 </a>
                             </li>
                         </ul>
