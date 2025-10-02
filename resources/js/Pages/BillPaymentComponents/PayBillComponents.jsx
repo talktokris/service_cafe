@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import FindMemberComponent from "./FindMemberComponent";
 
 export default function PayBillComponents({ table, onClose, onSuccess }) {
@@ -6,8 +6,11 @@ export default function PayBillComponents({ table, onClose, onSuccess }) {
     const [billingType, setBillingType] = useState("walking");
     const [discountAmount, setDiscountAmount] = useState(0);
     const [paymentReference, setPaymentReference] = useState("");
+    const [paymentOtp, setPaymentOtp] = useState("");
     const [notes, setNotes] = useState("");
     const [selectedMember, setSelectedMember] = useState(null);
+    const [memberBalance, setMemberBalance] = useState(0);
+    const [isLoadingBalance, setIsLoadingBalance] = useState(false);
     const [showFindMember, setShowFindMember] = useState(false);
     const [isSubmitting, setIsSubmitting] = useState(false);
     const [showSuccessModal, setShowSuccessModal] = useState(false);
@@ -24,6 +27,72 @@ export default function PayBillComponents({ table, onClose, onSuccess }) {
             currency: "INR",
         }).format(amount || 0);
     };
+
+    // Calculate member balance from transactions
+    const calculateMemberBalance = async (memberId) => {
+        try {
+            setIsLoadingBalance(true);
+            
+            // Fetch member transactions 
+            const csrfToken = document
+                .querySelector('meta[name="csrf-token"]')
+                ?.getAttribute("content") || "";
+
+            const response = await fetch(`/api/member-transactions/${memberId}`, {
+                method: "GET",
+                headers: {
+                    "Accept": "application/json",
+                    "Content-Type": "application/json",
+                    "X-CSRF-TOKEN": csrfToken,
+                },
+                credentials: "same-origin",
+            });
+
+            if (response.ok) {
+                const data = await response.json();
+                if (data.success && data.transactions) {
+                    // Calculate balance: total credits - total debits
+                    let totalCredits = 0;
+                    let totalDebits = 0;
+                    
+                    data.transactions.forEach(transaction => {
+                        if (transaction.debit_credit === 2) { // Credit
+                            totalCredits += parseFloat(transaction.amount) || 0;
+                        } else if (transaction.debit_credit === 1) { // Debit
+                            totalDebits += parseFloat(transaction.amount) || 0;
+                        }
+                    });
+                    
+                    const balance = totalCredits - totalDebits;
+                    setMemberBalance(balance);
+                    return balance;
+                } else {
+                    console.error('Failed to fetch transactions:', data.message);
+                    setMemberBalance(0);
+                    return 0;
+                }
+            } else {
+                console.error('API request failed:', response.status);
+                setMemberBalance(0);
+                return 0;
+            }
+        } catch (error) {
+            console.error("Error calculating member balance:", error);
+            setMemberBalance(0);
+            return 0;
+        } finally {
+            setIsLoadingBalance(false);
+        }
+    };
+
+    // Effect to calculate balance when member is selected
+    useEffect(() => {
+        if (selectedMember) {
+            calculateMemberBalance(selectedMember.id);
+        } else {
+            setMemberBalance(0);
+        }
+    }, [selectedMember]);
 
     const handleSubmit = async (e) => {
         e.preventDefault();
