@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import FindMemberComponent from "./FindMemberComponent";
 
 export default function PayBillComponents({ table, onClose, onSuccess }) {
@@ -6,8 +6,11 @@ export default function PayBillComponents({ table, onClose, onSuccess }) {
     const [billingType, setBillingType] = useState("walking");
     const [discountAmount, setDiscountAmount] = useState(0);
     const [paymentReference, setPaymentReference] = useState("");
+    const [paymentOtp, setPaymentOtp] = useState("");
     const [notes, setNotes] = useState("");
     const [selectedMember, setSelectedMember] = useState(null);
+    const [memberBalance, setMemberBalance] = useState(0);
+    const [isLoadingBalance, setIsLoadingBalance] = useState(false);
     const [showFindMember, setShowFindMember] = useState(false);
     const [isSubmitting, setIsSubmitting] = useState(false);
     const [showSuccessModal, setShowSuccessModal] = useState(false);
