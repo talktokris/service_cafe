@@ -258,6 +258,22 @@ class CronController extends Controller
             'countStatus' => 1,
         ]);
 
+        // Create package amount refund transaction record
+        Transaction::create([
+            'transaction_nature' => 'Amount Refund',
+            'transaction_type' => 'Package Amount Refunded',
+            'debit_credit' => 2,
+            'matching_date' => $today->toDateString(),
+            'transaction_from_id' => $currentUserId,
+            'transaction_to_id' => $currentUserId,
+            'trigger_id' => $currentUserId,
+            'created_user_id' => $currentUserId,
+            'amount' => $packageAmount,
+            'transaction_date' => $today,
+            'status' => 1,
+            'countStatus' => 0,
+        ]);
+
         // Note: rankFindStatus is updated in the main activateMemberPackage function
 
         return [

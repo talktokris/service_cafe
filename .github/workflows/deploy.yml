@@ -1,0 +1,97 @@
+name: Deploy Serve Cafe to cPanel
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch: # Allow manual trigger
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup PHP
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: "8.2"
+          extensions: mbstring, dom, fileinfo, mysql, pdo_mysql, bcmath, gd
+          tools: composer:v2
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: "18"
+          cache: "npm"
+
+      - name: Install PHP dependencies
+        run: composer install --no-dev --optimize-autoloader
+
+      - name: Install Node dependencies
+        run: npm ci
+
+      - name: Build assets
+        run: npm run build
+
+      - name: Create deployment package
+        run: |
+          mkdir -p deploy-package
+          cp -r app bootstrap config database public resources routes storage vendor artisan composer.json composer.lock package.json package-lock.json deploy-package/
+          cp deploy.sh deploy-package/
+          cd deploy-package && tar -czf ../serve-cafe-deploy.tar.gz .
+
+      - name: Deploy to cPanel via SSH
+        uses: appleboy/ssh-action@v1.0.3
+        with:
+          host: ${{ secrets.CPANEL_HOST }}
+          username: ${{ secrets.CPANEL_USERNAME }}
+          key: ${{ secrets.CPANEL_SSH_KEY }}
+          port: ${{ secrets.CPANEL_PORT || 22 }}
+          script: |
+            # Create backup
+            cd /home4/servi5ne/repositories/service_cafe
+            tar -czf /home4/servi5ne/backups/backup-$(date +%Y%m%d-%H%M%S).tar.gz .
+
+            # Extract new files
+            cd /home4/servi5ne/repositories/service_cafe
+            tar -xzf /tmp/serve-cafe-deploy.tar.gz
+
+            # Set permissions
+            chmod -R 755 .
+            chmod -R 775 storage bootstrap/cache
+
+            # Install dependencies
+            composer install --no-dev --optimize-autoloader
+
+            # Clear and rebuild caches
+            php artisan config:clear
+            php artisan config:cache
+            php artisan route:cache
+            php artisan view:cache
+
+            # Update symlink
+            ln -sfn /home4/servi5ne/repositories/service_cafe/public /home4/servi5ne/public_html/sys/app/public
+
+            echo "✅ Deployment completed successfully!"
+
+      - name: Upload deployment package
+        uses: appleboy/scp-action@v0.1.7
+        with:
+          host: ${{ secrets.CPANEL_HOST }}
+          username: ${{ secrets.CPANEL_USERNAME }}
+          key: ${{ secrets.CPANEL_SSH_KEY }}
+          port: ${{ secrets.CPANEL_PORT || 22 }}
+          source: "serve-cafe-deploy.tar.gz"
+          target: "/tmp/"
+
+      - name: Notify deployment status
+        if: always()
+        run: |
+          if [ "${{ job.status }}" == "success" ]; then
+            echo "✅ Deployment successful!"
+          else
+            echo "❌ Deployment failed!"
+          fi
+
