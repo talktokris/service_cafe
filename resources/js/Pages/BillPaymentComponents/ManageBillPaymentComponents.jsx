@@ -75,17 +75,27 @@ export default function ManageBillPaymentComponents({
                         item.orderId === order.id && item.deleteStatus === 0
                 );
 
-                // Calculate total amount and item count
-                const totalAmount = items.reduce(
-                    (sum, item) => sum + (parseFloat(item.sellingPrice) || 0),
-                    0
-                );
+                // Calculate total amount and item count (matching ViewItemsComponents logic)
+                const subtotal = items.reduce((sum, item) => {
+                    const itemPrice = parseFloat(item.sellingPrice) || 0;
+                    const itemQty = parseInt(item.quantity) || 0;
+                    return sum + itemPrice * itemQty;
+                }, 0);
+
+                const totalTax = items.reduce((sum, item) => {
+                    const taxAmount = parseFloat(item.taxAmount) || 0;
+                    return sum + taxAmount;
+                }, 0);
+
+                const totalAmount = subtotal + totalTax;
                 const itemCount = items.length;
 
                 occupancy[tableId] = {
                     isOccupied: true,
                     orderId: order.id,
                     totalAmount: totalAmount,
+                    subtotal: subtotal,
+                    totalTax: totalTax,
                     itemCount: itemCount,
                     order: order,
                 };
@@ -548,6 +558,13 @@ export default function ManageBillPaymentComponents({
             {showPayModal && selectedTable && (
                 <PayBillComponents
                     table={selectedTable}
+                    orderTotal={
+                        tableOccupancy[selectedTable.id]?.totalAmount || 0
+                    }
+                    orderSubtotal={
+                        tableOccupancy[selectedTable.id]?.subtotal || 0
+                    }
+                    orderTax={tableOccupancy[selectedTable.id]?.totalTax || 0}
                     onClose={() => {
                         setShowPayModal(false);
                         setSelectedTable(null);

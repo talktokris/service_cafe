@@ -34,11 +34,33 @@ This document lists all current and planned cron jobs for the Serve Cafe applica
 -   **Description**: Returns the most recent active package information
 -   **Output**: JSON response with package details
 
+### 3. Leadership Chaque Match Processing
+
+-   **Route**: `/cron/leadership-chaque-match`
+-   **Method**: GET
+-   **Controller**: `CronController@cronLeadershipChaqueMatch`
+-   **Purpose**: Process leadership chaque match for eligible orders
+-   **Frequency**: Daily (recommended)
+-   **Description**:
+    -   Fetches orders from `orders` table with specific criteria:
+        -   `customerType` = 'member'
+        -   `free_paid_member_status` = 1
+        -   `paymentStatus` = 1
+        -   `leadership_status` = 0
+        -   `chaque_match_status` = 0
+        -   `tax_status` = 0
+        -   `deleteStatus` = 0 (exclude deleted records)
+    -   Orders by ID in ascending order for consistent processing
+    -   Provides placeholder for future processing logic (commission calculations, status updates, etc.)
+    -   Logs execution details for monitoring and debugging
+-   **Output**: JSON response with processed order details and execution statistics
+-   **Note**: Requires additional fields in orders table: `free_paid_member_status`, `leadership_status`, `chaque_match_status`, `tax_status`
+
 ---
 
 ## Planned Future Cron Jobs
 
-### 3. Daily Transaction Processing
+### 4. Daily Transaction Processing
 
 -   **Route**: `/cron/process-daily-transactions`
 -   **Method**: GET
@@ -52,7 +74,7 @@ This document lists all current and planned cron jobs for the Serve Cafe applica
     -   Generate transaction reports
     -   Send notifications for completed transactions
 
-### 4. Commission Calculation
+### 5. Commission Calculation
 
 -   **Route**: `/cron/calculate-commissions`
 -   **Method**: GET
@@ -66,7 +88,7 @@ This document lists all current and planned cron jobs for the Serve Cafe applica
     -   Distribute earnings to upline members
     -   Generate commission reports
 
-### 5. Package Expiry Check
+### 6. Package Expiry Check
 
 -   **Route**: `/cron/check-package-expiry`
 -   **Method**: GET
@@ -80,7 +102,7 @@ This document lists all current and planned cron jobs for the Serve Cafe applica
     -   Downgrade expired packages
     -   Update member status
 
-### 6. Wallet Balance Sync
+### 7. Wallet Balance Sync
 
 -   **Route**: `/cron/sync-wallet-balances`
 -   **Method**: GET
@@ -94,7 +116,7 @@ This document lists all current and planned cron jobs for the Serve Cafe applica
     -   Update wallet records
     -   Generate balance reports
 
-### 7. Order Status Updates
+### 8. Order Status Updates
 
 -   **Route**: `/cron/update-order-status`
 -   **Method**: GET
@@ -136,7 +158,7 @@ This document lists all current and planned cron jobs for the Serve Cafe applica
     -   Optimize database tables
     -   Archive old records
 
-### 10. Backup Generation
+### 11. Backup Generation
 
 -   **Route**: `/cron/generate-backup`
 -   **Method**: GET
@@ -162,6 +184,9 @@ Add the following entries to your server's crontab:
 # Serve Cafe Cron Jobs
 # Activate Member Package - Daily at 1 AM
 0 1 * * * curl -s http://localhost:8000/cron/activate-member-package
+
+# Leadership Chaque Match Processing - Daily at 1:30 AM
+30 1 * * * curl -s http://localhost:8000/cron/leadership-chaque-match
 
 # Process Daily Transactions - Every 6 hours
 0 */6 * * * curl -s http://localhost:8000/cron/process-daily-transactions
@@ -254,6 +279,7 @@ Test each cron job manually by visiting the route in your browser:
 
 ```
 http://localhost:8000/cron/activate-member-package
+http://localhost:8000/cron/leadership-chaque-match
 ```
 
 ### Automated Testing

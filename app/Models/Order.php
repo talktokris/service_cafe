@@ -33,6 +33,12 @@ class Order extends Model
         'orderEndDateTime',
         'paymentType',
         'paymentReference',
+        'otp_code',
+        'otp_sent_at',
+        'otp_verified_at',
+        'otp_status',
+        'otp_phone',
+        'otp_email',
         'notes',
         'paymentStatus',
         'deleteStatus'
@@ -52,6 +58,8 @@ class Order extends Model
         'tax_status' => 'integer',
         'orderStaredDateTime' => 'datetime',
         'orderEndDateTime' => 'datetime',
+        'otp_sent_at' => 'datetime',
+        'otp_verified_at' => 'datetime',
     ];
 
     protected static function boot()

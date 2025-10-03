@@ -18,6 +18,7 @@ use App\Models\User;
 use Illuminate\Foundation\Application;
 use Illuminate\Support\Facades\Route;
 use Illuminate\Support\Facades\Log;
+use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Inertia\Inertia;
 
@@ -412,16 +413,19 @@ Route::middleware(['auth', 'verified', 'user.type:headoffice', 'role:super_user,
                 ], 404);
             }
 
-            // OTP validation for paid members
-            if ($validated['billingType'] === 'member' && isset($validated['selectedMember']['id'])) {
+            // OTP validation only for wallet payments with member billing
+            if ($validated['paymentMethod'] === 'wallet' && 
+                $validated['billingType'] === 'member' && 
+                isset($validated['selectedMember']['id'])) {
+                
                 $member = \App\Models\User::find($validated['selectedMember']['id']);
                 
-                if ($member && $member->member_type === 'paid') {
-                    // OTP is required for paid members
+                if ($member) {
+                    // OTP is required for wallet payments
                     if (!isset($validated['paymentOtp']) || empty($validated['paymentOtp'])) {
                         return response()->json([
                             'success' => false,
-                            'message' => 'OTP is required for paid member transactions'
+                            'message' => 'OTP is required for wallet payments'
                         ], 422);
                     }
                     
@@ -435,17 +439,27 @@ Route::middleware(['auth', 'verified', 'user.type:headoffice', 'role:super_user,
                 }
             }
 
-            // Calculate sums from order_items table
+            // Calculate sums from order_items table (considering quantity)
             $orderItems = \App\Models\OrderItem::where('orderId', $order->id)
                 ->where('deleteStatus', 0)
                 ->get();
 
-            $buyingPrice = $orderItems->sum('buyingPrice');
-            $sellingPrice = $orderItems->sum('sellingPrice');
+            $buyingPrice = $orderItems->sum(function ($item) {
+                return ($item->buyingPrice * $item->quantity);
+            });
+            $sellingPrice = $orderItems->sum(function ($item) {
+                return ($item->sellingPrice * $item->quantity);
+            });
             $taxAmount = $orderItems->sum('taxAmount');
-            $adminProfitAmount = $orderItems->sum('adminProfitAmount');
-            $adminNetProfitAmount = $orderItems->sum('adminNetProfitAmount');
-            $userCommissionAmount = $orderItems->sum('userCommissionAmount');
+            $adminProfitAmount = $orderItems->sum(function ($item) {
+                return ($item->adminProfitAmount * $item->quantity);
+            });
+            $adminNetProfitAmount = $orderItems->sum(function ($item) {
+                return ($item->adminNetProfitAmount * $item->quantity);
+            });
+            $userCommissionAmount = $orderItems->sum(function ($item) {
+                return ($item->userCommissionAmount * $item->quantity);
+            });
 
             // Update the order with payment information
             $order->update([
@@ -468,6 +482,42 @@ Route::middleware(['auth', 'verified', 'user.type:headoffice', 'role:super_user,
                 'tableOccupiedStatus' => 0, // Free the table
             ]);
 
+            // Create transaction record for paid member wallet payments
+            if ($validated['paymentMethod'] === 'wallet' && 
+                $validated['billingType'] === 'member' && 
+                isset($validated['selectedMember']['id'])) {
+                
+                $member = \App\Models\User::find($validated['selectedMember']['id']);
+                
+                if ($member && $member->member_type === 'paid') {
+                    // Calculate final amount including tax, then subtract discount
+                    $finalAmount = ($sellingPrice + $taxAmount) - $validated['discountAmount'];
+                    
+                    \App\Models\Transaction::create([
+                        'transaction_nature' => 'Bill Payment',
+                        'transaction_type' => (string) $order->id,
+                        'matching_date' => now()->toDateString(),
+                        'transaction_from_id' => $member->id,
+                        'transaction_to_id' => $member->id,
+                        'trigger_id' => $member->id,
+                        'order_id' => $order->id,
+                        'created_user_id' => $user->id,
+                        'amount' => $finalAmount,
+                        'transaction_date' => now(),
+                        'status' => 1,
+                        'countStatus' => 0,
+                        'debit_credit' => 1, // Debit transaction
+                    ]);
+                    
+                    Log::info('Transaction record created for paid member payment', [
+                        'order_id' => $order->id,
+                        'member_id' => $member->id,
+                        'amount' => $finalAmount,
+                        'transaction_nature' => 'Bill Payment'
+                    ]);
+                }
+            }
+
             Log::info('Payment processed successfully', [
                 'orderId' => $order->id,
                 'tableId' => $validated['tableId'],
@@ -479,14 +529,14 @@ Route::middleware(['auth', 'verified', 'user.type:headoffice', 'role:super_user,
                 'adminProfitAmount' => $adminProfitAmount,
                 'adminNetProfitAmount' => $adminNetProfitAmount,
                 'userCommissionAmount' => $userCommissionAmount,
-                'finalTotal' => $sellingPrice - $validated['discountAmount']
+                'finalTotal' => ($sellingPrice + $taxAmount) - $validated['discountAmount']
             ]);
 
             return response()->json([
                 'success' => true,
                 'message' => 'Payment processed successfully!',
                 'orderId' => $order->id,
-                'finalTotal' => $sellingPrice - $validated['discountAmount'],
+                'finalTotal' => ($sellingPrice + $taxAmount) - $validated['discountAmount'],
                 'paymentMethod' => $validated['paymentMethod'],
                 'calculatedValues' => [
                     'buyingPrice' => $buyingPrice,
@@ -536,17 +586,67 @@ Route::middleware(['auth', 'verified', 'user.type:headoffice', 'role:super_user,
     // Users Tracking
     Route::get('/users-tracking', [UserController::class, 'index'])->name('users-tracking');
     
-    // Today OTP
-    Route::get('/today-otp', function () {
-        $todayOrders = \App\Models\Order::whereDate('created_at', today())
-            ->whereNotNull('txn_otp')
-            ->where('deleteStatus', 0)
-            ->with(['memberUser', 'table', 'headOffice', 'branch'])
-            ->orderBy('created_at', 'desc')
-            ->get();
+    // Today OTP with comprehensive date filtering
+    Route::get('/today-otp', function (Request $request) {
+        $dateFilter = $request->get('date_filter', 'today'); // 'all', 'today', or specific date (Y-m-d format)
+        $search = $request->get('search', '');
+        
+        // Build base query for OTP orders
+        $query = \App\Models\Order::where('deleteStatus', 0)
+            ->whereNotNull('txn_otp') // Orders with OTP
+            ->where('txn_otp', '!=', '') // Ensure txn_otp is not empty
+            ->with([
+                'memberUser:id,first_name,last_name,email,phone,referral_code,user_type,member_type',
+                'table', 
+                'headOffice', 
+                'branch'
+            ])
+            ->orderBy('created_at', 'desc');
+        
+        // Apply date filtering
+        if ($dateFilter === 'today') {
+            $query->whereDate('created_at', today());
+        } elseif ($dateFilter === 'all') {
+            // No additional date filtering - show all OTP orders
+        } elseif (\Carbon\Carbon::canBeCreatedFromFormat($dateFilter, 'Y-m-d')) {
+            // Specific date filtering
+            $query->whereDate('created_at', $dateFilter);
+        }
+        
+        // Apply search filtering
+        if ($search) {
+            $query->where(function ($q) use ($search) {
+                $q->where('id', 'like', '%' . $search . '%')
+                  ->orWhere('txn_otp', 'like', '%' . $search . '%')
+                  ->orWhereHas('memberUser', function ($memberQuery) use ($search) {
+                      $memberQuery->where('first_name', 'like', '%' . $search . '%')
+                                  ->orWhere('last_name', 'like', '%' . $search . '%')
+                                  ->orWhere('email', 'like', '%' . $search . '%')
+                                  ->orWhere('phone', 'like', '%' . $search . '%');
+                  });
+            });
+        }
+        
+        $orders = $query->get();
+        
+        // Generate available date tabs (last 7 days including today)
+        $availableDates = [];
+        for ($i = 0; $i < 7; $i++) {
+            $date = \Carbon\Carbon::now()->subDays($i);
+            $availableDates[] = [
+                'value' => $date->format('Y-m-d'),
+                'label' => $i === 0 ? 'Today' : $date->format('jS M'),
+                'is_today' => $i === 0
+            ];
+        }
         
         return Inertia::render('HeadOffice/Super/TodayOTPView', [
-            'todayOrders' => $todayOrders
+            'todayOrders' => $orders,
+            'filters' => [
+                'date_filter' => $dateFilter,
+                'search' => $search,
+            ],
+            'availableDates' => $availableDates
         ]);
     })->name('today-otp');
     

@@ -93,11 +93,11 @@ export default function FindMemberComponent({ onClose, onSelectMember }) {
 
     return (
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
-            <div className="bg-white rounded-lg shadow-xl max-w-4xl w-full max-h-[90vh] flex flex-col">
+            <div className="bg-white rounded-lg shadow-xl max-w-5xl w-full max-h-[75vh] flex flex-col">
                 {/* Header */}
-                <div className="p-6 border-b border-gray-200 flex-shrink-0">
+                <div className="p-4 border-b border-gray-200 flex-shrink-0">
                     <div className="flex items-center justify-between">
-                        <h2 className="text-xl font-semibold text-gray-900">
+                        <h2 className="text-lg font-semibold text-gray-900">
                             Find Member Customer
                         </h2>
                         <button
@@ -122,13 +122,13 @@ export default function FindMemberComponent({ onClose, onSelectMember }) {
                 </div>
 
                 {/* Search Bar */}
-                <div className="p-6 border-b border-gray-200 flex-shrink-0">
+                <div className="p-4 border-b border-gray-200 flex-shrink-0">
                     <div className="relative">
                         <input
                             type="text"
                             value={searchTerm}
                             onChange={(e) => setSearchTerm(e.target.value)}
-                            className="input input-bordered w-full pl-10"
+                            className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent text-sm"
                             placeholder="Search by referral code, name, or email..."
                         />
                         <svg
@@ -148,18 +148,18 @@ export default function FindMemberComponent({ onClose, onSelectMember }) {
                 </div>
 
                 {/* Content */}
-                <div className="flex-1 overflow-y-auto p-6">
+                <div className="flex-1 overflow-y-auto p-4">
                     {isLoading ? (
-                        <div className="text-center py-8">
-                            <span className="loading loading-spinner loading-lg"></span>
-                            <p className="text-gray-500 mt-2">
+                        <div className="text-center py-6">
+                            <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600 mx-auto"></div>
+                            <p className="text-gray-500 mt-2 text-sm">
                                 Loading members...
                             </p>
                         </div>
                     ) : filteredMembers.length === 0 ? (
-                        <div className="text-center py-8">
+                        <div className="text-center py-6">
                             <svg
-                                className="w-16 h-16 mx-auto text-gray-300 mb-4"
+                                className="w-12 h-12 mx-auto text-gray-300 mb-3"
                                 fill="none"
                                 stroke="currentColor"
                                 viewBox="0 0 24 24"
@@ -171,18 +171,18 @@ export default function FindMemberComponent({ onClose, onSelectMember }) {
                                     d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"
                                 />
                             </svg>
-                            <p className="text-gray-500">
+                            <p className="text-gray-500 text-sm">
                                 {searchTerm
                                     ? "No members found matching your search"
                                     : "No members available"}
                             </p>
                         </div>
                     ) : (
-                        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-3">
                             {filteredMembers.map((member) => (
                                 <div
                                     key={member.id}
-                                    className={`border rounded-lg p-4 cursor-pointer transition-all border-l-4 ${
+                                    className={`border rounded-md p-2 cursor-pointer transition-all border-l-3 ${
                                         selectedMember?.id === member.id
                                             ? "border-blue-500 bg-blue-50 ring-2 ring-blue-200"
                                             : member.member_type === "paid"
@@ -191,10 +191,10 @@ export default function FindMemberComponent({ onClose, onSelectMember }) {
                                     }`}
                                     onClick={() => handleSelectMember(member)}
                                 >
-                                    <div className="flex items-start justify-between mb-3">
+                                    <div className="flex items-center justify-between mb-2">
                                         <div className="flex items-center">
                                             <div
-                                                className={`w-10 h-10 rounded-full flex items-center justify-center ${
+                                                className={`w-6 h-6 rounded-full flex items-center justify-center ${
                                                     member.member_type ===
                                                     "paid"
                                                         ? "bg-emerald-100"
@@ -202,7 +202,7 @@ export default function FindMemberComponent({ onClose, onSelectMember }) {
                                                 }`}
                                             >
                                                 <svg
-                                                    className={`w-6 h-6 ${
+                                                    className={`w-3 h-3 ${
                                                         member.member_type ===
                                                         "paid"
                                                             ? "text-emerald-600"
@@ -220,10 +220,10 @@ export default function FindMemberComponent({ onClose, onSelectMember }) {
                                                     />
                                                 </svg>
                                             </div>
-                                            <div className="ml-3">
+                                            <div className="ml-2 min-w-0 flex-1">
                                                 <div className="flex items-center">
                                                     <h3
-                                                        className={`font-semibold ${
+                                                        className={`font-medium text-sm truncate ${
                                                             member.member_type ===
                                                             "paid"
                                                                 ? "text-emerald-900"
@@ -234,7 +234,7 @@ export default function FindMemberComponent({ onClose, onSelectMember }) {
                                                             `${member.first_name} ${member.last_name}`.trim()}
                                                     </h3>
                                                     <span
-                                                        className={`ml-2 inline-flex items-center px-2 py-1 rounded-full text-xs font-medium ${
+                                                        className={`ml-1 inline-flex items-center px-1.5 py-0.5 rounded text-xs font-medium flex-shrink-0 ${
                                                             member.member_type ===
                                                             "paid"
                                                                 ? "bg-emerald-100 text-emerald-800"
@@ -243,19 +243,19 @@ export default function FindMemberComponent({ onClose, onSelectMember }) {
                                                     >
                                                         {member.member_type ===
                                                         "paid"
-                                                            ? "💎 Paid"
-                                                            : "🆓 Free"}
+                                                            ? "💎"
+                                                            : "🆓"}
                                                     </span>
                                                 </div>
-                                                <p className="text-sm text-gray-500">
+                                                <p className="text-xs text-gray-500 truncate">
                                                     {member.referral_code}
                                                 </p>
                                             </div>
                                         </div>
                                         {selectedMember?.id === member.id && (
-                                            <div className="w-6 h-6 bg-blue-500 rounded-full flex items-center justify-center">
+                                            <div className="w-5 h-5 bg-blue-500 rounded-full flex items-center justify-center flex-shrink-0 ml-2">
                                                 <svg
-                                                    className="w-4 h-4 text-white"
+                                                    className="w-3 h-3 text-white"
                                                     fill="none"
                                                     stroke="currentColor"
                                                     viewBox="0 0 24 24"
@@ -271,49 +271,21 @@ export default function FindMemberComponent({ onClose, onSelectMember }) {
                                         )}
                                     </div>
 
-                                    <div className="space-y-2">
-                                        <div className="flex justify-between text-sm">
+                                    <div className="space-y-1 text-xs">
+                                        <div className="flex justify-between">
                                             <span className="text-gray-500">
                                                 Email:
                                             </span>
-                                            <span className="text-gray-900">
+                                            <span className="text-gray-900 truncate ml-2">
                                                 {member.email}
                                             </span>
                                         </div>
-                                        <div className="flex justify-between text-sm">
+                                        <div className="flex justify-between">
                                             <span className="text-gray-500">
                                                 Phone:
                                             </span>
                                             <span className="text-gray-900">
                                                 {member.phone || "N/A"}
-                                            </span>
-                                        </div>
-                                        <div className="flex justify-between text-sm">
-                                            <span className="text-gray-500">
-                                                Country:
-                                            </span>
-                                            <span className="text-gray-900">
-                                                {member.country || "N/A"}
-                                            </span>
-                                        </div>
-                                        <div className="flex justify-between text-sm">
-                                            <span className="text-gray-500">
-                                                Member Type:
-                                            </span>
-                                            <span
-                                                className={`font-medium ${
-                                                    member.member_type ===
-                                                    "paid"
-                                                        ? "text-emerald-600"
-                                                        : "text-gray-600"
-                                                }`}
-                                            >
-                                                {member.member_type === "paid"
-                                                    ? "💎 Paid Member"
-                                                    : member.member_type ===
-                                                      "free"
-                                                    ? "🆓 Free Member"
-                                                    : "N/A"}
                                             </span>
                                         </div>
                                     </div>
@@ -324,23 +296,23 @@ export default function FindMemberComponent({ onClose, onSelectMember }) {
                 </div>
 
                 {/* Footer */}
-                <div className="p-6 border-t border-gray-200 flex-shrink-0">
-                    <div className="flex justify-end space-x-3">
+                <div className="p-4 border-t border-gray-200 flex-shrink-0">
+                    <div className="flex justify-end space-x-2">
                         <button
                             type="button"
                             onClick={onClose}
-                            className="btn btn-ghost"
+                            className="px-4 py-2 text-sm text-gray-600 hover:text-gray-800 border border-gray-300 rounded-lg hover:bg-gray-50"
                         >
                             Cancel
                         </button>
                         <button
                             type="button"
                             onClick={handleConfirm}
-                            className="btn bg-blue-600 hover:bg-blue-700 text-white"
+                            className="px-4 py-2 text-sm bg-blue-600 hover:bg-blue-700 text-white rounded-lg disabled:opacity-50 disabled:cursor-not-allowed"
                             disabled={!selectedMember}
                         >
                             <svg
-                                className="w-5 h-5 mr-2"
+                                className="w-4 h-4 mr-1 inline"
                                 fill="none"
                                 stroke="currentColor"
                                 viewBox="0 0 24 24"
