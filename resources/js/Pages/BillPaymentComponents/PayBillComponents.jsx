@@ -652,7 +652,7 @@ export default function PayBillComponents({
                                                                 0
                                                                     ? selectedMember.member_type ===
                                                                       "paid"
-                                                                        ? "text-green-600"
+                                                                    ? "text-green-600"
                                                                         : "text-gray-600"
                                                                     : "text-red-500"
                                                             }`}
@@ -1387,8 +1387,8 @@ export default function PayBillComponents({
 
                             {/* Action Buttons */}
                             <div className="flex space-x-3">
-                                <button
-                                    onClick={handleSuccessModalClose}
+                            <button
+                                onClick={handleSuccessModalClose}
                                     className="flex-1 bg-gray-600 hover:bg-gray-700 text-white font-medium py-2 px-4 rounded-lg transition-colors"
                                 >
                                     Close

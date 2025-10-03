@@ -5,7 +5,7 @@ export default function PrintReceiptComponents({ table, order, onClose }) {
     const { auth } = usePage().props;
     const user = auth?.user;
 
-    const [isPrinting, setIsPrinting] = useState(false);
+    const [isGeneratingPdf, setIsGeneratingPdf] = useState(false);
     const [orderItems, setOrderItems] = useState([]);
     const [isLoading, setIsLoading] = useState(true);
 
@@ -62,33 +62,6 @@ export default function PrintReceiptComponents({ table, order, onClose }) {
 
     const finalTotal = subtotal + totalTax;
 
-    // Order data for receipt
-    const orderData = {
-        orderId: order?.id || "N/A",
-        tableName: table?.tableShortName || "N/A",
-        items: orderItems.map((item, index) => ({
-            id: item.id,
-            menuName:
-                item.menu_item?.menuName ||
-                item.menuItem?.menuName ||
-                "Unknown Item",
-            price: parseFloat(item.sellingPrice) || 0,
-            quantity: parseInt(item.quantity) || 0,
-            total:
-                (parseFloat(item.sellingPrice) || 0) *
-                (parseInt(item.quantity) || 0),
-        })),
-        subtotal: subtotal,
-        tax: totalTax,
-        total: finalTotal,
-        paymentMethod: order?.paymentType || "Cash",
-        amountPaid: finalTotal, // Assuming full payment for now
-        change: 0, // No change for now
-        timestamp: order?.orderStaredDateTime
-            ? new Date(order.orderStaredDateTime).toLocaleString()
-            : new Date().toLocaleString(),
-    };
-
     // Format currency
     const formatCurrency = (amount) => {
         return new Intl.NumberFormat("en-IN", {
@@ -97,23 +70,111 @@ export default function PrintReceiptComponents({ table, order, onClose }) {
         }).format(amount || 0);
     };
 
-    const handlePrint = () => {
-        setIsPrinting(true);
+    // Simple download function using browser's built-in functionality
+    const handleDownloadPdf = () => {
+        setIsGeneratingPdf(true);
 
-        // Simulate print delay
-        setTimeout(() => {
-            window.print();
-            setIsPrinting(false);
-        }, 1000);
+        try {
+            const receiptElement = document.getElementById("receipt-content");
+            const receiptHtml = `
+                <!DOCTYPE html>
+                <html>
+                <head>
+                    <title>Receipt - Table ${table.tableShortName}</title>
+                    <style>
+                        body { 
+                            font-family: 'Courier New', monospace; 
+                            font-size: 12px; 
+                            margin: 20px;
+                            line-height: 1.4;
+                            width: 300px;
+                        }
+                        .receipt { margin: 0 auto; }
+                    </style>
+                </head>
+                <body>
+                    <div class="receipt">${receiptElement.innerHTML}</div>
+                </body>
+                </html>
+            `;
+
+            // Create downloadable HTML file
+            const blob = new Blob([receiptHtml], { type: "text/html" });
+            const url = URL.createObjectURL(blob);
+            const link = document.createElement("a");
+            link.href = url;
+            link.download = `Receipt-Table-${table.tableShortName}-Order-${order.id}.html`;
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+            URL.revokeObjectURL(url);
+        } catch (error) {
+            console.error("Download Error:", error);
+            alert(
+                "Failed to download receipt. Please try the Print option instead."
+            );
+        } finally {
+            setIsGeneratingPdf(false);
+        }
+    };
+
+    // Browser print function (working)
+    const handlePrintReceipt = () => {
+        setIsGeneratingPdf(true);
+
+        try {
+            const receiptElement = document.getElementById("receipt-content");
+            const printWindow = window.open("", "_blank");
+
+            printWindow.document.write(`
+                <!DOCTYPE html>
+                <html>
+                <head>
+                    <title>Receipt - Table ${table.tableShortName}</title>
+                    <style>
+                        body { 
+                            font-family: 'Courier New', monospace; 
+                            font-size: 12px; 
+                            margin: 20px;
+                            line-height: 1.4;
+                        }
+                        .receipt { 
+                            width: 300px; 
+                            margin: 0 auto;
+                        }
+                        @media print {
+                            body { margin: 0; }
+                            .receipt { width: 100%; }
+                        }
+                    </style>
+                </head>
+                <body>
+                    <div class="receipt">${receiptElement.innerHTML}</div>
+                </body>
+                </html>
+            `);
+
+            printWindow.document.close();
+            printWindow.focus();
+            setTimeout(() => {
+                printWindow.print();
+            }, 1000);
+        } catch (error) {
+            console.error("Print Error:", error);
+            alert("Failed to print receipt. Please try again.");
+        } finally {
+            setIsGeneratingPdf(false);
+        }
     };
 
     return (
-        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4 print:hidden overflow-y-auto">
-            <div className="bg-white rounded-lg shadow-xl max-w-2xl w-full max-h-[90vh] flex flex-col print:shadow-none print:rounded-none print:max-w-none print:w-full print:max-h-none">
-                <div className="p-6 border-b border-gray-200 print:hidden">
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
+            <div className="bg-white rounded-lg shadow-xl max-w-lg w-full max-h-[90vh] flex flex-col">
+                {/* Header */}
+                <div className="p-6 border-b border-gray-200">
                     <div className="flex items-center justify-between">
                         <h2 className="text-xl font-semibold text-gray-900">
-                            Print Receipt - Table {table.tableShortName}
+                            Receipt - Table {table.tableShortName}
                         </h2>
                         <button
                             onClick={onClose}
@@ -136,192 +197,380 @@ export default function PrintReceiptComponents({ table, order, onClose }) {
                     </div>
                 </div>
 
-                <div className="p-6 print:p-0 flex-1 overflow-y-auto">
+                {/* Receipt Preview */}
+                <div className="p-6 flex-1 overflow-y-auto">
                     {isLoading ? (
-                        <div className="text-center py-8 print:hidden">
+                        <div className="text-center py-8">
                             <span className="loading loading-spinner loading-lg"></span>
                             <p className="text-gray-500 mt-2">
                                 Loading receipt data...
                             </p>
                         </div>
                     ) : orderItems.length === 0 ? (
-                        <div className="text-center py-8 print:hidden">
+                        <div className="text-center py-8">
                             <p className="text-gray-500">
                                 No items found for this order
                             </p>
                         </div>
                     ) : (
-                        /* Receipt Preview */
-                        <div className="bg-white border-2 border-dashed border-gray-300 rounded-lg p-6 mb-6 print:border-none print:shadow-none print:rounded-none print:p-4 print:mb-0">
-                            {/* Receipt Header */}
-                            <div className="text-center mb-6">
-                                <h1 className="text-2xl font-bold text-gray-900 mb-2">
-                                    Serve Cafe
-                                </h1>
-                                <p className="text-gray-600">
-                                    14 Khumaltar, Lalitpur, Nepal
-                                </p>
-                                <p className="text-gray-600">
-                                    Phone: +977 9766389515
-                                </p>
+                        <div className="bg-gray-50 border border-gray-200 rounded-lg p-4">
+                            <div className="text-center text-sm text-gray-600 mb-4">
+                                📄 Receipt Preview
                             </div>
 
-                            {/* Receipt Details */}
-                            <div className="mb-6">
-                                <div className="flex justify-between items-center mb-2">
-                                    <span className="text-gray-600">
-                                        Order ID:
-                                    </span>
-                                    <span className="font-medium">
-                                        {orderData.orderId}
-                                    </span>
-                                </div>
-                                <div className="flex justify-between items-center mb-2">
-                                    <span className="text-gray-600">
-                                        Table:
-                                    </span>
-                                    <span className="font-medium">
-                                        {orderData.tableName}
-                                    </span>
-                                </div>
-                                <div className="flex justify-between items-center mb-2">
-                                    <span className="text-gray-600">
-                                        Date & Time:
-                                    </span>
-                                    <span className="font-medium">
-                                        {orderData.timestamp}
-                                    </span>
-                                </div>
-                            </div>
-
-                            {/* Items List */}
-                            <div className="mb-6">
-                                <div className="border-b border-gray-200 pb-2 mb-4">
-                                    <div className="grid grid-cols-4 gap-4 text-sm font-medium text-gray-600">
-                                        <div>Item</div>
-                                        <div className="text-center">Qty</div>
-                                        <div className="text-right">Price</div>
-                                        <div className="text-right">Total</div>
-                                    </div>
-                                </div>
-                                {orderData.items.map((item) => (
+                            {/* Receipt Content for PDF Generation */}
+                            <div
+                                id="receipt-content"
+                                className="bg-white p-6 border rounded-lg"
+                                style={{
+                                    width: "300px",
+                                    minHeight: "400px",
+                                    fontFamily: "Courier New, monospace",
+                                    fontSize: "12px",
+                                    lineHeight: "1.4",
+                                    color: "black",
+                                }}
+                            >
+                                {/* Receipt Header */}
+                                <div
+                                    style={{
+                                        textAlign: "center",
+                                        marginBottom: "20px",
+                                    }}
+                                >
                                     <div
-                                        key={item.id}
-                                        className="grid grid-cols-4 gap-4 py-2 border-b border-gray-100"
+                                        style={{
+                                            fontSize: "16px",
+                                            fontWeight: "bold",
+                                            marginBottom: "8px",
+                                        }}
                                     >
-                                        <div className="text-sm">
-                                            {item.menuName}
-                                        </div>
-                                        <div className="text-center text-sm">
-                                            {item.quantity}
-                                        </div>
-                                        <div className="text-right text-sm">
-                                            {formatCurrency(item.price)}
-                                        </div>
-                                        <div className="text-right text-sm font-medium">
-                                            {formatCurrency(item.total)}
-                                        </div>
+                                        SERVE CAFE
                                     </div>
-                                ))}
-                            </div>
+                                    <div
+                                        style={{
+                                            fontSize: "10px",
+                                            marginBottom: "4px",
+                                        }}
+                                    >
+                                        14 Khumaltar, Lalitpur, Nepal
+                                    </div>
+                                    <div
+                                        style={{
+                                            fontSize: "10px",
+                                            marginBottom: "8px",
+                                        }}
+                                    >
+                                        Phone: +977 9766389515
+                                    </div>
+                                    <div
+                                        style={{
+                                            borderBottom: "1px dashed #666",
+                                            marginBottom: "8px",
+                                        }}
+                                    >
+                                        ========================================
+                                    </div>
+                                </div>
 
-                            {/* Totals */}
-                            <div className="mb-6">
-                                <div className="flex justify-between items-center py-2">
-                                    <span className="text-gray-600">
-                                        Subtotal:
-                                    </span>
-                                    <span className="font-medium">
-                                        {formatCurrency(orderData.subtotal)}
-                                    </span>
+                                {/* Order Info */}
+                                <div style={{ marginBottom: "16px" }}>
+                                    <div
+                                        style={{
+                                            display: "flex",
+                                            justifyContent: "space-between",
+                                            marginBottom: "4px",
+                                        }}
+                                    >
+                                        <span>Order ID:</span>
+                                        <span>#{order?.id || "N/A"}</span>
+                                    </div>
+                                    <div
+                                        style={{
+                                            display: "flex",
+                                            justifyContent: "space-between",
+                                            marginBottom: "4px",
+                                        }}
+                                    >
+                                        <span>Table:</span>
+                                        <span>
+                                            {table?.tableShortName || "N/A"}
+                                        </span>
+                                    </div>
+                                    <div
+                                        style={{
+                                            display: "flex",
+                                            justifyContent: "space-between",
+                                            marginBottom: "8px",
+                                        }}
+                                    >
+                                        <span>Date & Time:</span>
+                                        <span style={{ fontSize: "10px" }}>
+                                            {new Date().toLocaleString(
+                                                "en-GB",
+                                                {
+                                                    day: "2-digit",
+                                                    month: "2-digit",
+                                                    year: "numeric",
+                                                    hour: "2-digit",
+                                                    minute: "2-digit",
+                                                }
+                                            )}
+                                        </span>
+                                    </div>
+                                    <div
+                                        style={{
+                                            borderBottom: "1px dashed #666",
+                                            marginBottom: "8px",
+                                        }}
+                                    >
+                                        ========================================
+                                    </div>
                                 </div>
-                                <div className="flex justify-between items-center py-2">
-                                    <span className="text-gray-600">Tax:</span>
-                                    <span className="font-medium">
-                                        {formatCurrency(orderData.tax)}
-                                    </span>
-                                </div>
-                                <div className="flex justify-between items-center py-2 border-t border-gray-200 pt-2">
-                                    <span className="text-lg font-semibold">
-                                        Total:
-                                    </span>
-                                    <span className="text-lg font-bold text-green-600">
-                                        {formatCurrency(orderData.total)}
-                                    </span>
-                                </div>
-                            </div>
 
-                            {/* Payment Details */}
-                            <div className="mb-6">
-                                <div className="flex justify-between items-center py-2">
-                                    <span className="text-gray-600">
-                                        Payment Method:
-                                    </span>
-                                    <span className="font-medium">
-                                        {orderData.paymentMethod}
-                                    </span>
-                                </div>
-                                {orderData.paymentMethod === "Cash" && (
-                                    <>
-                                        <div className="flex justify-between items-center py-2">
-                                            <span className="text-gray-600">
-                                                Amount Paid:
-                                            </span>
-                                            <span className="font-medium">
-                                                {formatCurrency(
-                                                    orderData.amountPaid
-                                                )}
-                                            </span>
-                                        </div>
-                                        <div className="flex justify-between items-center py-2">
-                                            <span className="text-gray-600">
-                                                Change:
-                                            </span>
-                                            <span className="font-medium">
-                                                {formatCurrency(
-                                                    orderData.change
-                                                )}
-                                            </span>
-                                        </div>
-                                    </>
-                                )}
-                            </div>
+                                {/* Items */}
+                                <div style={{ marginBottom: "16px" }}>
+                                    {orderItems.map((item, index) => {
+                                        const itemName =
+                                            item.menu_item?.menuName ||
+                                            item.menuItem?.menuName ||
+                                            "Unknown Item";
+                                        const price =
+                                            parseFloat(item.sellingPrice) || 0;
+                                        const qty =
+                                            parseInt(item.quantity) || 0;
+                                        const total = price * qty;
 
-                            {/* Footer */}
-                            <div className="text-center text-sm text-gray-500">
-                                <p>Thank you for your visit!</p>
-                                <p>Please come again</p>
+                                        return (
+                                            <div
+                                                key={item.id}
+                                                style={{ marginBottom: "8px" }}
+                                            >
+                                                <div
+                                                    style={{
+                                                        display: "flex",
+                                                        justifyContent:
+                                                            "space-between",
+                                                    }}
+                                                >
+                                                    <span
+                                                        style={{
+                                                            maxWidth: "180px",
+                                                            overflow: "hidden",
+                                                        }}
+                                                    >
+                                                        {itemName}
+                                                    </span>
+                                                    <span>
+                                                        {formatCurrency(total)}
+                                                    </span>
+                                                </div>
+                                                <div
+                                                    style={{
+                                                        fontSize: "10px",
+                                                        color: "#666",
+                                                        marginLeft: "8px",
+                                                    }}
+                                                >
+                                                    {formatCurrency(price)} x{" "}
+                                                    {qty}
+                                                </div>
+                                            </div>
+                                        );
+                                    })}
+                                    <div
+                                        style={{
+                                            borderBottom: "1px dashed #666",
+                                            marginTop: "8px",
+                                            marginBottom: "8px",
+                                        }}
+                                    >
+                                        ========================================
+                                    </div>
+                                </div>
+
+                                {/* Totals */}
+                                <div style={{ marginBottom: "16px" }}>
+                                    <div
+                                        style={{
+                                            display: "flex",
+                                            justifyContent: "space-between",
+                                            marginBottom: "4px",
+                                        }}
+                                    >
+                                        <span>Subtotal:</span>
+                                        <span>{formatCurrency(subtotal)}</span>
+                                    </div>
+                                    <div
+                                        style={{
+                                            display: "flex",
+                                            justifyContent: "space-between",
+                                            marginBottom: "8px",
+                                        }}
+                                    >
+                                        <span>Tax:</span>
+                                        <span>{formatCurrency(totalTax)}</span>
+                                    </div>
+                                    <div
+                                        style={{
+                                            borderBottom: "1px dashed #666",
+                                            marginBottom: "8px",
+                                        }}
+                                    >
+                                        ========================================
+                                    </div>
+                                    <div
+                                        style={{
+                                            display: "flex",
+                                            justifyContent: "space-between",
+                                            fontWeight: "bold",
+                                            fontSize: "14px",
+                                        }}
+                                    >
+                                        <span>TOTAL:</span>
+                                        <span>
+                                            {formatCurrency(finalTotal)}
+                                        </span>
+                                    </div>
+                                    <div
+                                        style={{
+                                            borderBottom: "1px dashed #666",
+                                            marginTop: "8px",
+                                            marginBottom: "8px",
+                                        }}
+                                    >
+                                        ========================================
+                                    </div>
+                                </div>
+
+                                {/* Payment Info */}
+                                <div style={{ marginBottom: "16px" }}>
+                                    <div
+                                        style={{
+                                            display: "flex",
+                                            justifyContent: "space-between",
+                                            marginBottom: "4px",
+                                        }}
+                                    >
+                                        <span>Payment Method:</span>
+                                        <span>
+                                            {order?.paymentType || "Cash"}
+                                        </span>
+                                    </div>
+                                    <div
+                                        style={{
+                                            display: "flex",
+                                            justifyContent: "space-between",
+                                            marginBottom: "4px",
+                                        }}
+                                    >
+                                        <span>Amount Paid:</span>
+                                        <span>
+                                            {formatCurrency(finalTotal)}
+                                        </span>
+                                    </div>
+                                    <div
+                                        style={{
+                                            display: "flex",
+                                            justifyContent: "space-between",
+                                            marginBottom: "8px",
+                                        }}
+                                    >
+                                        <span>Change:</span>
+                                        <span>{formatCurrency(0)}</span>
+                                    </div>
+                                </div>
+
+                                {/* Footer */}
+                                <div
+                                    style={{
+                                        textAlign: "center",
+                                        fontSize: "10px",
+                                        color: "#666",
+                                    }}
+                                >
+                                    <div
+                                        style={{
+                                            borderBottom: "1px dashed #666",
+                                            marginBottom: "8px",
+                                        }}
+                                    >
+                                        ========================================
+                                    </div>
+                                    <div style={{ marginBottom: "4px" }}>
+                                        Thank you for your visit!
+                                    </div>
+                                    <div style={{ marginBottom: "4px" }}>
+                                        Please come again
+                                    </div>
+                                    <div>Visit us at: servecafe.com</div>
+                                </div>
                             </div>
                         </div>
                     )}
+                </div>
 
-                    {/* Action Buttons */}
-                    <div className="flex justify-end space-x-3 print:hidden flex-shrink-0 p-6 border-t border-gray-200">
+                {/* Action Buttons */}
+                <div className="p-6 border-t border-gray-200 bg-gray-50">
+                    <div className="flex justify-end space-x-3">
                         <button
                             onClick={onClose}
-                            className="btn btn-ghost"
-                            disabled={isPrinting}
+                            className="px-4 py-2 border border-gray-300 rounded-lg text-gray-700 hover:bg-gray-50 transition-colors"
+                            disabled={isGeneratingPdf}
                         >
                             Close
                         </button>
                         <button
-                            onClick={handlePrint}
-                            className="btn bg-gray-600 hover:bg-gray-700 text-white"
+                            onClick={handleDownloadPdf}
+                            className="px-4 py-2 bg-green-600 hover:bg-green-700 text-white rounded-lg transition-colors flex items-center"
                             disabled={
-                                isPrinting ||
+                                isGeneratingPdf ||
                                 isLoading ||
                                 orderItems.length === 0
                             }
                         >
-                            {isPrinting ? (
+                            {isGeneratingPdf ? (
                                 <>
-                                    <span className="loading loading-spinner loading-sm mr-2"></span>
+                                    <div className="animate-spin rounded-full h-4 w-4 border-b border-white mr-2"></div>
+                                    Generating...
+                                </>
+                            ) : (
+                                <>
+                                    <svg
+                                        className="w-4 h-4 mr-2"
+                                        fill="none"
+                                        stroke="currentColor"
+                                        viewBox="0 0 24 24"
+                                    >
+                                        <path
+                                            strokeLinecap="round"
+                                            strokeLinejoin="round"
+                                            strokeWidth="2"
+                                            d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"
+                                        />
+                                    </svg>
+                                    Download HTML
+                                </>
+                            )}
+                        </button>
+                        <button
+                            onClick={handlePrintReceipt}
+                            className="px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg transition-colors flex items-center"
+                            disabled={
+                                isGeneratingPdf ||
+                                isLoading ||
+                                orderItems.length === 0
+                            }
+                        >
+                            {isGeneratingPdf ? (
+                                <>
+                                    <div className="animate-spin rounded-full h-4 w-4 border-b border-white mr-2"></div>
                                     Printing...
                                 </>
                             ) : (
                                 <>
                                     <svg
-                                        className="w-5 h-5 mr-2"
+                                        className="w-4 h-4 mr-2"
                                         fill="none"
                                         stroke="currentColor"
                                         viewBox="0 0 24 24"

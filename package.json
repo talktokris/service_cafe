@@ -25,6 +25,7 @@
         "@vitejs/plugin-react": "^5.0.2",
         "@yfiles/yfiles": "^0.9.0",
         "daisyui": "^5.0.54",
+        "html2pdf.js": "^0.12.1",
         "react": "^19.1.1",
         "react-dom": "^19.1.1",
         "react-organizational-chart": "^2.2.1"
