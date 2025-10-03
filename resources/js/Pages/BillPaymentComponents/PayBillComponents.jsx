@@ -4,6 +4,7 @@ import PrintReceiptComponents from "./PrintReceiptComponents";
 
 export default function PayBillComponents({
     table,
+    orderId = null,
     orderTotal = 0,
     orderSubtotal = 0,
     orderTax = 0,
@@ -456,6 +457,16 @@ export default function PayBillComponents({
                                 Order Summary
                             </h3>
                             <div className="space-y-2">
+                                {orderId && (
+                                    <div className="flex justify-between">
+                                        <span className="text-gray-600">
+                                            Order ID:
+                                        </span>
+                                        <span className="font-medium text-blue-600">
+                                            #{orderId}
+                                        </span>
+                                    </div>
+                                )}
                                 <div className="flex justify-between">
                                     <span className="text-gray-600">
                                         Subtotal:
@@ -652,7 +663,7 @@ export default function PayBillComponents({
                                                                 0
                                                                     ? selectedMember.member_type ===
                                                                       "paid"
-                                                                    ? "text-green-600"
+                                                                        ? "text-green-600"
                                                                         : "text-gray-600"
                                                                     : "text-red-500"
                                                             }`}
@@ -1387,8 +1398,8 @@ export default function PayBillComponents({
 
                             {/* Action Buttons */}
                             <div className="flex space-x-3">
-                            <button
-                                onClick={handleSuccessModalClose}
+                                <button
+                                    onClick={handleSuccessModalClose}
                                     className="flex-1 bg-gray-600 hover:bg-gray-700 text-white font-medium py-2 px-4 rounded-lg transition-colors"
                                 >
                                     Close

@@ -33,6 +33,19 @@ export default function TodayOTPView({
         date_filter: filters?.date_filter || "today",
     });
 
+    const [isLoading, setIsLoading] = useState(false);
+
+    // Handle reload data
+    const handleReloadData = () => {
+        setIsLoading(true);
+        get(route("today-otp"), {
+            data: { ...data },
+            preserveState: false, // Force fresh data from server
+            replace: false,
+            onFinish: () => setIsLoading(false),
+        });
+    };
+
     // Toggle OTP visibility
     const toggleOtpVisibility = (orderId) => {
         const newVisibleOtps = new Set(visibleOtps);
@@ -289,6 +302,37 @@ export default function TodayOTPView({
                                 Clear
                             </button>
                         )}
+
+                        {/* Load Data Button */}
+                        <button
+                            onClick={handleReloadData}
+                            disabled={isLoading || processing}
+                            className="px-6 py-3 bg-green-600 text-white rounded-lg hover:bg-green-700 focus:ring-2 focus:ring-green-500 focus:ring-offset-2 disabled:opacity-50 transition-colors text-sm font-medium flex items-center"
+                        >
+                            {isLoading ? (
+                                <>
+                                    <div className="animate-spin rounded-full h-4 w-4 border-b border-white mr-2"></div>
+                                    Loading...
+                                </>
+                            ) : (
+                                <>
+                                    <svg
+                                        className="w-4 h-4 mr-2"
+                                        fill="none"
+                                        stroke="currentColor"
+                                        viewBox="0 0 24 24"
+                                    >
+                                        <path
+                                            strokeLinecap="round"
+                                            strokeLinejoin="round"
+                                            strokeWidth="2"
+                                            d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"
+                                        />
+                                    </svg>
+                                    Load Data
+                                </>
+                            )}
+                        </button>
                     </div>
                 </div>
             </div>

@@ -77,6 +77,38 @@ export default function Transactions({
           })
         : [];
 
+    // Calculate running balance for bank statement style (newest first, calculating backward)
+    const transactionsWithBalance = [];
+    let currentBalance = walletBalance;
+
+    for (let i = 0; i < sortedTransactions.length; i++) {
+        const transaction = sortedTransactions[i];
+
+        if (i === 0) {
+            // For the first (newest) transaction, use current wallet balance
+            transactionsWithBalance.push({
+                ...transaction,
+                calculatedBalance: currentBalance,
+            });
+        } else {
+            // For older transactions, calculate what the balance was before this transaction
+            const currentAmount = parseFloat(transaction.amount) || 0;
+
+            if (transaction.debit_credit === 1) {
+                // If this transaction was debit, balance was higher before it
+                currentBalance = currentBalance + currentAmount;
+            } else {
+                // If this transaction was credit, balance was lower before it
+                currentBalance = currentBalance - currentAmount;
+            }
+
+            transactionsWithBalance.push({
+                ...transaction,
+                calculatedBalance: currentBalance,
+            });
+        }
+    }
+
     return (
         <MemberDashboardLayout
             title="Transactions - Serve Cafe"
@@ -300,16 +332,16 @@ export default function Transactions({
                                 Transaction Statement
                             </h3>
                             <p className="text-xs sm:text-sm text-gray-500 mt-1">
-                                Showing {sortedTransactions.length || 0}{" "}
+                                Showing {transactionsWithBalance.length || 0}{" "}
                                 transactions
                             </p>
                         </div>
 
                         {/* Mobile Card View */}
                         <div className="block lg:hidden">
-                            {sortedTransactions.length > 0 ? (
+                            {transactionsWithBalance.length > 0 ? (
                                 <div className="divide-y divide-gray-200">
-                                    {sortedTransactions.map(
+                                    {transactionsWithBalance.map(
                                         (transaction, index) => (
                                             <div
                                                 key={transaction.id}
@@ -368,9 +400,15 @@ export default function Transactions({
                                                             Amount:
                                                         </span>
                                                         <div className="font-medium">
-                                                            {formatCurrency(
-                                                                transaction.amount
-                                                            )}
+                                                            {transaction.debit_credit ===
+                                                            1
+                                                                ? "-" +
+                                                                  formatCurrency(
+                                                                      transaction.amount
+                                                                  )
+                                                                : formatCurrency(
+                                                                      transaction.amount
+                                                                  )}
                                                         </div>
                                                     </div>
                                                     <div>
@@ -379,7 +417,7 @@ export default function Transactions({
                                                         </span>
                                                         <div className="font-bold">
                                                             {formatCurrency(
-                                                                transaction.balance
+                                                                transaction.calculatedBalance
                                                             )}
                                                         </div>
                                                     </div>
@@ -427,8 +465,8 @@ export default function Transactions({
                                     </tr>
                                 </thead>
                                 <tbody className="bg-white divide-y divide-gray-200">
-                                    {sortedTransactions.length > 0 ? (
-                                        sortedTransactions.map(
+                                    {transactionsWithBalance.length > 0 ? (
+                                        transactionsWithBalance.map(
                                             (transaction, index) => (
                                                 <tr
                                                     key={transaction.id}
@@ -492,7 +530,8 @@ export default function Transactions({
                                                     <td className="px-6 py-4 whitespace-nowrap text-right text-sm font-medium text-gray-900">
                                                         {transaction.debit_credit ===
                                                         1
-                                                            ? formatCurrency(
+                                                            ? "-" +
+                                                              formatCurrency(
                                                                   transaction.amount
                                                               )
                                                             : "-"}
@@ -507,7 +546,7 @@ export default function Transactions({
                                                     </td>
                                                     <td className="px-6 py-4 whitespace-nowrap text-right text-sm font-bold text-gray-900">
                                                         {formatCurrency(
-                                                            transaction.balance
+                                                            transaction.calculatedBalance
                                                         )}
                                                     </td>
                                                 </tr>

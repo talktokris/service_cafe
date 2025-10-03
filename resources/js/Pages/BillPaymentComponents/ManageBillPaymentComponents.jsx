@@ -558,6 +558,7 @@ export default function ManageBillPaymentComponents({
             {showPayModal && selectedTable && (
                 <PayBillComponents
                     table={selectedTable}
+                    orderId={tableOccupancy[selectedTable.id]?.orderId || null}
                     orderTotal={
                         tableOccupancy[selectedTable.id]?.totalAmount || 0
                     }
