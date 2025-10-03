@@ -11,6 +11,7 @@ use App\Http\Controllers\MemberOrderController;
 use App\Http\Controllers\ShareReferralController;
 use App\Http\Controllers\TreeViewController;
 use App\Http\Controllers\CronController;
+use App\Http\Controllers\OtpOrderController;
 use App\Models\User;
 use Illuminate\Foundation\Application;
 use Illuminate\Support\Facades\Route;
@@ -528,6 +529,11 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::get('/settings', function () {
         return Inertia::render('HeadOffice/Super/Settings');
     })->name('settings');
+    
+    // OTP Orders Management
+    Route::get('/otp-orders', [OtpOrderController::class, 'index'])->name('otp-orders');
+    Route::post('/otp-orders/{orderId}/send-otp', [OtpOrderController::class, 'sendOtp'])->name('otp-orders.send-otp');
+    Route::post('/otp-orders/{orderId}/verify-otp', [OtpOrderController::class, 'verifyOtp'])->name('otp-orders.verify-otp');
     
     // Manage Tables Settings
     Route::get('/manage-tables', function () {
