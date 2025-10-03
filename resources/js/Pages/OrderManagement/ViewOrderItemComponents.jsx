@@ -49,17 +49,22 @@ export default function ViewOrderItemComponents({ order, onClose }) {
     const calculateTotals = () => {
         const totals = orderItems.reduce(
             (acc, item) => {
-                acc.buyingPrice += parseFloat(item.buyingPrice) || 0;
-                acc.sellingPrice += parseFloat(item.sellingPrice) || 0;
-                acc.taxAmount += parseFloat(item.taxAmount) || 0;
+                const quantity = parseInt(item.quantity) || 0;
+
+                // Calculate totals by multiplying price × quantity (except for tax which is already per item total)
+                acc.buyingPrice +=
+                    (parseFloat(item.buyingPrice) || 0) * quantity;
+                acc.sellingPrice +=
+                    (parseFloat(item.sellingPrice) || 0) * quantity;
+                acc.taxAmount += parseFloat(item.taxAmount) || 0; // Tax is already total for the item
                 acc.adminProfitAmount +=
-                    parseFloat(item.adminProfitAmount) || 0;
+                    (parseFloat(item.adminProfitAmount) || 0) * quantity;
                 acc.adminNetProfitAmount +=
-                    parseFloat(item.adminNetProfitAmount) || 0;
+                    (parseFloat(item.adminNetProfitAmount) || 0) * quantity;
                 acc.userCommissionAmount +=
-                    parseFloat(item.userCommissionAmount) || 0;
-                acc.subTotalAmount += parseFloat(item.subTotalAmount) || 0;
-                acc.totalQuantity += parseInt(item.quantity) || 0;
+                    (parseFloat(item.userCommissionAmount) || 0) * quantity;
+                acc.subTotalAmount += parseFloat(item.subTotalAmount) || 0; // SubTotal is already calculated
+                acc.totalQuantity += quantity;
                 return acc;
             },
             {
@@ -81,8 +86,8 @@ export default function ViewOrderItemComponents({ order, onClose }) {
 
     return (
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-[60] p-4">
-            <div className="bg-white rounded-lg shadow-xl max-w-6xl w-full max-h-[90vh] overflow-y-auto">
-                {/* Header */}
+            <div className="bg-white rounded-lg shadow-xl max-w-6xl w-full h-[90vh] flex flex-col">
+                {/* Fixed Header */}
                 <div className="p-6 border-b border-gray-200 flex-shrink-0">
                     <div className="flex items-center justify-between">
                         <div>
@@ -114,8 +119,8 @@ export default function ViewOrderItemComponents({ order, onClose }) {
                     </div>
                 </div>
 
-                {/* Content */}
-                <div className="p-6">
+                {/* Scrollable Content */}
+                <div className="p-6 flex-1 overflow-y-auto">
                     {isLoading ? (
                         <div className="flex items-center justify-center py-12">
                             <div className="loading loading-spinner loading-lg"></div>
@@ -346,8 +351,8 @@ export default function ViewOrderItemComponents({ order, onClose }) {
                     )}
                 </div>
 
-                {/* Footer */}
-                <div className="p-6 border-t border-gray-200 flex justify-end">
+                {/* Fixed Footer */}
+                <div className="p-6 border-t border-gray-200 flex justify-end flex-shrink-0 bg-gray-50">
                     <button onClick={onClose} className="btn btn-ghost">
                         Close
                     </button>

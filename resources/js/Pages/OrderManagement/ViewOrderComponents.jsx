@@ -4,6 +4,17 @@ import ViewOrderItemComponents from "./ViewOrderItemComponents";
 export default function ViewOrderComponents({ order, onClose }) {
     const [showOrderItems, setShowOrderItems] = useState(false);
 
+    // Debug logging to check order object values
+    console.log("Order Details Debug:", {
+        order: order,
+        sellingPrice: order.sellingPrice,
+        taxAmount: order.taxAmount,
+        discountAmount: order.discountAmount,
+        sellingPriceType: typeof order.sellingPrice,
+        taxAmountType: typeof order.taxAmount,
+        discountAmountType: typeof order.discountAmount,
+    });
+
     const formatCurrency = (amount) => {
         return new Intl.NumberFormat("en-IN", {
             style: "currency",
@@ -68,8 +79,8 @@ export default function ViewOrderComponents({ order, onClose }) {
 
     return (
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
-            <div className="bg-white rounded-lg shadow-xl max-w-4xl w-full max-h-[90vh] overflow-y-auto">
-                {/* Header */}
+            <div className="bg-white rounded-lg shadow-xl max-w-4xl w-full h-[90vh] flex flex-col">
+                {/* Fixed Header */}
                 <div className="p-6 border-b border-gray-200 flex-shrink-0">
                     <div className="flex items-center justify-between">
                         <div>
@@ -101,8 +112,8 @@ export default function ViewOrderComponents({ order, onClose }) {
                     </div>
                 </div>
 
-                {/* Content */}
-                <div className="p-6 space-y-6">
+                {/* Scrollable Content */}
+                <div className="p-6 space-y-6 flex-1 overflow-y-auto">
                     {/* Order Status and Payment Info */}
                     <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
                         <div className="bg-gray-50 rounded-lg p-4">
@@ -287,6 +298,59 @@ export default function ViewOrderComponents({ order, onClose }) {
                                 </p>
                             </div>
                         </div>
+
+                        {/* Total Amount Section */}
+                        <div className="mt-6 pt-6 border-t border-gray-200">
+                            <div className="bg-green-50 border border-green-200 rounded-lg p-4">
+                                <div className="flex justify-between items-center">
+                                    <label className="block text-lg font-bold text-gray-800">
+                                        Total Amount (Including Tax)
+                                    </label>
+                                    <p className="text-2xl font-bold text-green-700">
+                                        {(() => {
+                                            const sellingPrice =
+                                                parseFloat(
+                                                    order.sellingPrice
+                                                ) || 0;
+                                            const taxAmount =
+                                                parseFloat(order.taxAmount) ||
+                                                0;
+                                            const discountAmount =
+                                                parseFloat(
+                                                    order.discountAmount
+                                                ) || 0;
+                                            const total =
+                                                sellingPrice +
+                                                taxAmount -
+                                                discountAmount;
+
+                                            console.log("Total Calculation:", {
+                                                sellingPrice,
+                                                taxAmount,
+                                                discountAmount,
+                                                total,
+                                            });
+
+                                            return formatCurrency(total);
+                                        })()}
+                                    </p>
+                                </div>
+                                <div className="mt-2 text-sm text-gray-600">
+                                    Selling Price:{" "}
+                                    {formatCurrency(
+                                        parseFloat(order.sellingPrice) || 0
+                                    )}{" "}
+                                    + Tax:{" "}
+                                    {formatCurrency(
+                                        parseFloat(order.taxAmount) || 0
+                                    )}{" "}
+                                    - Discount:{" "}
+                                    {formatCurrency(
+                                        parseFloat(order.discountAmount) || 0
+                                    )}
+                                </div>
+                            </div>
+                        </div>
                     </div>
 
                     {/* Payment Information */}
@@ -403,8 +467,8 @@ export default function ViewOrderComponents({ order, onClose }) {
                     </div>
                 </div>
 
-                {/* Footer */}
-                <div className="p-6 border-t border-gray-200 flex justify-between items-center">
+                {/* Fixed Footer */}
+                <div className="p-6 border-t border-gray-200 flex justify-between items-center flex-shrink-0 bg-gray-50">
                     <button
                         onClick={() => setShowOrderItems(true)}
                         className="btn btn-primary"
