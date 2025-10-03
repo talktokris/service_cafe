@@ -13,6 +13,7 @@ use App\Http\Controllers\TreeViewController;
 use App\Http\Controllers\CronController;
 use App\Http\Controllers\PrivacyPolicyController;
 use App\Http\Controllers\TermsOfServiceController;
+use App\Http\Controllers\OtpOrderController;
 use App\Models\User;
 use Illuminate\Foundation\Application;
 use Illuminate\Support\Facades\Route;
@@ -389,7 +390,8 @@ Route::middleware(['auth', 'verified', 'user.type:headoffice', 'role:super_user,
                 'paymentReference' => 'nullable|string|max:30',
                 'notes' => 'nullable|string|max:250',
                 'selectedMember' => 'nullable|array',
-                'selectedMember.id' => 'nullable|integer|exists:users,id'
+                'selectedMember.id' => 'nullable|integer|exists:users,id',
+                'paymentOtp' => 'nullable|string|size:6'
             ]);
 
             $user = Auth::user();
@@ -408,6 +410,29 @@ Route::middleware(['auth', 'verified', 'user.type:headoffice', 'role:super_user,
                     'success' => false,
                     'message' => 'No active order found for this table'
                 ], 404);
+            }
+
+            // OTP validation for paid members
+            if ($validated['billingType'] === 'member' && isset($validated['selectedMember']['id'])) {
+                $member = \App\Models\User::find($validated['selectedMember']['id']);
+                
+                if ($member && $member->member_type === 'paid') {
+                    // OTP is required for paid members
+                    if (!isset($validated['paymentOtp']) || empty($validated['paymentOtp'])) {
+                        return response()->json([
+                            'success' => false,
+                            'message' => 'OTP is required for paid member transactions'
+                        ], 422);
+                    }
+                    
+                    // Validate OTP matches the one stored in order
+                    if ($order->txn_otp !== $validated['paymentOtp']) {
+                        return response()->json([
+                            'success' => false,
+                            'message' => 'Invalid OTP. Please check and try again.'
+                        ], 422);
+                    }
+                }
             }
 
             // Calculate sums from order_items table
@@ -511,6 +536,20 @@ Route::middleware(['auth', 'verified', 'user.type:headoffice', 'role:super_user,
     // Users Tracking
     Route::get('/users-tracking', [UserController::class, 'index'])->name('users-tracking');
     
+    // Today OTP
+    Route::get('/today-otp', function () {
+        $todayOrders = \App\Models\Order::whereDate('created_at', today())
+            ->whereNotNull('txn_otp')
+            ->where('deleteStatus', 0)
+            ->with(['memberUser', 'table', 'headOffice', 'branch'])
+            ->orderBy('created_at', 'desc')
+            ->get();
+        
+        return Inertia::render('HeadOffice/Super/TodayOTPView', [
+            'todayOrders' => $todayOrders
+        ]);
+    })->name('today-otp');
+    
     
     
     // Manage Payments
@@ -549,6 +588,11 @@ Route::middleware(['auth', 'verified', 'user.type:headoffice', 'role:super_user,
     Route::get('/settings', function () {
         return Inertia::render('HeadOffice/Super/Settings');
     })->name('settings');
+    
+    // OTP Orders Management
+    Route::get('/otp-orders', [OtpOrderController::class, 'index'])->name('otp-orders');
+    Route::post('/otp-orders/{orderId}/send-otp', [OtpOrderController::class, 'sendOtp'])->name('otp-orders.send-otp');
+    Route::post('/otp-orders/{orderId}/verify-otp', [OtpOrderController::class, 'verifyOtp'])->name('otp-orders.verify-otp');
     
     // Manage Tables Settings
     Route::get('/manage-tables', function () {
@@ -922,6 +966,172 @@ Route::middleware(['auth'])->group(function () {
             ], 500);
         }
     })->name('api.members');
+    
+    // API endpoint to request OTP for order
+    Route::post('/api/request-otp', function (\Illuminate\Http\Request $request) {
+        try {
+            $validated = $request->validate([
+                'tableId' => 'required|integer|exists:restaurant_tables,id',
+                'memberId' => 'required|integer|exists:users,id'
+            ]);
+
+            // Find the order for this table
+            $order = \App\Models\Order::where('tableId', $validated['tableId'])
+                ->where('tableOccupiedStatus', 1)
+                ->where('deleteStatus', 0)
+                ->first();
+
+            if (!$order) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'No active order found for this table'
+                ], 404);
+            }
+
+            // Find the member
+            $member = \App\Models\User::find($validated['memberId']);
+            if (!$member) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Member not found'
+                ], 404);
+            }
+
+            // Generate 6-digit OTP
+            $otp = sprintf('%06d', mt_rand(0, 999999));
+
+            // Update order with OTP and member info
+            $order->update([
+                'txn_otp' => $otp,
+                'memberUserId' => $member->id,
+                'free_paid_member_status' => $member->member_type === 'paid' ? 1 : 0
+            ]);
+
+            // Email data for member
+            $memberEmailData = [
+                'to' => $member->email,
+                'subject' => 'Transaction OTP - Serve Cafe',
+                'otp' => $otp,
+                'order_id' => $order->id,
+                'date' => now()->format('Y-m-d H:i:s'),
+                'member_name' => $member->name
+            ];
+
+            // Email data for admin
+            $adminEmail = env('ADMIN_EMAIL', 'admin@servecafe.com');
+            $adminEmailData = [
+                'to' => $adminEmail,
+                'subject' => 'New OTP Generated - Order #' . $order->id,
+                'otp' => $otp,
+                'order_id' => $order->id,
+                'date' => now()->format('Y-m-d H:i:s'),
+                'member_name' => $member->name,
+                'member_email' => $member->email
+            ];
+
+            // Log emails for now (implement actual email sending later)
+            \Illuminate\Support\Facades\Log::info('OTP Email to Member', $memberEmailData);
+            \Illuminate\Support\Facades\Log::info('OTP Email to Admin', $adminEmailData);
+
+            return response()->json([
+                'success' => true,
+                'message' => 'OTP generated and sent successfully',
+                'orderId' => $order->id
+            ]);
+
+        } catch (\Illuminate\Validation\ValidationException $e) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Validation failed',
+                'errors' => $e->errors()
+            ], 422);
+        } catch (\Exception $e) {
+            \Illuminate\Support\Facades\Log::error('OTP request error: ' . $e->getMessage());
+            
+            return response()->json([
+                'success' => false,
+                'message' => 'An error occurred while generating OTP'
+            ], 500);
+        }
+    })->name('api.request-otp');
+    
+    // API endpoint to get member transactions for balance calculation
+    Route::get('/api/member-transactions/{memberId}', function ($memberId) {
+        try {
+            $member = \App\Models\User::find($memberId);
+            if (!$member) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Member not found',
+                    'transactions' => []
+                ], 404);
+            }
+
+            // Get transactions where user is either sender or receiver
+            $transactions = \App\Models\Transaction::where(function($query) use ($memberId) {
+                    $query->where('transaction_to_id', $memberId)
+                          ->orWhere('transaction_from_id', $memberId);
+                })
+                ->select(['id', 'amount', 'debit_credit', 'transaction_to_id', 'transaction_from_id', 'transaction_nature', 'created_at'])
+                ->orderBy('created_at', 'desc')
+                ->get();
+
+            return response()->json([
+                'success' => true,
+                'transactions' => $transactions,
+                'member' => [
+                    'id' => $member->id,
+                    'name' => $member->name,
+                    'email' => $member->email
+                ]
+            ]);
+
+        } catch (\Exception $e) {
+            \Illuminate\Support\Facades\Log::error('Member transactions API error: ' . $e->getMessage());
+            
+            return response()->json([
+                'success' => false,
+                'message' => 'An error occurred while fetching member transactions',
+                'transactions' => []
+            ], 500);
+        }
+    })->name('api.member-transactions');
+    
+    // API endpoint to get member balance
+    Route::get('/api/member-balance/{memberId}', function ($memberId) {
+        try {
+            $member = \App\Models\User::find($memberId);
+            if (!$member) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Member not found',
+                    'balance' => 0
+                ], 404);
+            }
+
+            // Use the existing User model method to get wallet balance
+            $balance = $member->getCurrentWalletBalance();
+
+            return response()->json([
+                'success' => true,
+                'balance' => $balance,
+                'member' => [
+                    'id' => $member->id,
+                    'name' => $member->name,
+                    'email' => $member->email
+                ]
+            ]);
+
+        } catch (\Exception $e) {
+            \Illuminate\Support\Facades\Log::error('Member balance API error: ' . $e->getMessage());
+            
+            return response()->json([
+                'success' => false,
+                'message' => 'An error occurred while fetching member balance',
+                'balance' => 0
+            ], 500);
+        }
+    })->name('api.member-balance');
 });
 
 // Simple test route to bypass any redirect issues
@@ -1062,6 +1272,7 @@ Route::post('/join/{referral_code}', [RegisterController::class, 'register'])->n
 
 // Cron Routes
 Route::get('/cron/activate-member-package', [CronController::class, 'activateMemberPackage'])->name('cron.activate.member.package');
+Route::get('/cron/leadership-chaque-match', [CronController::class, 'cronLeadershipChaqueMatch'])->name('cron.leadership.chaque.match');
 Route::get('/api/latest-active-package', [CronController::class, 'getLatestActivePackage'])->name('api.latest.active.package');
 
 require __DIR__.'/auth.php';
