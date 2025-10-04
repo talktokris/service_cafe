@@ -1384,6 +1384,9 @@ Route::post('/join/{referral_code}', [RegisterController::class, 'register'])->n
 // Cron Routes
 Route::get('/cron/activate-member-package', [MemberActivationController::class, 'activateMemberPackage'])->name('cron.activate.member.package');
 Route::get('/cron/leadership-chaque-match', [LeadershipChaqueMatchController::class, 'cronLeadershipChaqueMatch'])->name('cron.leadership.chaque.match');
+
+// Test route for debugging chaqueMatchDistribution
+Route::get('/test-chaque-match', [LeadershipChaqueMatchController::class, 'testChaqueMatchDistribution'])->name('test.chaque.match');
 Route::get('/api/latest-active-package', [MemberActivationController::class, 'getLatestActivePackage'])->name('api.latest.active.package');
 
 require __DIR__.'/auth.php';

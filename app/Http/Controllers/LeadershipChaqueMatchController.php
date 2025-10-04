@@ -42,6 +42,23 @@ class LeadershipChaqueMatchController extends Controller
                 'total_orders_found' => $orders->count(),
                 'execution_time' => now()->toDateTimeString()
             ]);
+            
+            // Debug: Log order details if any orders found
+            if ($orders->count() > 0) {
+                Log::info('Orders found for processing:', [
+                    'order_ids' => $orders->pluck('id')->toArray(),
+                    'member_user_ids' => $orders->pluck('memberUserId')->toArray()
+                ]);
+            } else {
+                Log::info('No orders found matching criteria');
+                return response()->json([
+                    'success' => true,
+                    'message' => 'No orders found matching the specified criteria',
+                    'total_orders' => 0,
+                    'processed_orders' => 0,
+                    'execution_time' => now()->toDateTimeString()
+                ]);
+            }
 
             // Process each order
             $processedOrders = [];
@@ -216,6 +233,11 @@ class LeadershipChaqueMatchController extends Controller
                     'countStatus' => 0
                 ]);
 
+                Log::info('Calling chaqueMatchDistribution for Manaslu Earning', [
+                    'earning_id' => $manasluEarning->id,
+                    'user_id' => $manasluEarning->user_id,
+                    'amount' => $manasluEarning->ammout
+                ]);
                 $chaqueMatchResult = $this->chaqueMatchDistribution($manasluEarning);
                 $distributionResults['manaslu'] = [
                     'earning_id' => $manasluEarning->id,
@@ -246,6 +268,11 @@ class LeadershipChaqueMatchController extends Controller
                     'countStatus' => 0
                 ]);
 
+                Log::info('Calling chaqueMatchDistribution for Dhaulagiri Earning', [
+                    'earning_id' => $dhaulagiriEarning->id,
+                    'user_id' => $dhaulagiriEarning->user_id,
+                    'amount' => $dhaulagiriEarning->ammout
+                ]);
                 $chaqueMatchResult = $this->chaqueMatchDistribution($dhaulagiriEarning);
                 $distributionResults['dhaulagiri'] = [
                     'earning_id' => $dhaulagiriEarning->id,
@@ -276,6 +303,11 @@ class LeadershipChaqueMatchController extends Controller
                     'countStatus' => 0
                 ]);
 
+                Log::info('Calling chaqueMatchDistribution for Makalu Earning', [
+                    'earning_id' => $makaluEarning->id,
+                    'user_id' => $makaluEarning->user_id,
+                    'amount' => $makaluEarning->ammout
+                ]);
                 $chaqueMatchResult = $this->chaqueMatchDistribution($makaluEarning);
                 $distributionResults['makalu'] = [
                     'earning_id' => $makaluEarning->id,
@@ -361,13 +393,126 @@ class LeadershipChaqueMatchController extends Controller
     }
 
     /**
-     * Chaque Match Distribution (placeholder function)
+     * Chaque Match Distribution
      */
     private function chaqueMatchDistribution($earningData)
     {
         try {
-            // For now, simply return the earning data
-            // This function will be modified later as per requirements
+            // Store chaque_match_result.amount in const
+            $chaque_match_total_amount = $earningData->ammout;
+            
+            // Set current leadership details
+            $current_leadership_id = $earningData->user_id;
+            $current_earning_type = $earningData->earning_name;
+            
+            Log::info('Starting Chaque Match Distribution', [
+                'earning_id' => $earningData->id,
+                'current_leadership_id' => $current_leadership_id,
+                'current_earning_type' => $current_earning_type,
+                'chaque_match_total_amount' => $chaque_match_total_amount
+            ]);
+            
+            $upline_levels = [];
+            
+            // Start from the current leadership user's upline (not the user itself)
+            $starting_user = DB::table('users')->where('id', $current_leadership_id)->first();
+            
+            if (!$starting_user || !$starting_user->referred_by) {
+                Log::info('No starting upline found for current leadership user', [
+                    'current_leadership_id' => $current_leadership_id,
+                    'has_referred_by' => $starting_user ? (bool)$starting_user->referred_by : false
+                ]);
+                
+                return [
+                    'success' => true,
+                    'earning_id' => $earningData->id,
+                    'earning_name' => $earningData->earning_name,
+                    'earning_type' => $earningData->earning_type,
+                    'amount' => $earningData->ammout,
+                    'user_id' => $earningData->user_id,
+                    'chaque_match_total_amount' => $chaque_match_total_amount,
+                    'current_leadership_id' => $current_leadership_id,
+                    'current_earning_type' => $current_earning_type,
+                    'upline_levels' => [],
+                    'message' => 'No upline found for current user',
+                    'processed_at' => now()->toDateTimeString()
+                ];
+            }
+            
+            $current_upline_id = $starting_user->referred_by;
+            
+            // Find 7 levels of upline paid members
+            for ($level = 1; $level <= 7; $level++) {
+                
+                // Find the next paid member in the upline
+                $paid_upline_id = $this->findNextPaidUpline($current_upline_id);
+                
+                if (!$paid_upline_id) {
+                    Log::info('No paid upline found, stopping search', [
+                        'level' => $level,
+                        'searched_from_id' => $current_upline_id
+                    ]);
+                    break;
+                }
+                
+                // Store level information
+                $upline_levels[] = [
+                    'level' => $level,
+                    'upline_id' => $paid_upline_id,
+                    'searched_from' => $current_upline_id
+                ];
+                
+                Log::info("Level: {$level} and First level id: {$paid_upline_id}", [
+                    'level' => $level,
+                    'paid_upline_id' => $paid_upline_id,
+                    'searched_from' => $current_upline_id
+                ]);
+                
+                // Debug: Log the user details for the found paid member
+                $found_user = DB::table('users')->where('id', $paid_upline_id)->first();
+                if ($found_user) {
+                    Log::info('Found paid user details', [
+                        'user_id' => $found_user->id,
+                        'member_type' => $found_user->member_type,
+                        'referred_by' => $found_user->referred_by,
+                        'first_name' => $found_user->first_name ?? 'N/A',
+                        'last_name' => $found_user->last_name ?? 'N/A'
+                    ]);
+                }
+                
+                // Move to next level - find the upline of the current paid member
+                $next_user = DB::table('users')->where('id', $paid_upline_id)->first();
+                if (!$next_user) {
+                    Log::info('User not found for paid upline', [
+                        'level' => $level,
+                        'paid_upline_id' => $paid_upline_id
+                    ]);
+                    break;
+                }
+                
+                Log::info('Checking next user for upline', [
+                    'level' => $level,
+                    'current_paid_user_id' => $paid_upline_id,
+                    'next_user_referred_by' => $next_user->referred_by,
+                    'next_user_member_type' => $next_user->member_type
+                ]);
+                
+                if (!$next_user->referred_by) {
+                    Log::info('No more upline found for paid member - breaking loop', [
+                        'level' => $level,
+                        'paid_upline_id' => $paid_upline_id,
+                        'referred_by' => $next_user->referred_by,
+                        'reason' => 'referred_by is null or empty'
+                    ]);
+                    break;
+                }
+                
+                $current_upline_id = $next_user->referred_by;
+                Log::info('Moving to next level', [
+                    'level' => $level,
+                    'new_current_upline_id' => $current_upline_id
+                ]);
+            }
             
             return [
                 'success' => true,
@@ -376,6 +521,10 @@ class LeadershipChaqueMatchController extends Controller
                 'earning_type' => $earningData->earning_type,
                 'amount' => $earningData->ammout,
                 'user_id' => $earningData->user_id,
+                'chaque_match_total_amount' => $chaque_match_total_amount,
+                'current_leadership_id' => $current_leadership_id,
+                'current_earning_type' => $current_earning_type,
+                'upline_levels' => $upline_levels,
                 'processed_at' => now()->toDateTimeString()
             ];
 
@@ -389,6 +538,116 @@ class LeadershipChaqueMatchController extends Controller
                 'success' => false,
                 'error' => $e->getMessage()
             ];
+        }
+    }
+    
+    /**
+     * Find the next paid upline member
+     */
+    private function findNextPaidUpline($startUserId)
+    {
+        $current_id = $startUserId;
+        $max_iterations = 50; // Prevent infinite loops
+        $iteration = 0;
+        
+        Log::info('Starting paid upline search', [
+            'start_user_id' => $startUserId
+        ]);
+        
+        while ($current_id && $iteration < $max_iterations) {
+            
+            // Get user details
+            $user = DB::table('users')->where('id', $current_id)->first();
+            
+            if (!$user) {
+                Log::warning('User not found in findNextPaidUpline', [
+                    'user_id' => $current_id
+                ]);
+                return null;
+            }
+            
+            Log::info('Checking user in upline search', [
+                'user_id' => $current_id,
+                'member_type' => $user->member_type,
+                'referred_by' => $user->referred_by,
+                'iteration' => $iteration
+            ]);
+            
+            // Check if current user is paid
+            if ($user->member_type == 'paid') {
+                Log::info('Found paid member in upline search', [
+                    'paid_user_id' => $current_id,
+                    'iterations_checked' => $iteration
+                ]);
+                return $current_id;
+            }
+            
+            // If free, move to next upline
+            if ($user->member_type == 'free' && $user->referred_by) {
+                $current_id = $user->referred_by;
+                $iteration++;
+            } else {
+                // No more upline to check
+                Log::info('No more upline to check', [
+                    'current_id' => $current_id,
+                    'member_type' => $user->member_type,
+                    'has_referred_by' => (bool)$user->referred_by
+                ]);
+                return null;
+            }
+        }
+        
+        Log::warning('Max iterations reached in findNextPaidUpline', [
+            'start_user_id' => $startUserId,
+            'max_iterations' => $max_iterations
+        ]);
+        
+        return null;
+    }
+    
+    /**
+     * Test function to debug chaqueMatchDistribution
+     */
+    public function testChaqueMatchDistribution()
+    {
+        try {
+            // Get a recent earning record to test with
+            $testEarning = Earning::where('earning_name', 'LIKE', '%Earning%')
+                ->orderBy('id', 'desc')
+                ->first();
+            
+            if (!$testEarning) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'No test earning found'
+                ]);
+            }
+            
+            Log::info('Testing chaqueMatchDistribution with earning:', [
+                'earning_id' => $testEarning->id,
+                'user_id' => $testEarning->user_id,
+                'earning_name' => $testEarning->earning_name,
+                'amount' => $testEarning->ammout
+            ]);
+            
+            $result = $this->chaqueMatchDistribution($testEarning);
+            
+            return response()->json([
+                'success' => true,
+                'test_earning' => $testEarning,
+                'result' => $result
+            ]);
+            
+        } catch (\Exception $e) {
+            Log::error('Test chaqueMatchDistribution failed', [
+                'error' => $e->getMessage(),
+                'trace' => $e->getTraceAsString()
+            ]);
+            
+            return response()->json([
+                'success' => false,
+                'error' => $e->getMessage()
+            ]);
         }
     }
 }
