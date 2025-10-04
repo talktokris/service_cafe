@@ -779,4 +779,40 @@ class MemberActivationController extends Controller
             'message' => 'Not eligible for Giga Star promotion'
         ];
     }
+
+    /**
+     * Check what badges exist in the system
+     */
+    public function checkBadges()
+    {
+        try {
+            $badges = [
+                'three_stars' => BadgeThreeStars::count(),
+                'five_stars' => BadgeFiveStars::count(),
+                'seven_stars' => BadgeSevenStars::count(),
+                'mega_stars' => BadgeMegaStars::count(),
+                'giga_stars' => BadgeGigaStars::count(),
+            ];
+
+            $badgeUsers = [
+                'three_stars_users' => BadgeThreeStars::pluck('user_id')->toArray(),
+                'five_stars_users' => BadgeFiveStars::pluck('user_id')->toArray(),
+                'seven_stars_users' => BadgeSevenStars::pluck('user_id')->toArray(),
+                'mega_stars_users' => BadgeMegaStars::pluck('user_id')->toArray(),
+                'giga_stars_users' => BadgeGigaStars::pluck('user_id')->toArray(),
+            ];
+
+            return response()->json([
+                'success' => true,
+                'badge_counts' => $badges,
+                'badge_users' => $badgeUsers
+            ]);
+
+        } catch (\Exception $e) {
+            return response()->json([
+                'success' => false,
+                'error' => $e->getMessage()
+            ]);
+        }
+    }
 }

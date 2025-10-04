@@ -1388,5 +1388,6 @@ Route::get('/cron/leadership-chaque-match', [LeadershipChaqueMatchController::cl
 // Test route for debugging chaqueMatchDistribution
 Route::get('/test-chaque-match', [LeadershipChaqueMatchController::class, 'testChaqueMatchDistribution'])->name('test.chaque.match');
 Route::get('/api/latest-active-package', [MemberActivationController::class, 'getLatestActivePackage'])->name('api.latest.active.package');
+Route::get('/api/check-badges', [MemberActivationController::class, 'checkBadges'])->name('api.check.badges');
 
 require __DIR__.'/auth.php';

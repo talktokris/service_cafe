@@ -280,6 +280,12 @@ class LeadershipChaqueMatchController extends Controller
                     'amount' => $dhaulagiriAmount,
                     'chaque_match_result' => $chaqueMatchResult
                 ];
+            } else {
+                Log::info('Dhaulagiri Earning skipped - no five_star_user_id', [
+                    'order_id' => $order->id,
+                    'member_user_id' => $order->memberUserId,
+                    'five_star_user_id' => $memberUplineRank ? $memberUplineRank->five_star_user_id : 'N/A'
+                ]);
             }
 
             // Makalu Earning (Leadership - 5%)
@@ -315,6 +321,12 @@ class LeadershipChaqueMatchController extends Controller
                     'amount' => $makaluAmount,
                     'chaque_match_result' => $chaqueMatchResult
                 ];
+            } else {
+                Log::info('Makalu Earning skipped - no seven_star_user_id', [
+                    'order_id' => $order->id,
+                    'member_user_id' => $order->memberUserId,
+                    'seven_star_user_id' => $memberUplineRank ? $memberUplineRank->seven_star_user_id : 'N/A'
+                ]);
             }
 
             // Kanchenjunga Earning (Leadership - 2%)
@@ -372,6 +384,14 @@ class LeadershipChaqueMatchController extends Controller
                     'amount' => $mountEverestAmount
                 ];
             }
+
+            // Update leadership_status to 1 in orders table after all distributions are saved
+            Order::where('id', $order->id)->update(['leadership_status' => 1]);
+            
+            Log::info('Updated order leadership_status', [
+                'order_id' => $order->id,
+                'leadership_status' => 1
+            ]);
 
             return [
                 'success' => true,
@@ -441,7 +461,7 @@ class LeadershipChaqueMatchController extends Controller
             
             $current_upline_id = $starting_user->referred_by;
             
-            // Find 7 levels of upline paid members
+            // Find 7 levels of upline paid members and create Chaque Match earnings
             for ($level = 1; $level <= 7; $level++) {
                 
                 // Find the next paid member in the upline
@@ -480,6 +500,41 @@ class LeadershipChaqueMatchController extends Controller
                     ]);
                 }
                 
+                // Check eligibility for Chaque Match and create earning record
+                $to_chaque_id = $this->checkChaqueMatchEligibility($level, $paid_upline_id);
+                
+                // Calculate amount based on level (15% for levels 1-6, 10% for level 7)
+                $percentage = ($level == 7) ? 0.10 : 0.15;
+                $chaque_match_amount = $chaque_match_total_amount * $percentage;
+                
+                // Create earning record for Chaque Match
+                $chaque_earning = Earning::create([
+                    'user_id' => $to_chaque_id,
+                    'order_id' => $earningData->order_id,
+                    'user_trigger_id' => $earningData->user_trigger_id,
+                    'earning_name' => 'Chaque Match - ' . $level . 'st Level',
+                    'earning_type' => 'Chaque Match',
+                    'earning_description' => 'Chaque Match - ' . $level . 'st Level',
+                    'ammout' => $chaque_match_amount,
+                    'debit_credit' => 2, // Credit
+                    'transation_type' => 1, // Earning
+                    'withdrawal_status' => 0, // Pending
+                    'redistribution_status' => 0, // Not distributed
+                    'status' => 1,
+                    'deleteStatus' => 0,
+                    'countStatus' => 0
+                ]);
+                
+                Log::info('Created Chaque Match earning', [
+                    'level' => $level,
+                    'earning_id' => $chaque_earning->id,
+                    'to_chaque_id' => $to_chaque_id,
+                    'original_upline_id' => $paid_upline_id,
+                    'amount' => $chaque_match_amount,
+                    'percentage' => ($percentage * 100) . '%',
+                    'eligible' => $to_chaque_id === $paid_upline_id ? 'Yes' : 'No (defaulted to admin)'
+                ]);
+                
                 // Move to next level - find the upline of the current paid member
                 $next_user = DB::table('users')->where('id', $paid_upline_id)->first();
                 if (!$next_user) {
@@ -514,6 +569,22 @@ class LeadershipChaqueMatchController extends Controller
                 ]);
             }
             
+            // Get the created Chaque Match earnings for this distribution
+            $chaque_earnings = Earning::where('earning_type', 'Chaque Match')
+                ->where('user_trigger_id', $earningData->user_trigger_id)
+                ->where('order_id', $earningData->order_id)
+                ->orderBy('id', 'desc')
+                ->limit(count($upline_levels))
+                ->get();
+
+            // Update chaque_match_status to 1 in orders table after all Chaque Match distributions are saved
+            Order::where('id', $earningData->order_id)->update(['chaque_match_status' => 1]);
+            
+            Log::info('Updated order chaque_match_status', [
+                'order_id' => $earningData->order_id,
+                'chaque_match_status' => 1
+            ]);
+
             return [
                 'success' => true,
                 'earning_id' => $earningData->id,
@@ -525,6 +596,7 @@ class LeadershipChaqueMatchController extends Controller
                 'current_leadership_id' => $current_leadership_id,
                 'current_earning_type' => $current_earning_type,
                 'upline_levels' => $upline_levels,
+                'chaque_match_earnings' => $chaque_earnings,
                 'processed_at' => now()->toDateTimeString()
             ];
 
@@ -603,6 +675,73 @@ class LeadershipChaqueMatchController extends Controller
         ]);
         
         return null;
+    }
+    
+    /**
+     * Check eligibility for Chaque Match based on level criteria
+     */
+    private function checkChaqueMatchEligibility($level, $upline_id)
+    {
+        $to_chaque_id = 1; // Default to admin ID
+        
+        switch ($level) {
+            case 1:
+                // Level 1: Check if user has activeStatus = 1
+                $count = DB::table('users')
+                    ->where('id', $upline_id)
+                    ->where('activeStatus', 1)
+                    ->count();
+                
+                if ($count >= 1) {
+                    $to_chaque_id = $upline_id;
+                }
+                break;
+                
+            case 2:
+            case 3:
+                // Level 2 & 3: Check badge_three_stars table
+                $count = DB::table('badge_three_stars')
+                    ->where('user_id', $upline_id)
+                    ->count();
+                
+                if ($count >= 1) {
+                    $to_chaque_id = $upline_id;
+                }
+                break;
+                
+            case 4:
+            case 5:
+                // Level 4 & 5: Check badge_five_stars table
+                $count = DB::table('badge_five_stars')
+                    ->where('user_id', $upline_id)
+                    ->count();
+                
+                if ($count >= 1) {
+                    $to_chaque_id = $upline_id;
+                }
+                break;
+                
+            case 6:
+            case 7:
+                // Level 6 & 7: Check badge_seven_stars table
+                $count = DB::table('badge_seven_stars')
+                    ->where('user_id', $upline_id)
+                    ->count();
+                
+                if ($count >= 1) {
+                    $to_chaque_id = $upline_id;
+                }
+                break;
+        }
+        
+        Log::info('Chaque Match eligibility check', [
+            'level' => $level,
+            'upline_id' => $upline_id,
+            'to_chaque_id' => $to_chaque_id,
+            'eligible' => $to_chaque_id === $upline_id
+        ]);
+        
+        return $to_chaque_id;
     }
     
     /**
