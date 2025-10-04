@@ -286,12 +286,10 @@ class LeadershipChaqueMatchController extends Controller
                     'countStatus' => 0
                 ]);
 
-                $chaqueMatchResult = $this->chaqueMatchDistribution($kanchenjungaEarning);
                 $distributionResults['kanchenjunga'] = [
                     'earning_id' => $kanchenjungaEarning->id,
                     'user_id' => $memberUplineRank->mega_star_user_id,
-                    'amount' => $kanchenjungaAmount,
-                    'chaque_match_result' => $chaqueMatchResult
+                    'amount' => $kanchenjungaAmount
                 ];
             }
 
@@ -312,12 +310,10 @@ class LeadershipChaqueMatchController extends Controller
                     'countStatus' => 0
                 ]);
 
-                $chaqueMatchResult = $this->chaqueMatchDistribution($mountEverestEarning);
                 $distributionResults['mount_everest'] = [
                     'earning_id' => $mountEverestEarning->id,
                     'user_id' => $memberUplineRank->giga_star_user_id,
-                    'amount' => $mountEverestAmount,
-                    'chaque_match_result' => $chaqueMatchResult
+                    'amount' => $mountEverestAmount
                 ];
             }
 
