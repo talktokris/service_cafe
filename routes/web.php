@@ -16,6 +16,7 @@ use App\Http\Controllers\MemberActivationController;
 use App\Http\Controllers\PrivacyPolicyController;
 use App\Http\Controllers\TermsOfServiceController;
 use App\Http\Controllers\OtpOrderController;
+use App\Http\Controllers\EarningsController;
 use App\Models\User;
 use Illuminate\Foundation\Application;
 use Illuminate\Support\Facades\Route;
@@ -1260,6 +1261,14 @@ Route::middleware(['auth', 'user.type:member'])->group(function () {
     // Member Badges Route (Paid Members Only)
     Route::get('/member-badges', [MemberDashboardController::class, 'memberBadges'])
         ->name('member.badges');
+
+    // Earnings Routes (Paid Members Only)
+    Route::get('/member-earnings', [EarningsController::class, 'index'])
+        ->name('member.earnings');
+    Route::post('/withdrawal/create', [EarningsController::class, 'createWithdrawal'])
+        ->name('withdrawal.create');
+    Route::get('/api/member-earnings', [EarningsController::class, 'getEarnings'])
+        ->name('api.member.earnings');
 
     // Support Routes
     Route::get('/support', [SupportController::class, 'index'])->name('support');

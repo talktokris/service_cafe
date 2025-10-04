@@ -16,6 +16,10 @@ class Earning extends Model
         'earning_type',
         'earning_description',
         'ammout',
+        'debit_credit',
+        'transation_type',
+        'withdrawal_status',
+        'redistribution_status',
         'status',
         'deleteStatus',
         'countStatus'
@@ -23,6 +27,10 @@ class Earning extends Model
 
     protected $casts = [
         'ammout' => 'decimal:2',
+        'debit_credit' => 'integer',
+        'transation_type' => 'integer',
+        'withdrawal_status' => 'integer',
+        'redistribution_status' => 'integer',
         'status' => 'integer',
         'deleteStatus' => 'integer', 
         'countStatus' => 'integer'

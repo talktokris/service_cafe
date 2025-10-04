@@ -179,6 +179,10 @@ class LeadershipChaqueMatchController extends Controller
                     'earning_type' => 'Referral',
                     'earning_description' => 'Referral Earning - #' . $order->id,
                     'ammout' => $annapurnaAmount,
+                    'debit_credit' => 2, // Credit
+                    'transation_type' => 1, // Earning
+                    'withdrawal_status' => 0, // Pending
+                    'redistribution_status' => 0, // Not distributed
                     'status' => 1,
                     'deleteStatus' => 0,
                     'countStatus' => 0
@@ -203,6 +207,10 @@ class LeadershipChaqueMatchController extends Controller
                     'earning_type' => 'LeaderShip',
                     'earning_description' => 'Manaslu Earning - #' . $order->id,
                     'ammout' => $manasluAmount,
+                    'debit_credit' => 2, // Credit
+                    'transation_type' => 1, // Earning
+                    'withdrawal_status' => 0, // Pending
+                    'redistribution_status' => 0, // Not distributed
                     'status' => 1,
                     'deleteStatus' => 0,
                     'countStatus' => 0
@@ -229,6 +237,10 @@ class LeadershipChaqueMatchController extends Controller
                     'earning_type' => 'LeaderShip',
                     'earning_description' => 'Dhaulagiri Earning - #' . $order->id,
                     'ammout' => $dhaulagiriAmount,
+                    'debit_credit' => 2, // Credit
+                    'transation_type' => 1, // Earning
+                    'withdrawal_status' => 0, // Pending
+                    'redistribution_status' => 0, // Not distributed
                     'status' => 1,
                     'deleteStatus' => 0,
                     'countStatus' => 0
@@ -255,6 +267,10 @@ class LeadershipChaqueMatchController extends Controller
                     'earning_type' => 'LeaderShip',
                     'earning_description' => 'Makalu Earning - #' . $order->id,
                     'ammout' => $makaluAmount,
+                    'debit_credit' => 2, // Credit
+                    'transation_type' => 1, // Earning
+                    'withdrawal_status' => 0, // Pending
+                    'redistribution_status' => 0, // Not distributed
                     'status' => 1,
                     'deleteStatus' => 0,
                     'countStatus' => 0
@@ -281,6 +297,10 @@ class LeadershipChaqueMatchController extends Controller
                     'earning_type' => 'LeaderShip',
                     'earning_description' => 'Kanchenjunga Earning - #' . $order->id,
                     'ammout' => $kanchenjungaAmount,
+                    'debit_credit' => 2, // Credit
+                    'transation_type' => 1, // Earning
+                    'withdrawal_status' => 0, // Pending
+                    'redistribution_status' => 0, // Not distributed
                     'status' => 1,
                     'deleteStatus' => 0,
                     'countStatus' => 0
@@ -305,6 +325,10 @@ class LeadershipChaqueMatchController extends Controller
                     'earning_type' => 'LeaderShip',
                     'earning_description' => 'Mount Everest Earning - #' . $order->id,
                     'ammout' => $mountEverestAmount,
+                    'debit_credit' => 2, // Credit
+                    'transation_type' => 1, // Earning
+                    'withdrawal_status' => 0, // Pending
+                    'redistribution_status' => 0, // Not distributed
                     'status' => 1,
                     'deleteStatus' => 0,
                     'countStatus' => 0
