@@ -458,14 +458,14 @@ export default function PayBillComponents({
                             </h3>
                             <div className="space-y-2">
                                 {orderId && (
-                                    <div className="flex justify-between">
-                                        <span className="text-gray-600">
+                                <div className="flex justify-between">
+                                    <span className="text-gray-600">
                                             Order ID:
-                                        </span>
+                                    </span>
                                         <span className="font-medium text-blue-600">
                                             #{orderId}
-                                        </span>
-                                    </div>
+                                    </span>
+                                </div>
                                 )}
                                 <div className="flex justify-between">
                                     <span className="text-gray-600">
@@ -663,7 +663,7 @@ export default function PayBillComponents({
                                                                 0
                                                                     ? selectedMember.member_type ===
                                                                       "paid"
-                                                                        ? "text-green-600"
+                                                                    ? "text-green-600"
                                                                         : "text-gray-600"
                                                                     : "text-red-500"
                                                             }`}
@@ -1398,8 +1398,8 @@ export default function PayBillComponents({
 
                             {/* Action Buttons */}
                             <div className="flex space-x-3">
-                                <button
-                                    onClick={handleSuccessModalClose}
+                            <button
+                                onClick={handleSuccessModalClose}
                                     className="flex-1 bg-gray-600 hover:bg-gray-700 text-white font-medium py-2 px-4 rounded-lg transition-colors"
                                 >
                                     Close

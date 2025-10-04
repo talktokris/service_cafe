@@ -17,6 +17,7 @@ export default function Earnings({
     const [selectedType, setSelectedType] = useState("");
     const [isLoading, setIsLoading] = useState(false);
     const [filteredEarnings, setFilteredEarnings] = useState(earnings);
+    const [currentSummary, setCurrentSummary] = useState(summary);
 
     const { get, data, setData } = useForm({
         from_date: "",
@@ -42,7 +43,8 @@ export default function Earnings({
 
     useEffect(() => {
         setFilteredEarnings(earnings);
-    }, [earnings]);
+        setCurrentSummary(summary);
+    }, [earnings, summary]);
 
     const formatCurrency = (amount) => {
         return new Intl.NumberFormat("en-IN", {
@@ -93,22 +95,36 @@ export default function Earnings({
         return debitCredit === 1 ? "text-red-600" : "text-green-600";
     };
 
-    const handleSearch = () => {
+    const handleSearch = async () => {
         setIsLoading(true);
 
-        get(route("member.earnings"), {
-            data: {
-                from_date: searchFromDate,
-                to_date: searchToDate,
-                type: selectedType,
-            },
-            onSuccess: () => {
-                setIsLoading(false);
-            },
-            onError: () => {
-                setIsLoading(false);
-            },
-        });
+        try {
+            const response = await fetch(
+                route("api.member.earnings") +
+                    `?from_date=${searchFromDate}&to_date=${searchToDate}&type=${selectedType}`,
+                {
+                    method: "GET",
+                    headers: {
+                        "Content-Type": "application/json",
+                        "X-CSRF-TOKEN": document
+                            .querySelector('meta[name="csrf-token"]')
+                            .getAttribute("content"),
+                    },
+                }
+            );
+
+            if (response.ok) {
+                const data = await response.json();
+                setFilteredEarnings(data.earnings);
+                setCurrentSummary(data.summary);
+            } else {
+                console.error("Failed to fetch earnings data");
+            }
+        } catch (error) {
+            console.error("Error fetching earnings data:", error);
+        } finally {
+            setIsLoading(false);
+        }
     };
 
     const handleWithdrawSuccess = () => {
@@ -174,14 +190,16 @@ export default function Earnings({
                                     </p>
                                     <p className="text-lg sm:text-xl lg:text-2xl font-bold text-green-900">
                                         {formatCurrency(
-                                            summary.total_earnings || 0
+                                            currentSummary.total_earnings || 0
                                         )}
                                     </p>
                                 </div>
                             </div>
                             <div className="mt-2 text-xs text-gray-500">
                                 This month:{" "}
-                                {formatCurrency(summary.month_earnings || 0)}
+                                {formatCurrency(
+                                    currentSummary.month_earnings || 0
+                                )}
                             </div>
                         </div>
 
@@ -209,14 +227,17 @@ export default function Earnings({
                                     </p>
                                     <p className="text-lg sm:text-xl lg:text-2xl font-bold text-red-900">
                                         {formatCurrency(
-                                            summary.total_withdrawals || 0
+                                            currentSummary.total_withdrawals ||
+                                                0
                                         )}
                                     </p>
                                 </div>
                             </div>
                             <div className="mt-2 text-xs text-gray-500">
                                 This month:{" "}
-                                {formatCurrency(summary.month_withdrawals || 0)}
+                                {formatCurrency(
+                                    currentSummary.month_withdrawals || 0
+                                )}
                             </div>
                         </div>
 
@@ -244,7 +265,8 @@ export default function Earnings({
                                     </p>
                                     <p className="text-lg sm:text-xl lg:text-2xl font-bold text-blue-900">
                                         {formatCurrency(
-                                            summary.total_redistributions || 0
+                                            currentSummary.total_redistributions ||
+                                                0
                                         )}
                                     </p>
                                 </div>
@@ -252,7 +274,7 @@ export default function Earnings({
                             <div className="mt-2 text-xs text-gray-500">
                                 This month:{" "}
                                 {formatCurrency(
-                                    summary.month_redistributions || 0
+                                    currentSummary.month_redistributions || 0
                                 )}
                             </div>
                         </div>
@@ -281,7 +303,7 @@ export default function Earnings({
                                     </p>
                                     <p className="text-lg sm:text-xl lg:text-2xl font-bold text-purple-900">
                                         {formatCurrency(
-                                            summary.earning_balance || 0
+                                            currentSummary.earning_balance || 0
                                         )}
                                     </p>
                                 </div>
@@ -505,7 +527,7 @@ export default function Earnings({
             <WithdrawComponent
                 isOpen={isWithdrawModalOpen}
                 onClose={() => setIsWithdrawModalOpen(false)}
-                currentBalance={summary.earning_balance || 0}
+                currentBalance={currentSummary.earning_balance || 0}
                 minWithdrawalAmount={1000} // This should come from env
                 onWithdrawSuccess={handleWithdrawSuccess}
             />

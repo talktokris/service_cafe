@@ -156,9 +156,9 @@ export default function PrintReceiptComponents({ table, order, onClose }) {
 
             printWindow.document.close();
             printWindow.focus();
-            setTimeout(() => {
+        setTimeout(() => {
                 printWindow.print();
-            }, 1000);
+        }, 1000);
         } catch (error) {
             console.error("Print Error:", error);
             alert("Failed to print receipt. Please try again.");
@@ -295,7 +295,7 @@ export default function PrintReceiptComponents({ table, order, onClose }) {
                                         <span>Table:</span>
                                         <span>
                                             {table?.tableShortName || "N/A"}
-                                        </span>
+                                    </span>
                                     </div>
                                     <div
                                         style={{
@@ -316,7 +316,7 @@ export default function PrintReceiptComponents({ table, order, onClose }) {
                                                     minute: "2-digit",
                                                 }
                                             )}
-                                        </span>
+                                    </span>
                                     </div>
                                     <div
                                         style={{
@@ -360,11 +360,11 @@ export default function PrintReceiptComponents({ table, order, onClose }) {
                                                         }}
                                                     >
                                                         {itemName}
-                                                    </span>
+                                    </span>
                                                     <span>
                                                         {formatCurrency(total)}
-                                                    </span>
-                                                </div>
+                                    </span>
+                                </div>
                                                 <div
                                                     style={{
                                                         fontSize: "10px",
@@ -375,7 +375,7 @@ export default function PrintReceiptComponents({ table, order, onClose }) {
                                                     {formatCurrency(price)} x{" "}
                                                     {qty}
                                                 </div>
-                                            </div>
+                            </div>
                                         );
                                     })}
                                     <div
@@ -400,7 +400,7 @@ export default function PrintReceiptComponents({ table, order, onClose }) {
                                     >
                                         <span>Subtotal:</span>
                                         <span>{formatCurrency(subtotal)}</span>
-                                    </div>
+                                        </div>
                                     <div
                                         style={{
                                             display: "flex",
@@ -410,7 +410,7 @@ export default function PrintReceiptComponents({ table, order, onClose }) {
                                     >
                                         <span>Tax:</span>
                                         <span>{formatCurrency(totalTax)}</span>
-                                    </div>
+                                        </div>
                                     <div
                                         style={{
                                             borderBottom: "1px dashed #666",
@@ -418,7 +418,7 @@ export default function PrintReceiptComponents({ table, order, onClose }) {
                                         }}
                                     >
                                         ========================================
-                                    </div>
+                                        </div>
                                     <div
                                         style={{
                                             display: "flex",
@@ -440,7 +440,7 @@ export default function PrintReceiptComponents({ table, order, onClose }) {
                                         }}
                                     >
                                         ========================================
-                                    </div>
+                            </div>
                                 </div>
 
                                 {/* Payment Info */}
@@ -455,8 +455,8 @@ export default function PrintReceiptComponents({ table, order, onClose }) {
                                         <span>Payment Method:</span>
                                         <span>
                                             {order?.paymentType || "Cash"}
-                                        </span>
-                                    </div>
+                                    </span>
+                                </div>
                                     <div
                                         style={{
                                             display: "flex",
@@ -467,8 +467,8 @@ export default function PrintReceiptComponents({ table, order, onClose }) {
                                         <span>Amount Paid:</span>
                                         <span>
                                             {formatCurrency(finalTotal)}
-                                        </span>
-                                    </div>
+                                    </span>
+                                </div>
                                     <div
                                         style={{
                                             display: "flex",
@@ -478,7 +478,7 @@ export default function PrintReceiptComponents({ table, order, onClose }) {
                                     >
                                         <span>Change:</span>
                                         <span>{formatCurrency(0)}</span>
-                                    </div>
+                            </div>
                                 </div>
 
                                 {/* Footer */}
@@ -499,18 +499,18 @@ export default function PrintReceiptComponents({ table, order, onClose }) {
                                     </div>
                                     <div style={{ marginBottom: "4px" }}>
                                         Thank you for your visit!
-                                    </div>
+                                        </div>
                                     <div style={{ marginBottom: "4px" }}>
                                         Please come again
-                                    </div>
+                                        </div>
                                     <div>Visit us at: servecafe.com</div>
-                                </div>
+                            </div>
                             </div>
                         </div>
                     )}
                 </div>
 
-                {/* Action Buttons */}
+                    {/* Action Buttons */}
                 <div className="p-6 border-t border-gray-200 bg-gray-50">
                     <div className="flex justify-end space-x-3">
                         <button
