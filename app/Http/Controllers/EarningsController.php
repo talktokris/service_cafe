@@ -8,6 +8,7 @@ use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 use App\Models\Earning;
 use App\Models\Transaction;
+use App\Models\CashWalletTransaction;
 use Carbon\Carbon;
 
 class EarningsController extends Controller
@@ -91,12 +92,14 @@ class EarningsController extends Controller
         try {
             DB::beginTransaction();
 
-            // Calculate 80/20 split
-            $cashoutWithdrawalAmount = $amount * 0.80; // 80% for cash out
-            $redistributionWithdrawalAmount = $amount * 0.20; // 20% for redistribution
+            // Calculate amounts based on new logic
+            $cashoutWithdrawalAmount = $amount * 0.80; // 80% of total amount
+            $redistributionWithdrawalAmount = $amount * 0.20; // 20% of total amount
+            $repurchaseAmount = $amount * 0.20; // 20% of total amount for repurchase
+            $cashInAmount = $amount * 0.80; // 80% of total amount for cash in
+            $taxAmount = $cashInAmount * ($personalTaxPercentage / 100); // 15% of the 80% amount
 
-            // Calculate personal tax amount (15% of cashout amount)
-            $personalTaxAmount = $cashoutWithdrawalAmount * ($personalTaxPercentage / 100);
+            $today = now();
 
             // 1. Create Cash Out earning record
             $cashoutEarning = Earning::create([
@@ -134,12 +137,10 @@ class EarningsController extends Controller
                 'countStatus' => 1,
             ]);
 
-            $today = now();
-
-            // 3. Create Transaction record for Earning Amount Credited
+            // 3. Save 20% amount in transactions table as Repurchase Credited
             Transaction::create([
-                'transaction_nature' => 'Earning Amount Credited',
-                'transaction_type' => 'Earning Amount',
+                'transaction_nature' => 'Tax Amount Debited',
+                'transaction_type' => 'Repurchase Credited',
                 'debit_credit' => 2, // Credit
                 'matching_date' => $today->toDateString(),
                 'transaction_from_id' => $user->id,
@@ -147,45 +148,61 @@ class EarningsController extends Controller
                 'trigger_id' => $user->id,
                 'order_id' => null,
                 'created_user_id' => $user->id,
-                'amount' => $cashoutWithdrawalAmount,
+                'amount' => $repurchaseAmount,
                 'transaction_date' => $today,
                 'status' => 1,
                 'tax_status' => 0, // Not tax amount
                 'countStatus' => 0,
             ]);
 
-            // 4. Create Transaction record for Tax Amount Debited
-            Transaction::create([
-                'transaction_nature' => 'Tax Amount Debited',
-                'transaction_type' => 'Tax Debited',
-                'debit_credit' => 1, // Debit
-                'matching_date' => $today->toDateString(),
-                'transaction_from_id' => $user->id,
-                'transaction_to_id' => $user->id,
+            // 4. Insert 80% amount into cash_wallets_transactions table - Cash In transaction
+            CashWalletTransaction::create([
+                'user_id' => $user->id,
                 'trigger_id' => $user->id,
-                'order_id' => null,
-                'created_user_id' => $user->id,
-                'amount' => $personalTaxAmount,
+                'create_user_id' => $user->id,
+                'name' => 'Earning Cash In',
+                'type' => 'Cash In',
+                'debit_credit' => 2, // Credit
+                'amount' => $cashInAmount,
                 'transaction_date' => $today,
+                'cash_out_status' => 0,
+                'tax_status' => 0,
                 'status' => 1,
-                'tax_status' => 0, // Not tax amount
-                'countStatus' => 0,
+                'deleteStatus' => 0,
+            ]);
+
+            // 5. Insert tax amount (15% of 80%) into cash_wallets_transactions table - Tax Amount Debited
+            CashWalletTransaction::create([
+                'user_id' => $user->id,
+                'trigger_id' => $user->id,
+                'create_user_id' => $user->id,
+                'name' => 'Tax Amount Debited',
+                'type' => 'Tax',
+                'debit_credit' => 1, // Debit
+                'amount' => $taxAmount,
+                'transaction_date' => $today,
+                'cash_out_status' => 0,
+                'tax_status' => 1,
+                'status' => 1,
+                'deleteStatus' => 0,
             ]);
 
             DB::commit();
 
-            Log::info('Withdrawal processed successfully', [
+            Log::info('Withdrawal processed successfully with earnings and new logic', [
                 'user_id' => $user->id,
                 'total_amount' => $amount,
-                'cashout_amount' => $cashoutWithdrawalAmount,
-                'redistribution_amount' => $redistributionWithdrawalAmount,
-                'tax_amount' => $personalTaxAmount,
-                'tax_percentage' => $personalTaxPercentage,
+                'cashout_withdrawal_amount' => $cashoutWithdrawalAmount, // 80% of total
+                'redistribution_withdrawal_amount' => $redistributionWithdrawalAmount, // 20% of total
+                'repurchase_amount' => $repurchaseAmount, // 20% of total
+                'cash_in_amount' => $cashInAmount, // 80% of total
+                'tax_amount' => $taxAmount, // 15% of 80% amount
+                'personal_tax_percentage' => $personalTaxPercentage,
                 'cashout_earning_id' => $cashoutEarning->id,
-                'redistribution_earning_id' => $redistributionEarning->id
+                'redistribution_earning_id' => $redistributionEarning->id,
             ]);
 
-            return back()->with('success', 'Withdrawal processed successfully! Cash out amount: ₹' . number_format($cashoutWithdrawalAmount, 2) . ', Redistribution amount: ₹' . number_format($redistributionWithdrawalAmount, 2) . ', Tax deducted: ₹' . number_format($personalTaxAmount, 2));
+            return back()->with('success', 'Withdrawal processed successfully! Cash out: ₹' . number_format($cashoutWithdrawalAmount, 2) . ', Redistribution: ₹' . number_format($redistributionWithdrawalAmount, 2) . ', Cash in: ₹' . number_format($cashInAmount, 2) . ', Tax: ₹' . number_format($taxAmount, 2));
 
         } catch (\Exception $e) {
             DB::rollBack();
