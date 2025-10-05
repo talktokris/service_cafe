@@ -21,6 +21,7 @@ class Transaction extends Model
         'transaction_date',
         'status',
         'countStatus',
+        'tax_status',
     ];
 
     protected $casts = [
@@ -30,6 +31,7 @@ class Transaction extends Model
         'debit_credit' => 'integer',
         'status' => 'integer',
         'countStatus' => 'integer',
+        'tax_status' => 'integer',
     ];
 
     /**
@@ -90,6 +92,18 @@ class Transaction extends Model
             0 => 'Pending',
             1 => 'Completed',
             2 => 'Failed',
+            default => 'Unknown'
+        };
+    }
+
+    /**
+     * Get tax status as text
+     */
+    public function getTaxStatusTextAttribute(): string
+    {
+        return match($this->tax_status) {
+            0 => 'Not Tax Amount',
+            1 => 'Tax Amount',
             default => 'Unknown'
         };
     }

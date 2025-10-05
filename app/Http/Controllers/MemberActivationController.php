@@ -308,6 +308,7 @@ class MemberActivationController extends Controller
             'transaction_date' => $today,
             'status' => 1,
             'countStatus' => 1,
+            'tax_status' => 0, // Not tax amount
         ]);
 
         // Create package amount refund transaction record
@@ -324,6 +325,7 @@ class MemberActivationController extends Controller
             'transaction_date' => $today,
             'status' => 1,
             'countStatus' => 0,
+            'tax_status' => 0, // Not tax amount
         ]);
 
         // Note: rankFindStatus is updated in the main activateMemberPackage function

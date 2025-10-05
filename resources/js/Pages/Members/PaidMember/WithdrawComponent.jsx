@@ -13,6 +13,8 @@ export default function WithdrawComponent({
 }) {
     const [isProcessing, setIsProcessing] = useState(false);
     const [error, setError] = useState("");
+    const [validationMessage, setValidationMessage] = useState("");
+    const [successMessage, setSuccessMessage] = useState("");
 
     const { data, setData, post, processing, errors, reset } = useForm({
         amount: "",
@@ -22,8 +24,45 @@ export default function WithdrawComponent({
         if (!isOpen) {
             reset();
             setError("");
+            setValidationMessage("");
+            setSuccessMessage("");
         }
     }, [isOpen, reset]);
+
+    // Real-time validation
+    useEffect(() => {
+        if (!data.amount) {
+            setValidationMessage("");
+            return;
+        }
+
+        const withdrawalAmount = parseFloat(data.amount);
+
+        if (isNaN(withdrawalAmount) || withdrawalAmount <= 0) {
+            setValidationMessage("Please enter a valid withdrawal amount.");
+            return;
+        }
+
+        if (withdrawalAmount < minWithdrawalAmount) {
+            setValidationMessage(
+                `Minimum withdrawal amount is ${formatCurrency(
+                    minWithdrawalAmount
+                )}.`
+            );
+            return;
+        }
+
+        if (withdrawalAmount > currentBalance) {
+            setValidationMessage(
+                `Value must be less than or equal to ${currentBalance.toFixed(
+                    2
+                )}.`
+            );
+            return;
+        }
+
+        setValidationMessage("");
+    }, [data.amount, currentBalance, minWithdrawalAmount]);
 
     const formatCurrency = (amount) => {
         return new Intl.NumberFormat("en-IN", {
@@ -36,9 +75,15 @@ export default function WithdrawComponent({
         e.preventDefault();
         setError("");
 
+        // Check if there's a validation message
+        if (validationMessage) {
+            setError(validationMessage);
+            return;
+        }
+
         const withdrawalAmount = parseFloat(data.amount);
 
-        // Validation
+        // Final validation
         if (!data.amount || isNaN(withdrawalAmount) || withdrawalAmount <= 0) {
             setError("Please enter a valid withdrawal amount.");
             return;
@@ -55,7 +100,9 @@ export default function WithdrawComponent({
 
         if (withdrawalAmount > currentBalance) {
             setError(
-                "Withdrawal amount cannot exceed your current earning balance."
+                `Value must be less than or equal to ${currentBalance.toFixed(
+                    2
+                )}.`
             );
             return;
         }
@@ -63,10 +110,22 @@ export default function WithdrawComponent({
         setIsProcessing(true);
 
         post(route("withdrawal.create"), {
-            onSuccess: () => {
-                onWithdrawSuccess?.();
-                onClose();
-                reset();
+            onSuccess: (page) => {
+                // Show success message if available
+                if (page.props.flash?.success) {
+                    setError(""); // Clear any existing errors
+                    setSuccessMessage(page.props.flash.success);
+                    // Close modal after 3 seconds
+                    setTimeout(() => {
+                        onWithdrawSuccess?.();
+                        onClose();
+                        reset();
+                    }, 3000);
+                } else {
+                    onWithdrawSuccess?.();
+                    onClose();
+                    reset();
+                }
             },
             onError: (errors) => {
                 setError(
@@ -127,13 +186,6 @@ export default function WithdrawComponent({
                         </div>
                     </div>
 
-                    {/* Error Message */}
-                    {error && (
-                        <div className="mb-4 p-3 bg-red-50 border border-red-200 rounded-md">
-                            <div className="text-sm text-red-800">{error}</div>
-                        </div>
-                    )}
-
                     {/* Withdrawal Form */}
                     <form onSubmit={handleSubmit}>
                         <div className="mb-4">
@@ -141,6 +193,51 @@ export default function WithdrawComponent({
                                 htmlFor="amount"
                                 value="Withdrawal Amount"
                             />
+
+                            {/* Success Message */}
+                            {successMessage && (
+                                <div className="mt-2 mb-3 p-3 bg-green-50 border border-green-200 rounded-md">
+                                    <div className="flex items-center">
+                                        <svg
+                                            className="w-5 h-5 text-green-500 mr-2 flex-shrink-0"
+                                            fill="currentColor"
+                                            viewBox="0 0 20 20"
+                                        >
+                                            <path
+                                                fillRule="evenodd"
+                                                d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z"
+                                                clipRule="evenodd"
+                                            />
+                                        </svg>
+                                        <div className="text-sm font-medium text-green-800">
+                                            {successMessage}
+                                        </div>
+                                    </div>
+                                </div>
+                            )}
+
+                            {/* Validation Message - Above the input field */}
+                            {(validationMessage || error) &&
+                                !successMessage && (
+                                    <div className="mt-2 mb-3 p-3 bg-orange-50 border border-orange-200 rounded-md">
+                                        <div className="flex items-center">
+                                            <svg
+                                                className="w-5 h-5 text-orange-500 mr-2 flex-shrink-0"
+                                                fill="currentColor"
+                                                viewBox="0 0 20 20"
+                                            >
+                                                <path
+                                                    fillRule="evenodd"
+                                                    d="M8.257 3.099c.765-1.36 2.722-1.36 3.486 0l5.58 9.92c.75 1.334-.213 2.98-1.742 2.98H4.42c-1.53 0-2.493-1.646-1.743-2.98l5.58-9.92zM11 13a1 1 0 11-2 0 1 1 0 012 0zm-1-8a1 1 0 00-1 1v3a1 1 0 002 0V6a1 1 0 00-1-1z"
+                                                    clipRule="evenodd"
+                                                />
+                                            </svg>
+                                            <div className="text-sm font-medium text-orange-800">
+                                                {validationMessage || error}
+                                            </div>
+                                        </div>
+                                    </div>
+                                )}
                             <TextInput
                                 id="amount"
                                 type="number"
@@ -155,6 +252,7 @@ export default function WithdrawComponent({
                                 onChange={(e) =>
                                     setData("amount", e.target.value)
                                 }
+                                disabled={successMessage ? true : false}
                                 required
                             />
                             {errors.amount && (
@@ -170,13 +268,17 @@ export default function WithdrawComponent({
                                 type="button"
                                 onClick={onClose}
                                 className="px-4 py-2 text-sm font-medium text-gray-700 bg-gray-100 border border-gray-300 rounded-md hover:bg-gray-200 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gray-500"
-                                disabled={processing || isProcessing}
+                                disabled={
+                                    processing || isProcessing || successMessage
+                                }
                             >
                                 Cancel
                             </button>
                             <PrimaryButton
                                 type="submit"
-                                disabled={processing || isProcessing}
+                                disabled={
+                                    processing || isProcessing || successMessage
+                                }
                                 className="px-4 py-2"
                             >
                                 {processing || isProcessing ? (
@@ -190,15 +292,6 @@ export default function WithdrawComponent({
                             </PrimaryButton>
                         </div>
                     </form>
-
-                    {/* Additional Info */}
-                    <div className="mt-4 p-3 bg-blue-50 border border-blue-200 rounded-md">
-                        <div className="text-xs text-blue-800">
-                            <strong>Note:</strong> Your withdrawal request will
-                            be processed within 1-2 business days. You will
-                            receive a notification once it's completed.
-                        </div>
-                    </div>
                 </div>
             </div>
         </div>

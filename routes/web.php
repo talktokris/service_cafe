@@ -510,6 +510,7 @@ Route::middleware(['auth', 'verified', 'user.type:headoffice', 'role:super_user,
                         'status' => 1,
                         'countStatus' => 0,
                         'debit_credit' => 1, // Debit transaction
+                        'tax_status' => 1, // Tax amount included
                     ]);
                     
                     Log::info('Transaction record created for paid member payment', [

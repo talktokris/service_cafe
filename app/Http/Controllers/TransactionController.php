@@ -313,6 +313,7 @@ public function freeMemberTransactions(Request $request)
                 'transaction_date' => now(),
                 'status' => 1,
                 'countStatus' => 0,
+                'tax_status' => 0, // Not tax amount
             ]);
             
             \Illuminate\Support\Facades\Log::info('Fund topup successful', [

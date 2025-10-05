@@ -7,6 +7,7 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 use App\Models\Earning;
+use App\Models\Transaction;
 use Carbon\Carbon;
 
 class EarningsController extends Controller
@@ -68,6 +69,7 @@ class EarningsController extends Controller
         $user = Auth::user();
         $amount = $request->amount;
         $minWithdrawalAmount = env('WITHDRAWAL_MIN_AMOUT', 1000);
+        $personalTaxPercentage = env('PERSONAL_TAX_PERCENTAGE', 15);
 
         // Get current earning balance
         $summary = $this->calculateEarningsSummary($user->id);
@@ -87,41 +89,115 @@ class EarningsController extends Controller
         }
 
         try {
-            // Create withdrawal record
-            $withdrawal = Earning::create([
+            DB::beginTransaction();
+
+            // Calculate 80/20 split
+            $cashoutWithdrawalAmount = $amount * 0.80; // 80% for cash out
+            $redistributionWithdrawalAmount = $amount * 0.20; // 20% for redistribution
+
+            // Calculate personal tax amount (15% of cashout amount)
+            $personalTaxAmount = $cashoutWithdrawalAmount * ($personalTaxPercentage / 100);
+
+            // 1. Create Cash Out earning record
+            $cashoutEarning = Earning::create([
                 'user_id' => $user->id,
                 'order_id' => null,
                 'user_trigger_id' => $user->id,
-                'earning_name' => 'Withdrawal Request',
+                'earning_name' => 'Cash Out',
                 'earning_type' => 'Withdrawal',
-                'earning_description' => "Withdrawal request of ₹{$amount}",
-                'ammout' => $amount,
+                'earning_description' => 'Cash Out Withdrawal',
+                'ammout' => $cashoutWithdrawalAmount,
                 'debit_credit' => 1, // Debit
                 'transation_type' => 2, // Withdrawal
-                'withdrawal_status' => 0, // Pending
+                'withdrawal_status' => 1, // Done
                 'redistribution_status' => 0, // Not distributed
                 'status' => 1, // Active
                 'deleteStatus' => 0,
+                'countStatus' => 1,
+            ]);
+
+            // 2. Create Redistribution earning record
+            $redistributionEarning = Earning::create([
+                'user_id' => $user->id,
+                'order_id' => null,
+                'user_trigger_id' => $user->id,
+                'earning_name' => 'Redistribution Out',
+                'earning_type' => 'Redistribution',
+                'earning_description' => 'Redistribution Amount',
+                'ammout' => $redistributionWithdrawalAmount,
+                'debit_credit' => 1, // Debit
+                'transation_type' => 3, // Redistribution
+                'withdrawal_status' => 0, // Pending
+                'redistribution_status' => 1, // Distributed
+                'status' => 1, // Active
+                'deleteStatus' => 0,
+                'countStatus' => 1,
+            ]);
+
+            $today = now();
+
+            // 3. Create Transaction record for Earning Amount Credited
+            Transaction::create([
+                'transaction_nature' => 'Earning Amount Credited',
+                'transaction_type' => 'Earning Amount',
+                'debit_credit' => 2, // Credit
+                'matching_date' => $today->toDateString(),
+                'transaction_from_id' => $user->id,
+                'transaction_to_id' => $user->id,
+                'trigger_id' => $user->id,
+                'order_id' => null,
+                'created_user_id' => $user->id,
+                'amount' => $cashoutWithdrawalAmount,
+                'transaction_date' => $today,
+                'status' => 1,
+                'tax_status' => 0, // Not tax amount
                 'countStatus' => 0,
             ]);
 
-            Log::info('Withdrawal request created', [
-                'user_id' => $user->id,
-                'withdrawal_id' => $withdrawal->id,
-                'amount' => $amount,
+            // 4. Create Transaction record for Tax Amount Debited
+            Transaction::create([
+                'transaction_nature' => 'Tax Amount Debited',
+                'transaction_type' => 'Tax Debited',
+                'debit_credit' => 1, // Debit
+                'matching_date' => $today->toDateString(),
+                'transaction_from_id' => $user->id,
+                'transaction_to_id' => $user->id,
+                'trigger_id' => $user->id,
+                'order_id' => null,
+                'created_user_id' => $user->id,
+                'amount' => $personalTaxAmount,
+                'transaction_date' => $today,
+                'status' => 1,
+                'tax_status' => 0, // Not tax amount
+                'countStatus' => 0,
             ]);
 
-            return back()->with('success', 'Withdrawal request created successfully. It will be processed within 1-2 business days.');
+            DB::commit();
+
+            Log::info('Withdrawal processed successfully', [
+                'user_id' => $user->id,
+                'total_amount' => $amount,
+                'cashout_amount' => $cashoutWithdrawalAmount,
+                'redistribution_amount' => $redistributionWithdrawalAmount,
+                'tax_amount' => $personalTaxAmount,
+                'tax_percentage' => $personalTaxPercentage,
+                'cashout_earning_id' => $cashoutEarning->id,
+                'redistribution_earning_id' => $redistributionEarning->id
+            ]);
+
+            return back()->with('success', 'Withdrawal processed successfully! Cash out amount: ₹' . number_format($cashoutWithdrawalAmount, 2) . ', Redistribution amount: ₹' . number_format($redistributionWithdrawalAmount, 2) . ', Tax deducted: ₹' . number_format($personalTaxAmount, 2));
 
         } catch (\Exception $e) {
-            Log::error('Withdrawal creation failed', [
+            DB::rollBack();
+            
+            Log::error('Withdrawal processing failed', [
                 'user_id' => $user->id,
                 'amount' => $amount,
-                'error' => $e->getMessage(),
+                'error' => $e->getMessage()
             ]);
 
             return back()->withErrors([
-                'message' => 'Failed to create withdrawal request. Please try again.'
+                'message' => 'Failed to process withdrawal. Please try again.'
             ]);
         }
     }
