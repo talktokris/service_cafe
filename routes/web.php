@@ -11,8 +11,9 @@ use App\Http\Controllers\MemberOrderController;
 use App\Http\Controllers\ShareReferralController;
 use App\Http\Controllers\TreeViewController;
 use App\Http\Controllers\CronController;
-use App\Http\Controllers\LeadershipChaqueMatchController;
-use App\Http\Controllers\MemberActivationController;
+use App\Http\Controllers\CronLeadershipChaqueMatchController;
+use App\Http\Controllers\CronMemberActivationController;
+use App\Http\Controllers\CronDistributionController;
 use App\Http\Controllers\PrivacyPolicyController;
 use App\Http\Controllers\TermsOfServiceController;
 use App\Http\Controllers\OtpOrderController;
@@ -1383,12 +1384,13 @@ Route::get('/join/{referral_code}', [RegisterController::class, 'showRegistratio
 Route::post('/join/{referral_code}', [RegisterController::class, 'register'])->name('register.submit');
 
 // Cron Routes
-Route::get('/cron/activate-member-package', [MemberActivationController::class, 'activateMemberPackage'])->name('cron.activate.member.package');
-Route::get('/cron/leadership-chaque-match', [LeadershipChaqueMatchController::class, 'cronLeadershipChaqueMatch'])->name('cron.leadership.chaque.match');
+Route::get('/cron/activate-member-package', [CronMemberActivationController::class, 'activateMemberPackage'])->name('cron.activate.member.package');
+Route::get('/cron/leadership-chaque-match', [CronLeadershipChaqueMatchController::class, 'cronLeadershipChaqueMatch'])->name('cron.leadership.chaque.match');
+Route::get('/cron/redistribution-distribution', [CronDistributionController::class, 'redistributionDistribution'])->name('cron.redistribution.distribution');
 
 // Test route for debugging chaqueMatchDistribution
-Route::get('/test-chaque-match', [LeadershipChaqueMatchController::class, 'testChaqueMatchDistribution'])->name('test.chaque.match');
-Route::get('/api/latest-active-package', [MemberActivationController::class, 'getLatestActivePackage'])->name('api.latest.active.package');
-Route::get('/api/check-badges', [MemberActivationController::class, 'checkBadges'])->name('api.check.badges');
+Route::get('/test-chaque-match', [CronLeadershipChaqueMatchController::class, 'testChaqueMatchDistribution'])->name('test.chaque.match');
+Route::get('/api/latest-active-package', [CronMemberActivationController::class, 'getLatestActivePackage'])->name('api.latest.active.package');
+Route::get('/api/check-badges', [CronMemberActivationController::class, 'checkBadges'])->name('api.check.badges');
 
 require __DIR__.'/auth.php';

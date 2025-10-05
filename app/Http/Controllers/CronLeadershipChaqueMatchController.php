@@ -10,7 +10,7 @@ use App\Models\MemberUplineRank;
 use App\Models\Earning;
 use App\Models\GlobalPool;
 
-class LeadershipChaqueMatchController extends Controller
+class CronLeadershipChaqueMatchController extends Controller
 {
     /**
      * Cron job to process leadership chaque match

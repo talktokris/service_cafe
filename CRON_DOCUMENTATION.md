@@ -12,7 +12,7 @@ This document lists all current and planned cron jobs for the Serve Cafe applica
 
 -   **Route**: `/cron/activate-member-package`
 -   **Method**: GET
--   **Controller**: `CronController@activateMemberPackage`
+-   **Controller**: `CronMemberActivationController@activateMemberPackage`
 -   **Purpose**: Find free members who have sufficient account balance to upgrade to paid membership
 -   **Frequency**: Daily (recommended)
 -   **Description**:
@@ -28,7 +28,7 @@ This document lists all current and planned cron jobs for the Serve Cafe applica
 
 -   **Route**: `/api/latest-active-package`
 -   **Method**: GET
--   **Controller**: `CronController@getLatestActivePackage`
+-   **Controller**: `CronMemberActivationController@getLatestActivePackage`
 -   **Purpose**: Provide latest active package data for UI components
 -   **Frequency**: On-demand (API call)
 -   **Description**: Returns the most recent active package information
@@ -38,7 +38,7 @@ This document lists all current and planned cron jobs for the Serve Cafe applica
 
 -   **Route**: `/cron/leadership-chaque-match`
 -   **Method**: GET
--   **Controller**: `CronController@cronLeadershipChaqueMatch`
+-   **Controller**: `CronLeadershipChaqueMatchController@cronLeadershipChaqueMatch`
 -   **Purpose**: Process leadership chaque match for eligible orders
 -   **Frequency**: Daily (recommended)
 -   **Description**:
@@ -56,11 +56,29 @@ This document lists all current and planned cron jobs for the Serve Cafe applica
 -   **Output**: JSON response with processed order details and execution statistics
 -   **Note**: Requires additional fields in orders table: `free_paid_member_status`, `leadership_status`, `chaque_match_status`, `tax_status`
 
+### 4. Redistribution Distribution Processing
+
+-   **Route**: `/cron/redistribution-distribution`
+-   **Method**: GET
+-   **Controller**: `CronDistributionController@redistributionDistribution`
+-   **Purpose**: Process redistribution earnings that need to be distributed
+-   **Frequency**: Daily (recommended)
+-   **Description**:
+    -   Fetches earnings from `earnings` table with specific criteria:
+        -   `transation_type` = 3 (Redistribution)
+        -   `redistribution_status` = 0 (Not distributed)
+    -   Orders by ID in ascending order for consistent processing
+    -   Calculates total redistribution amount
+    -   Provides data for redistribution processing logic
+    -   Logs execution details for monitoring and debugging
+-   **Output**: JSON response with redistribution earnings data and execution statistics
+-   **Note**: Currently collects data only. Future implementation will include actual redistribution logic
+
 ---
 
 ## Planned Future Cron Jobs
 
-### 4. Daily Transaction Processing
+### 5. Daily Transaction Processing
 
 -   **Route**: `/cron/process-daily-transactions`
 -   **Method**: GET
@@ -74,7 +92,7 @@ This document lists all current and planned cron jobs for the Serve Cafe applica
     -   Generate transaction reports
     -   Send notifications for completed transactions
 
-### 5. Commission Calculation
+### 6. Commission Calculation
 
 -   **Route**: `/cron/calculate-commissions`
 -   **Method**: GET
@@ -88,7 +106,7 @@ This document lists all current and planned cron jobs for the Serve Cafe applica
     -   Distribute earnings to upline members
     -   Generate commission reports
 
-### 6. Package Expiry Check
+### 7. Package Expiry Check
 
 -   **Route**: `/cron/check-package-expiry`
 -   **Method**: GET
@@ -102,7 +120,7 @@ This document lists all current and planned cron jobs for the Serve Cafe applica
     -   Downgrade expired packages
     -   Update member status
 
-### 7. Wallet Balance Sync
+### 8. Wallet Balance Sync
 
 -   **Route**: `/cron/sync-wallet-balances`
 -   **Method**: GET
@@ -116,7 +134,7 @@ This document lists all current and planned cron jobs for the Serve Cafe applica
     -   Update wallet records
     -   Generate balance reports
 
-### 8. Order Status Updates
+### 9. Order Status Updates
 
 -   **Route**: `/cron/update-order-status`
 -   **Method**: GET
@@ -130,7 +148,7 @@ This document lists all current and planned cron jobs for the Serve Cafe applica
     -   Handle cancelled orders
     -   Send status notifications
 
-### 8. MLM Tree Structure Sync
+### 10. MLM Tree Structure Sync
 
 -   **Route**: `/cron/sync-mlm-tree`
 -   **Method**: GET
@@ -144,7 +162,7 @@ This document lists all current and planned cron jobs for the Serve Cafe applica
     -   Fix orphaned members
     -   Generate tree reports
 
-### 9. Database Cleanup
+### 11. Database Cleanup
 
 -   **Route**: `/cron/database-cleanup`
 -   **Method**: GET
@@ -158,7 +176,7 @@ This document lists all current and planned cron jobs for the Serve Cafe applica
     -   Optimize database tables
     -   Archive old records
 
-### 11. Backup Generation
+### 12. Backup Generation
 
 -   **Route**: `/cron/generate-backup`
 -   **Method**: GET
@@ -187,6 +205,9 @@ Add the following entries to your server's crontab:
 
 # Leadership Chaque Match Processing - Daily at 1:30 AM
 30 1 * * * curl -s http://localhost:8000/cron/leadership-chaque-match
+
+# Redistribution Distribution Processing - Daily at 2:00 AM
+0 2 * * * curl -s http://localhost:8000/cron/redistribution-distribution
 
 # Process Daily Transactions - Every 6 hours
 0 */6 * * * curl -s http://localhost:8000/cron/process-daily-transactions
@@ -280,6 +301,7 @@ Test each cron job manually by visiting the route in your browser:
 ```
 http://localhost:8000/cron/activate-member-package
 http://localhost:8000/cron/leadership-chaque-match
+http://localhost:8000/cron/redistribution-distribution
 ```
 
 ### Automated Testing

@@ -9,8 +9,9 @@ use Illuminate\Support\Facades\Log;
 class CronController extends Controller
 {
     // This controller is now empty as the cron functionality has been moved to:
-    // - LeadershipChaqueMatchController for leadership chaque match cron jobs
-    // - MemberActivationController for member activation cron jobs
+    // - CronLeadershipChaqueMatchController for leadership chaque match cron jobs
+    // - CronMemberActivationController for member activation cron jobs
+    // - CronDistributionController for redistribution distribution cron jobs
     
     // If you need to add new cron jobs here, you can do so.
 }

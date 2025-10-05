@@ -15,7 +15,7 @@ use App\Models\BadgeSevenStars;
 use App\Models\BadgeMegaStars;
 use App\Models\BadgeGigaStars;
 
-class MemberActivationController extends Controller
+class CronMemberActivationController extends Controller
 {
     /**
      * Activate member package - Find free members who can upgrade
