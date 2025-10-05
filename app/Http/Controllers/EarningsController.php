@@ -162,6 +162,7 @@ class EarningsController extends Controller
                 'create_user_id' => $user->id,
                 'name' => 'Earning Cash In',
                 'type' => 'Cash In',
+                'transaction_type' => 1, // 1 - cashIn
                 'debit_credit' => 2, // Credit
                 'amount' => $cashInAmount,
                 'transaction_date' => $today,
@@ -178,6 +179,7 @@ class EarningsController extends Controller
                 'create_user_id' => $user->id,
                 'name' => 'Tax Amount Debited',
                 'type' => 'Tax',
+                'transaction_type' => 2, // 2 - tax
                 'debit_credit' => 1, // Debit
                 'amount' => $taxAmount,
                 'transaction_date' => $today,

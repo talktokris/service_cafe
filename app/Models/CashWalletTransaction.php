@@ -14,6 +14,7 @@ class CashWalletTransaction extends Model
         'trigger_id',
         'name',
         'type',
+        'transaction_type',
         'debit_credit',
         'amount',
         'transaction_date',
@@ -27,6 +28,7 @@ class CashWalletTransaction extends Model
     protected $casts = [
         'transaction_date' => 'datetime',
         'amount' => 'decimal:2',
+        'transaction_type' => 'integer',
         'debit_credit' => 'integer',
         'cash_out_status' => 'integer',
         'tax_status' => 'integer',
