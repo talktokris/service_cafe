@@ -20,6 +20,7 @@ use App\Http\Controllers\OtpOrderController;
 use App\Http\Controllers\EarningsController;
 use App\Http\Controllers\CashWalletController;
 use App\Http\Controllers\CashOutManagementController;
+use App\Http\Controllers\CronGlobalPoolDistributionController;
 use App\Models\User;
 use Illuminate\Foundation\Application;
 use Illuminate\Support\Facades\Route;
@@ -1408,6 +1409,7 @@ Route::post('/join/{referral_code}', [RegisterController::class, 'register'])->n
 Route::get('/cron/activate-member-package', [CronMemberActivationController::class, 'activateMemberPackage'])->name('cron.activate.member.package');
 Route::get('/cron/leadership-chaque-match', [CronLeadershipChaqueMatchController::class, 'cronLeadershipChaqueMatch'])->name('cron.leadership.chaque.match');
 Route::get('/cron/redistribution-distribution', [CronDistributionController::class, 'redistributionDistribution'])->name('cron.redistribution.distribution');
+Route::get('/cron/global-pool-distribution', [CronGlobalPoolDistributionController::class, 'handle'])->name('cron.global.pool.distribution');
 
 // Test route for debugging chaqueMatchDistribution
 Route::get('/test-chaque-match', [CronLeadershipChaqueMatchController::class, 'testChaqueMatchDistribution'])->name('test.chaque.match');

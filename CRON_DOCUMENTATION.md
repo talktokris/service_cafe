@@ -74,6 +74,40 @@ This document lists all current and planned cron jobs for the Serve Cafe applica
 -   **Output**: JSON response with redistribution earnings data and execution statistics
 -   **Note**: Currently collects data only. Future implementation will include actual redistribution logic
 
+### 4. Global Pool Distribution
+
+-   **Route**: `/cron/global-pool-distribution`
+-   **Method**: GET
+-   **Controller**: `CronGlobalPoolDistributionController@handle`
+-   **Purpose**: Calculate and distribute global pool amounts to badge users
+-   **Frequency**: Monthly (recommended)
+-   **Description**:
+    -   Calculates start and end timestamps of current month
+    -   Queries `global_pools` table with filters:
+        -   `countStatus` = 0
+        -   `status` = 0
+        -   `created_at` between start and end of current month
+    -   Sums the `ammout` field from matching records
+    -   **Distribution Logic**:
+        -   **Seven Star**: 50% of total amount distributed to `badge_seven_stars` users
+        -   **Mega Star**: 30% of total amount distributed to `badge_mega_stars` users
+        -   **Giga Star**: 20% of total amount distributed to `badge_giga_stars` users
+    -   Creates earnings records for each badge user with calculated amounts
+    -   Uses database transactions for data integrity
+    -   Comprehensive logging for monitoring and debugging
+-   **Output**: JSON response with distribution results and detailed statistics
+-   **Data Returned**:
+    -   `total_amount`: Sum of amounts from matching records
+    -   `record_count`: Number of records matching the criteria
+    -   `distribution_amounts`: Calculated amounts for each badge type
+    -   `distribution_results`: Detailed results for each badge distribution
+    -   `date_range`: From and to dates of current month
+    -   `id_range`: Minimum and maximum IDs of matching records
+-   **Database Operations**:
+    -   Reads from `global_pools`, `badge_seven_stars`, `badge_mega_stars`, `badge_giga_stars`
+    -   Creates records in `earnings` table for each eligible user
+    -   All operations wrapped in database transaction for consistency
+
 ---
 
 ## Planned Future Cron Jobs
