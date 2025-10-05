@@ -55,11 +55,15 @@ Route::get('/contact', function () {
     return Inertia::render('Contact');
 })->name('contact');
 
-// Test Users Page
-Route::get('/test-users', [UserController::class, 'testUsers'])->name('test-users');
+// Test Users Page (Admin Only)
+Route::get('/test-users', [UserController::class, 'testUsers'])
+    ->middleware(['auth', 'verified', 'user.type:headoffice', 'role:super_user,admin_user'])
+    ->name('test-users');
 
-// Create Test Users (for development)
-Route::post('/create-test-users', [UserController::class, 'createTestUsers'])->name('create-test-users');
+// Create Test Users (for development) (Admin Only)
+Route::post('/create-test-users', [UserController::class, 'createTestUsers'])
+    ->middleware(['auth', 'verified', 'user.type:headoffice', 'role:super_user,admin_user'])
+    ->name('create-test-users');
 
 // Dashboard with role-based routing - PROTECTED (Super Users Only)
 Route::get('/dashboard', [DashboardController::class, 'index'])
@@ -1245,10 +1249,13 @@ Route::middleware(['auth'])->group(function () {
 
     // Cash Out Management Routes (Super Users Only)
     Route::get('/cash-out-management', [CashOutManagementController::class, 'index'])
+        ->middleware(['auth', 'verified', 'user.type:headoffice', 'role:super_user,admin_user'])
         ->name('cash.out.management');
     Route::post('/cash-out/payout', [CashOutManagementController::class, 'processPayout'])
+        ->middleware(['auth', 'verified', 'user.type:headoffice', 'role:super_user,admin_user'])
         ->name('cash.out.payout');
     Route::get('/api/cash-out-transaction/{id}', [CashOutManagementController::class, 'getTransactionDetails'])
+        ->middleware(['auth', 'verified', 'user.type:headoffice', 'role:super_user,admin_user'])
         ->name('api.cash.out.transaction');
 });
 

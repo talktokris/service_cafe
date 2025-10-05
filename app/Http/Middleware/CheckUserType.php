@@ -24,7 +24,17 @@ class CheckUserType
 
         // Check if user's type is in the allowed types
         if (!in_array($user->user_type, $userTypes)) {
-            return redirect()->route('dashboard')->with('error', 'Access denied. This section is not available for your user type.');
+            // Redirect to appropriate dashboard based on user type
+            if ($user->user_type === 'member') {
+                if ($user->member_type === 'free') {
+                    return redirect()->route('member.f.dashboard')->with('error', 'Access denied. This section is not available for your user type.');
+                } elseif ($user->member_type === 'paid') {
+                    return redirect()->route('member.p.dashboard')->with('error', 'Access denied. This section is not available for your user type.');
+                }
+            }
+            
+            // For other user types, redirect to login
+            return redirect()->route('login')->with('error', 'Access denied. This section is not available for your user type.');
         }
 
         return $next($request);

@@ -36,38 +36,33 @@ class AuthenticatedSessionController extends Controller
         // Get the authenticated user
         $user = Auth::user();
 
-        // Redirect based on user type and member type
+        // Always redirect to appropriate dashboard based on user type (no intended() to prevent loops)
         if ($user->user_type === 'member') {
             if ($user->member_type === 'free') {
-                return redirect()->intended('/member-f-dashboard');
+                return redirect()->route('member.f.dashboard');
             } elseif ($user->member_type === 'paid') {
-                return redirect()->intended('/member-p-dashboard');
+                return redirect()->route('member.p.dashboard');
             }
         }
 
-        // For admin users, redirect to appropriate admin dashboard
+        // For admin users, redirect to admin dashboard
         if ($user->user_type === 'headoffice') {
             $primaryRole = $user->primary_role;
             if ($primaryRole) {
                 switch ($primaryRole->name) {
                     case 'super_user':
-                        return redirect()->intended('/dashboard');
                     case 'admin_user':
-                        return redirect()->intended('/dashboard');
                     case 'account_user':
-                        return redirect()->intended('/dashboard');
                     case 'billing_user':
-                        return redirect()->intended('/dashboard');
                     default:
-                        return redirect()->intended('/dashboard');
+                        return redirect()->route('dashboard');
                 }
             }
         }
 
-        // For branch office users, redirect to appropriate branch dashboard
+        // For branch office users, redirect to dashboard
         if ($user->user_type === 'branchoffice') {
-            // For now, redirect to dashboard - can be customized later
-            return redirect()->intended('/dashboard');
+            return redirect()->route('dashboard');
         }
 
         // Fallback to login for unknown user types

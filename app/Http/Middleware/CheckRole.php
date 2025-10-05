@@ -28,7 +28,17 @@ class CheckRole
         $userRole = $user->primary_role;
         
         if (!$userRole) {
-            return redirect()->route('dashboard')->with('error', 'No role assigned. Please contact administrator.');
+            // Redirect to appropriate dashboard based on user type
+            if ($user->user_type === 'member') {
+                if ($user->member_type === 'free') {
+                    return redirect()->route('member.f.dashboard')->with('error', 'No role assigned. Please contact administrator.');
+                } elseif ($user->member_type === 'paid') {
+                    return redirect()->route('member.p.dashboard')->with('error', 'No role assigned. Please contact administrator.');
+                }
+            }
+            
+            // For other user types, redirect to login
+            return redirect()->route('login')->with('error', 'No role assigned. Please contact administrator.');
         }
 
         // Check if user's role is in the allowed roles
