@@ -514,7 +514,7 @@ class LeadershipChaqueMatchController extends Controller
                     'user_trigger_id' => $earningData->user_trigger_id,
                     'earning_name' => 'Chaque Match - ' . $level . 'st Level',
                     'earning_type' => 'Chaque Match',
-                    'earning_description' => 'Chaque Match - ' . $level . 'st Level',
+                    'earning_description' => 'Chaque Match - ' . $level . 'st Level - #' . $earningData->order_id,
                     'ammout' => $chaque_match_amount,
                     'debit_credit' => 2, // Credit
                     'transation_type' => 1, // Earning
