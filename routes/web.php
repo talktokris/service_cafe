@@ -18,6 +18,7 @@ use App\Http\Controllers\PrivacyPolicyController;
 use App\Http\Controllers\TermsOfServiceController;
 use App\Http\Controllers\OtpOrderController;
 use App\Http\Controllers\EarningsController;
+use App\Http\Controllers\CashWalletController;
 use App\Models\User;
 use Illuminate\Foundation\Application;
 use Illuminate\Support\Facades\Route;
@@ -1271,6 +1272,16 @@ Route::middleware(['auth', 'user.type:member'])->group(function () {
         ->name('withdrawal.create');
     Route::get('/api/member-earnings', [EarningsController::class, 'getEarnings'])
         ->name('api.member.earnings');
+
+    // Cash Wallet Routes (Paid Members Only)
+    Route::get('/cash-wallet', [CashWalletController::class, 'index'])
+        ->name('cash.wallet');
+    Route::post('/cash-out/create', [CashWalletController::class, 'createCashOut'])
+        ->name('cash.out.create');
+    Route::post('/transfer-purchase-balance', [CashWalletController::class, 'transferToPurchaseBalance'])
+        ->name('transfer.purchase.balance');
+    Route::get('/api/cash-wallet', [CashWalletController::class, 'getCashWalletData'])
+        ->name('api.cash.wallet');
 
     // Support Routes
     Route::get('/support', [SupportController::class, 'index'])->name('support');
