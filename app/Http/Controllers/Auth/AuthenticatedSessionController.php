@@ -45,8 +45,33 @@ class AuthenticatedSessionController extends Controller
             }
         }
 
-        // Fallback to original dashboard for other user types
-        return redirect()->intended(route('dashboard', absolute: false));
+        // For admin users, redirect to appropriate admin dashboard
+        if ($user->user_type === 'headoffice') {
+            $primaryRole = $user->primary_role;
+            if ($primaryRole) {
+                switch ($primaryRole->name) {
+                    case 'super_user':
+                        return redirect()->intended('/dashboard');
+                    case 'admin_user':
+                        return redirect()->intended('/dashboard');
+                    case 'account_user':
+                        return redirect()->intended('/dashboard');
+                    case 'billing_user':
+                        return redirect()->intended('/dashboard');
+                    default:
+                        return redirect()->intended('/dashboard');
+                }
+            }
+        }
+
+        // For branch office users, redirect to appropriate branch dashboard
+        if ($user->user_type === 'branchoffice') {
+            // For now, redirect to dashboard - can be customized later
+            return redirect()->intended('/dashboard');
+        }
+
+        // Fallback to login for unknown user types
+        return redirect()->route('login')->with('error', 'Invalid user type. Please contact administrator.');
     }
 
     /**

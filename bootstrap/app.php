@@ -23,6 +23,8 @@ return Application::configure(basePath: dirname(__DIR__))
         $middleware->alias([
             'role' => \App\Http\Middleware\CheckRole::class,
             'user.type' => \App\Http\Middleware\CheckUserType::class,
+            'paid.member' => \App\Http\Middleware\CheckPaidMember::class,
+            'free.member' => \App\Http\Middleware\CheckFreeMember::class,
         ]);
     })
     ->withExceptions(function (Exceptions $exceptions) {

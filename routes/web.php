@@ -61,8 +61,10 @@ Route::get('/test-users', [UserController::class, 'testUsers'])->name('test-user
 // Create Test Users (for development)
 Route::post('/create-test-users', [UserController::class, 'createTestUsers'])->name('create-test-users');
 
-// Dashboard with role-based routing
-Route::get('/dashboard', [DashboardController::class, 'index'])->middleware(['auth', 'verified'])->name('dashboard');
+// Dashboard with role-based routing - PROTECTED (Super Users Only)
+Route::get('/dashboard', [DashboardController::class, 'index'])
+    ->middleware(['auth', 'verified', 'user.type:headoffice', 'role:super_user,admin_user'])
+    ->name('dashboard');
 
 // Head Office Super User Routes - PROTECTED
 Route::middleware(['auth', 'verified', 'user.type:headoffice', 'role:super_user,admin_user'])->group(function () {
@@ -1259,18 +1261,18 @@ Route::get('/test-login', function () {
 });
 
 // Member Dashboard Routes - PROTECTED
-Route::middleware(['auth', 'user.type:member'])->group(function () {
-    // Free Member Dashboard Route
-    Route::get('/member-f-dashboard', [MemberDashboardController::class, 'freeMemberDashboard'])
-        ->name('member.f.dashboard');
+// Free Member Dashboard Route
+Route::get('/member-f-dashboard', [MemberDashboardController::class, 'freeMemberDashboard'])
+    ->middleware(['auth', 'free.member'])
+    ->name('member.f.dashboard');
 
-    // Paid Member Dashboard Route
-    Route::get('/member-p-dashboard', [MemberDashboardController::class, 'paidMemberDashboard'])
-        ->name('member.p.dashboard');
-});
+// Paid Member Dashboard Route
+Route::get('/member-p-dashboard', [MemberDashboardController::class, 'paidMemberDashboard'])
+    ->middleware(['auth', 'paid.member'])
+    ->name('member.p.dashboard');
 
-// Member-Only Routes - PROTECTED
-Route::middleware(['auth', 'user.type:member'])->group(function () {
+// Paid Member Routes - PROTECTED
+Route::middleware(['auth', 'paid.member'])->group(function () {
     // Member Badges Route (Paid Members Only)
     Route::get('/member-badges', [MemberDashboardController::class, 'memberBadges'])
         ->name('member.badges');
@@ -1293,7 +1295,28 @@ Route::middleware(['auth', 'user.type:member'])->group(function () {
     Route::get('/api/cash-wallet', [CashWalletController::class, 'getCashWalletData'])
         ->name('api.cash.wallet');
 
+    // Transactions Route (Paid Members Only)
+    Route::get('/transactions', [TransactionController::class, 'paidMemberTransactions'])
+        ->name('transactions');
 
+    // Paid Member Orders Route (Paid Members Only)
+    Route::get('/paid-orders', [MemberOrderController::class, 'paidMemberOrders'])
+        ->name('paid.orders');
+});
+
+// Free Member Routes - PROTECTED
+Route::middleware(['auth', 'free.member'])->group(function () {
+    // Free Member Transactions Route (Free Members Only)
+    Route::get('/free-transactions', [TransactionController::class, 'freeMemberTransactions'])
+        ->name('free.transactions');
+
+    // Free Member Orders Route (Free Members Only)
+    Route::get('/free-orders', [MemberOrderController::class, 'freeMemberOrders'])
+        ->name('free.orders');
+});
+
+// Common Member Routes - PROTECTED (Both Free and Paid Members)
+Route::middleware(['auth', 'user.type:member'])->group(function () {
     // Support Routes
     Route::get('/support', [SupportController::class, 'index'])->name('support');
 
@@ -1307,22 +1330,6 @@ Route::middleware(['auth', 'user.type:member'])->group(function () {
     // Tree View Routes
     Route::get('/tree-view', [TreeViewController::class, 'index'])->name('tree.view');
     Route::post('/api/tree-view/get-children', [TreeViewController::class, 'getChildren'])->name('tree.view.get.children');
-
-    // Transactions Route (Paid Members Only)
-    Route::get('/transactions', [TransactionController::class, 'paidMemberTransactions'])
-        ->name('transactions');
-
-    // Free Member Transactions Route (Free Members Only)
-    Route::get('/free-transactions', [TransactionController::class, 'freeMemberTransactions'])
-        ->name('free.transactions');
-
-    // Free Member Orders Route (Free Members Only)
-    Route::get('/free-orders', [MemberOrderController::class, 'freeMemberOrders'])
-        ->name('free.orders');
-
-    // Paid Member Orders Route (Paid Members Only)
-    Route::get('/paid-orders', [MemberOrderController::class, 'paidMemberOrders'])
-        ->name('paid.orders');
 });
 
 // Member Transactions Route (Super Admin Only) - PROTECTED
@@ -1385,6 +1392,39 @@ Route::get('/debug-user', function () {
         'primary_role' => $user->primary_role ?? 'N/A'
     ]);
 });
+
+// Test routes for middleware verification
+Route::get('/test-paid-access', function () {
+    $user = Auth::user();
+    return response()->json([
+        'message' => 'Paid member access granted!',
+        'user_id' => $user->id,
+        'user_type' => $user->user_type,
+        'member_type' => $user->member_type
+    ]);
+})->middleware(['auth', 'paid.member']);
+
+Route::get('/test-free-access', function () {
+    $user = Auth::user();
+    return response()->json([
+        'message' => 'Free member access granted!',
+        'user_id' => $user->id,
+        'user_type' => $user->user_type,
+        'member_type' => $user->member_type
+    ]);
+})->middleware(['auth', 'free.member']);
+
+// Debug middleware test
+Route::get('/debug-middleware', function () {
+    $user = Auth::user();
+    return response()->json([
+        'authenticated' => $user ? true : false,
+        'user_id' => $user ? $user->id : null,
+        'user_type' => $user ? $user->user_type : null,
+        'member_type' => $user ? $user->member_type : null,
+        'primary_role' => $user && $user->primary_role ? $user->primary_role->name : null,
+    ]);
+})->middleware(['auth']);
 
 // Profile Routes (Common for all members)
 Route::middleware(['auth'])->group(function () {

@@ -11,11 +11,7 @@ class DashboardController extends Controller
     {
         $user = $request->user();
         
-        // Check if user is authenticated
-        if (!$user) {
-            return redirect()->route('login')->with('error', 'Please log in to access the dashboard.');
-        }
-        
+        // This controller is now only for headoffice users (enforced by middleware)
         // Get user's primary role
         $primaryRole = $user->primary_role;
         
@@ -23,17 +19,13 @@ class DashboardController extends Controller
             return redirect()->route('login')->with('error', 'No role assigned to user.');
         }
 
-        // Route based on user type and role
-        switch ($user->user_type) {
-            case 'headoffice':
-                return $this->handleHeadOfficeDashboard($user, $primaryRole);
-            case 'brandoffice':
-                return $this->handleBrandOfficeDashboard($user, $primaryRole);
-            case 'member':
-                return $this->handleMemberDashboard($user, $primaryRole);
-            default:
-                return redirect()->route('login')->with('error', 'Invalid user type.');
+        // Only handle headoffice users (middleware ensures this)
+        if ($user->user_type === 'headoffice') {
+            return $this->handleHeadOfficeDashboard($user, $primaryRole);
         }
+        
+        // This should never be reached due to middleware, but just in case
+        return redirect()->route('login')->with('error', 'Access denied. This dashboard is for admin users only.');
     }
 
     private function handleHeadOfficeDashboard($user, $role)
