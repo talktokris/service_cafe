@@ -23,6 +23,10 @@ class CashWalletTransaction extends Model
         'create_user_id',
         'status',
         'deleteStatus',
+        'cash_out_reference_no',
+        'cash_out_description',
+        'cash_out_user_id',
+        'cash_out_date',
     ];
 
     protected $casts = [
@@ -34,6 +38,7 @@ class CashWalletTransaction extends Model
         'tax_status' => 'integer',
         'status' => 'integer',
         'deleteStatus' => 'integer',
+        'cash_out_date' => 'datetime',
     ];
 
     /**
@@ -50,5 +55,10 @@ class CashWalletTransaction extends Model
     public function createUser(): BelongsTo
     {
         return $this->belongsTo(User::class, 'create_user_id');
+    }
+
+    public function cashOutUser(): BelongsTo
+    {
+        return $this->belongsTo(User::class, 'cash_out_user_id');
     }
 }
