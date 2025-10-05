@@ -52,6 +52,26 @@ export default function AdminSidebar({ isOpen, onClose, user }) {
             ),
         },
         {
+            title: "Manage Cash Out",
+            href: "/cash-out-management",
+            icon: (
+                <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    className="h-5 w-5"
+                    fill="none"
+                    viewBox="0 0 24 24"
+                    stroke="currentColor"
+                >
+                    <path
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        strokeWidth="2"
+                        d="M20 12H4m16 0l-4-4m4 4l-4 4"
+                    />
+                </svg>
+            ),
+        },
+        {
             title: "Order Management",
             href: "/orders",
             icon: (
@@ -67,26 +87,6 @@ export default function AdminSidebar({ isOpen, onClose, user }) {
                         strokeLinejoin="round"
                         strokeWidth="2"
                         d="M9 5H7a2 2 0 00-2 2v10a2 2 0 002 2h8a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"
-                    />
-                </svg>
-            ),
-        },
-        {
-            title: "OTP Orders",
-            href: "/otp-orders",
-            icon: (
-                <svg
-                    xmlns="http://www.w3.org/2000/svg"
-                    className="h-5 w-5"
-                    fill="none"
-                    viewBox="0 0 24 24"
-                    stroke="currentColor"
-                >
-                    <path
-                        strokeLinecap="round"
-                        strokeLinejoin="round"
-                        strokeWidth="2"
-                        d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"
                     />
                 </svg>
             ),

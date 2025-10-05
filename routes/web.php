@@ -19,6 +19,7 @@ use App\Http\Controllers\TermsOfServiceController;
 use App\Http\Controllers\OtpOrderController;
 use App\Http\Controllers\EarningsController;
 use App\Http\Controllers\CashWalletController;
+use App\Http\Controllers\CashOutManagementController;
 use App\Models\User;
 use Illuminate\Foundation\Application;
 use Illuminate\Support\Facades\Route;
@@ -1238,6 +1239,14 @@ Route::middleware(['auth'])->group(function () {
             ], 500);
         }
     })->name('api.member-balance');
+
+    // Cash Out Management Routes (Super Users Only)
+    Route::get('/cash-out-management', [CashOutManagementController::class, 'index'])
+        ->name('cash.out.management');
+    Route::post('/cash-out/payout', [CashOutManagementController::class, 'processPayout'])
+        ->name('cash.out.payout');
+    Route::get('/api/cash-out-transaction/{id}', [CashOutManagementController::class, 'getTransactionDetails'])
+        ->name('api.cash.out.transaction');
 });
 
 // Simple test route to bypass any redirect issues
@@ -1282,6 +1291,7 @@ Route::middleware(['auth', 'user.type:member'])->group(function () {
         ->name('transfer.purchase.balance');
     Route::get('/api/cash-wallet', [CashWalletController::class, 'getCashWalletData'])
         ->name('api.cash.wallet');
+
 
     // Support Routes
     Route::get('/support', [SupportController::class, 'index'])->name('support');
