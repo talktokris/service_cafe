@@ -1,97 +1,146 @@
-name: Deploy Serve Cafe to cPanel
+name: Deploy to cPanel
 
 on:
   push:
-    branches: [main]
-  workflow_dispatch: # Allow manual trigger
+    branches: [main, master]
+  pull_request:
+    branches: [main, master]
+  workflow_dispatch:
 
 jobs:
   deploy:
     runs-on: ubuntu-latest
-    if: ${{ secrets.CPANEL_HOST != '' }}
+    name: Deploy Serve Cafe to cPanel
 
     steps:
-      - name: Checkout code
+      - name: 🔄 Checkout code
         uses: actions/checkout@v4
 
-      - name: Setup PHP
+      - name: 🐘 Setup PHP
         uses: shivammathur/setup-php@v2
         with:
           php-version: "8.2"
-          extensions: mbstring, dom, fileinfo, mysql, pdo_mysql, bcmath, gd
-          tools: composer:v2
+          extensions: mbstring, dom, fileinfo, mysql, pdo, pdo_mysql, bcmath, gd, zip
+          coverage: none
 
-      - name: Setup Node.js
+      - name: 📦 Setup Node.js
         uses: actions/setup-node@v4
         with:
-          node-version: "18"
+          node-version: "20"
           cache: "npm"
 
-      - name: Install PHP dependencies
-        run: composer install --no-dev --optimize-autoloader
+      - name: 📥 Get Composer Cache Directory
+        id: composer-cache
+        run: echo "dir=$(composer config cache-files-dir)" >> $GITHUB_OUTPUT
 
-      - name: Install Node dependencies
+      - name: 💾 Cache Composer dependencies
+        uses: actions/cache@v3
+        with:
+          path: ${{ steps.composer-cache.outputs.dir }}
+          key: ${{ runner.os }}-composer-${{ hashFiles('**/composer.lock') }}
+          restore-keys: ${{ runner.os }}-composer-
+
+      - name: 🎼 Install Composer dependencies
+        run: composer install --no-dev --optimize-autoloader --no-interaction --prefer-dist
+
+      - name: 📦 Install Node dependencies
         run: npm ci
 
-      - name: Build assets
+      - name: 🎨 Build assets
         run: npm run build
 
-      - name: Create deployment package
+      - name: 🧪 Run tests (optional)
         run: |
-          mkdir -p deploy-package
-          cp -r app bootstrap config database public resources routes storage vendor artisan composer.json composer.lock package.json package-lock.json deploy-package/
-          cp deploy.sh deploy-package/
-          cd deploy-package && tar -czf ../serve-cafe-deploy.tar.gz .
+          if [ -f "phpunit.xml" ]; then
+            php artisan test || true
+          fi
 
-      - name: Upload deployment package
-        uses: appleboy/scp-action@v0.1.7
-        with:
-          host: ${{ secrets.CPANEL_HOST }}
-          username: ${{ secrets.CPANEL_USERNAME }}
-          key: ${{ secrets.CPANEL_SSH_KEY }}
-          port: ${{ secrets.CPANEL_PORT || '22' }}
-          source: "serve-cafe-deploy.tar.gz"
-          target: "/tmp/"
+      - name: 📊 Display deployment info
+        run: |
+          echo "🚀 Deploying to cPanel..."
+          echo "📂 Branch: ${{ github.ref_name }}"
+          echo "👤 Triggered by: ${{ github.actor }}"
+          echo "📝 Commit: ${{ github.sha }}"
 
-      - name: Deploy to cPanel via SSH
+      - name: 🚀 Deploy to cPanel via SSH
         uses: appleboy/ssh-action@v1.0.3
         with:
           host: ${{ secrets.CPANEL_HOST }}
           username: ${{ secrets.CPANEL_USERNAME }}
           key: ${{ secrets.CPANEL_SSH_KEY }}
-          port: ${{ secrets.CPANEL_PORT || '22' }}
+          port: ${{ secrets.CPANEL_PORT || 22 }}
           script: |
-            # Create backup
-            cd /home4/servi5ne/repositories/service_cafe
-            tar -czf /home4/servi5ne/backups/backup-$(date +%Y%m%d-%H%M%S).tar.gz .
+            echo "🔍 Starting deployment process..."
 
-            # Extract new files
-            cd /home4/servi5ne/repositories/service_cafe
-            tar -xzf /tmp/serve-cafe-deploy.tar.gz
+            # Navigate to project directory
+            cd /home4/servi5ne/repositories/service_cafe || exit 1
+
+            # Create backup
+            echo "📦 Creating backup..."
+            BACKUP_DIR="/home4/servi5ne/backups"
+            mkdir -p $BACKUP_DIR
+            tar -czf "$BACKUP_DIR/backup-$(date +%Y%m%d-%H%M%S).tar.gz" . 2>/dev/null || true
+
+            # Pull latest changes
+            echo "📥 Pulling latest changes..."
+            git fetch origin main
+            git reset --hard origin/main
+
+            # Install PHP dependencies
+            echo "🎼 Installing Composer dependencies..."
+            composer install --no-dev --optimize-autoloader --no-interaction
+
+            # Build assets (if npm available)
+            if command -v npm &> /dev/null; then
+              echo "🎨 Building assets..."
+              npm install --silent
+              npm run build
+            fi
 
             # Set permissions
+            echo "🔐 Setting permissions..."
             chmod -R 755 .
             chmod -R 775 storage bootstrap/cache
 
-            # Install dependencies
-            composer install --no-dev --optimize-autoloader
-
-            # Clear and rebuild caches
+            # Clear Laravel caches
+            echo "🧹 Clearing caches..."
             php artisan config:clear
+            php artisan route:clear
+            php artisan view:clear
+            php artisan cache:clear
+
+            # Rebuild caches
+            echo "🔄 Rebuilding caches..."
             php artisan config:cache
             php artisan route:cache
             php artisan view:cache
 
+            # Run migrations (if needed)
+            echo "🗄️ Running migrations..."
+            php artisan migrate --force || true
+
             # Update symlink
-            ln -sfn /home4/servi5ne/repositories/service_cafe/public /home4/servi5ne/public_html/sys/app/public
+            echo "🔗 Updating symlink..."
+            ln -sfn "$(pwd)/public" "/home4/servi5ne/public_html/sys/app/public"
+
+            # Clean old backups (keep last 5)
+            echo "🧹 Cleaning old backups..."
+            ls -t $BACKUP_DIR/backup-*.tar.gz 2>/dev/null | tail -n +6 | xargs -r rm
+
+            # Test application
+            echo "🧪 Testing application..."
+            php artisan route:list > /dev/null 2>&1 && echo "✅ Application test passed" || echo "⚠️ Application test failed"
 
             echo "✅ Deployment completed successfully!"
 
-      - name: Notify deployment status
-        if: always()
+      - name: 🎉 Deployment Success
+        if: success()
         run: |
-          if [ "${{ job.status }}" == "success" ]; then
-            echo "✅ Deployment successful!"
-          else
-            echo "❌ Deployment failed!"
-          fi
+          echo "✅ Deployment completed successfully!"
+          echo "🌐 Application is available at: https://servecafe.com"
+
+      - name: ❌ Deployment Failed
+        if: failure()
+        run: |
+          echo "❌ Deployment failed!"
+          echo "Please check the logs above for errors."

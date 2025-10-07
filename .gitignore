@@ -23,3 +23,21 @@ yarn-error.log
 /.zed
 *.rar
 *.zip
+
+# Deployment & CI/CD
+/backups/
+*.log
+/logs/
+.deploy-lock
+deploy-*.tar.gz
+cookies.txt
+
+# macOS
+.DS_Store
+.AppleDouble
+.LSOverride
+
+# Windows
+Thumbs.db
+ehthumbs.db
+Desktop.ini
