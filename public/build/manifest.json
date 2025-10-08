@@ -1,0 +1,1813 @@
+{
+  "_AuthenticatedLayout-DHjKKdaQ.js": {
+    "file": "assets/AuthenticatedLayout-DHjKKdaQ.js",
+    "name": "AuthenticatedLayout",
+    "imports": [
+      "resources/js/app.jsx",
+      "_Footer-CogazGZy.js"
+    ]
+  },
+  "_Footer-CogazGZy.js": {
+    "file": "assets/Footer-CogazGZy.js",
+    "name": "Footer",
+    "imports": [
+      "resources/js/app.jsx"
+    ]
+  },
+  "_GuestLayout-D2ySQWzI.js": {
+    "file": "assets/GuestLayout-D2ySQWzI.js",
+    "name": "GuestLayout",
+    "imports": [
+      "resources/js/app.jsx"
+    ]
+  },
+  "_InputError-DKcHRhAT.js": {
+    "file": "assets/InputError-DKcHRhAT.js",
+    "name": "InputError",
+    "imports": [
+      "resources/js/app.jsx"
+    ]
+  },
+  "_InputLabel-CYYTd4Xb.js": {
+    "file": "assets/InputLabel-CYYTd4Xb.js",
+    "name": "InputLabel",
+    "imports": [
+      "resources/js/app.jsx"
+    ]
+  },
+  "_PrimaryButton-DE4opROf.js": {
+    "file": "assets/PrimaryButton-DE4opROf.js",
+    "name": "PrimaryButton",
+    "imports": [
+      "resources/js/app.jsx"
+    ]
+  },
+  "_PublicLayout--JWwhh6_.js": {
+    "file": "assets/PublicLayout--JWwhh6_.js",
+    "name": "PublicLayout",
+    "imports": [
+      "resources/js/app.jsx",
+      "_Footer-CogazGZy.js"
+    ]
+  },
+  "_TextInput-BJH9GNUA.js": {
+    "file": "assets/TextInput-BJH9GNUA.js",
+    "name": "TextInput",
+    "imports": [
+      "resources/js/app.jsx"
+    ]
+  },
+  "_index.module-B3GOSOof.js": {
+    "file": "assets/index.module-B3GOSOof.js",
+    "name": "index.module",
+    "imports": [
+      "resources/js/app.jsx"
+    ]
+  },
+  "_transition-dkTcfCa-.js": {
+    "file": "assets/transition-dkTcfCa-.js",
+    "name": "transition",
+    "imports": [
+      "resources/js/app.jsx"
+    ]
+  },
+  "resources/js/Pages/About.jsx": {
+    "file": "assets/About-BlBeiXCj.js",
+    "name": "About",
+    "src": "resources/js/Pages/About.jsx",
+    "isDynamicEntry": true,
+    "imports": [
+      "resources/js/app.jsx",
+      "_PublicLayout--JWwhh6_.js",
+      "_Footer-CogazGZy.js"
+    ]
+  },
+  "resources/js/Pages/Auth/ConfirmPassword.jsx": {
+    "file": "assets/ConfirmPassword-Cb6HWtSY.js",
+    "name": "ConfirmPassword",
+    "src": "resources/js/Pages/Auth/ConfirmPassword.jsx",
+    "isDynamicEntry": true,
+    "imports": [
+      "resources/js/app.jsx",
+      "_InputError-DKcHRhAT.js",
+      "_InputLabel-CYYTd4Xb.js",
+      "_PrimaryButton-DE4opROf.js",
+      "_TextInput-BJH9GNUA.js",
+      "_GuestLayout-D2ySQWzI.js"
+    ]
+  },
+  "resources/js/Pages/Auth/ForgotPassword.jsx": {
+    "file": "assets/ForgotPassword-VyNp79cl.js",
+    "name": "ForgotPassword",
+    "src": "resources/js/Pages/Auth/ForgotPassword.jsx",
+    "isDynamicEntry": true,
+    "imports": [
+      "resources/js/app.jsx",
+      "_InputError-DKcHRhAT.js",
+      "_PrimaryButton-DE4opROf.js",
+      "_TextInput-BJH9GNUA.js",
+      "_GuestLayout-D2ySQWzI.js"
+    ]
+  },
+  "resources/js/Pages/Auth/InvalidReferralCode.jsx": {
+    "file": "assets/InvalidReferralCode-DMJL-5bG.js",
+    "name": "InvalidReferralCode",
+    "src": "resources/js/Pages/Auth/InvalidReferralCode.jsx",
+    "isDynamicEntry": true,
+    "imports": [
+      "resources/js/app.jsx"
+    ]
+  },
+  "resources/js/Pages/Auth/Login.jsx": {
+    "file": "assets/Login-BynuhIcx.js",
+    "name": "Login",
+    "src": "resources/js/Pages/Auth/Login.jsx",
+    "isDynamicEntry": true,
+    "imports": [
+      "resources/js/app.jsx",
+      "_PublicLayout--JWwhh6_.js",
+      "_Footer-CogazGZy.js"
+    ]
+  },
+  "resources/js/Pages/Auth/Register.jsx": {
+    "file": "assets/Register-DOeMUJQY.js",
+    "name": "Register",
+    "src": "resources/js/Pages/Auth/Register.jsx",
+    "isDynamicEntry": true,
+    "imports": [
+      "resources/js/app.jsx"
+    ]
+  },
+  "resources/js/Pages/Auth/ResetPassword.jsx": {
+    "file": "assets/ResetPassword-2xmuWvRT.js",
+    "name": "ResetPassword",
+    "src": "resources/js/Pages/Auth/ResetPassword.jsx",
+    "isDynamicEntry": true,
+    "imports": [
+      "resources/js/app.jsx",
+      "_InputError-DKcHRhAT.js",
+      "_InputLabel-CYYTd4Xb.js",
+      "_PrimaryButton-DE4opROf.js",
+      "_TextInput-BJH9GNUA.js",
+      "_GuestLayout-D2ySQWzI.js"
+    ]
+  },
+  "resources/js/Pages/Auth/VerifyEmail.jsx": {
+    "file": "assets/VerifyEmail-D_CC7MTH.js",
+    "name": "VerifyEmail",
+    "src": "resources/js/Pages/Auth/VerifyEmail.jsx",
+    "isDynamicEntry": true,
+    "imports": [
+      "resources/js/app.jsx",
+      "_PrimaryButton-DE4opROf.js",
+      "_GuestLayout-D2ySQWzI.js"
+    ]
+  },
+  "resources/js/Pages/BillPaymentComponents/AddMenuItemComponents.jsx": {
+    "file": "assets/AddMenuItemComponents-v_Mu5HmE.js",
+    "name": "AddMenuItemComponents",
+    "src": "resources/js/Pages/BillPaymentComponents/AddMenuItemComponents.jsx",
+    "isDynamicEntry": true,
+    "imports": [
+      "resources/js/app.jsx"
+    ]
+  },
+  "resources/js/Pages/BillPaymentComponents/DeleteMenuItemComponents.jsx": {
+    "file": "assets/DeleteMenuItemComponents-JUOnjDk7.js",
+    "name": "DeleteMenuItemComponents",
+    "src": "resources/js/Pages/BillPaymentComponents/DeleteMenuItemComponents.jsx",
+    "isDynamicEntry": true,
+    "imports": [
+      "resources/js/app.jsx"
+    ]
+  },
+  "resources/js/Pages/BillPaymentComponents/EditMenuItemComponents.jsx": {
+    "file": "assets/EditMenuItemComponents-CzhyLqD7.js",
+    "name": "EditMenuItemComponents",
+    "src": "resources/js/Pages/BillPaymentComponents/EditMenuItemComponents.jsx",
+    "isDynamicEntry": true,
+    "imports": [
+      "resources/js/app.jsx"
+    ]
+  },
+  "resources/js/Pages/BillPaymentComponents/FindMemberComponent.jsx": {
+    "file": "assets/FindMemberComponent-D0SwqTEV.js",
+    "name": "FindMemberComponent",
+    "src": "resources/js/Pages/BillPaymentComponents/FindMemberComponent.jsx",
+    "isDynamicEntry": true,
+    "imports": [
+      "resources/js/app.jsx"
+    ]
+  },
+  "resources/js/Pages/BillPaymentComponents/ManageBillPaymentComponents.jsx": {
+    "file": "assets/ManageBillPaymentComponents-DnsNpf2z.js",
+    "name": "ManageBillPaymentComponents",
+    "src": "resources/js/Pages/BillPaymentComponents/ManageBillPaymentComponents.jsx",
+    "isDynamicEntry": true,
+    "imports": [
+      "resources/js/app.jsx",
+      "resources/js/Pages/BillPaymentComponents/ViewItemsComponents.jsx",
+      "resources/js/Pages/BillPaymentComponents/AddMenuItemComponents.jsx",
+      "resources/js/Pages/BillPaymentComponents/EditMenuItemComponents.jsx",
+      "resources/js/Pages/BillPaymentComponents/DeleteMenuItemComponents.jsx",
+      "resources/js/Pages/BillPaymentComponents/PayBillComponents.jsx",
+      "resources/js/Pages/BillPaymentComponents/PrintReceiptComponents.jsx",
+      "resources/js/Pages/BillPaymentComponents/TableUserConfirmComponent.jsx",
+      "resources/js/Pages/BillPaymentComponents/FindMemberComponent.jsx"
+    ]
+  },
+  "resources/js/Pages/BillPaymentComponents/PayBillComponents.jsx": {
+    "file": "assets/PayBillComponents-Dv-VMbKP.js",
+    "name": "PayBillComponents",
+    "src": "resources/js/Pages/BillPaymentComponents/PayBillComponents.jsx",
+    "isDynamicEntry": true,
+    "imports": [
+      "resources/js/app.jsx",
+      "resources/js/Pages/BillPaymentComponents/FindMemberComponent.jsx",
+      "resources/js/Pages/BillPaymentComponents/PrintReceiptComponents.jsx"
+    ]
+  },
+  "resources/js/Pages/BillPaymentComponents/PrintReceiptComponents.jsx": {
+    "file": "assets/PrintReceiptComponents-CewOzny6.js",
+    "name": "PrintReceiptComponents",
+    "src": "resources/js/Pages/BillPaymentComponents/PrintReceiptComponents.jsx",
+    "isDynamicEntry": true,
+    "imports": [
+      "resources/js/app.jsx"
+    ]
+  },
+  "resources/js/Pages/BillPaymentComponents/TableUserConfirmComponent.jsx": {
+    "file": "assets/TableUserConfirmComponent-49LjTqix.js",
+    "name": "TableUserConfirmComponent",
+    "src": "resources/js/Pages/BillPaymentComponents/TableUserConfirmComponent.jsx",
+    "isDynamicEntry": true,
+    "imports": [
+      "resources/js/app.jsx"
+    ]
+  },
+  "resources/js/Pages/BillPaymentComponents/ViewItemsComponents.jsx": {
+    "file": "assets/ViewItemsComponents-DU5dxE3x.js",
+    "name": "ViewItemsComponents",
+    "src": "resources/js/Pages/BillPaymentComponents/ViewItemsComponents.jsx",
+    "isDynamicEntry": true,
+    "imports": [
+      "resources/js/app.jsx"
+    ]
+  },
+  "resources/js/Pages/BrandOffice/Admin/BranchAdminDashboard.jsx": {
+    "file": "assets/BranchAdminDashboard-D3qjv0cr.js",
+    "name": "BranchAdminDashboard",
+    "src": "resources/js/Pages/BrandOffice/Admin/BranchAdminDashboard.jsx",
+    "isDynamicEntry": true,
+    "imports": [
+      "resources/js/app.jsx",
+      "_AuthenticatedLayout-DHjKKdaQ.js",
+      "_Footer-CogazGZy.js"
+    ]
+  },
+  "resources/js/Pages/BrandOffice/Billing/BranchBillingDashboard.jsx": {
+    "file": "assets/BranchBillingDashboard-Bl7wTt_q.js",
+    "name": "BranchBillingDashboard",
+    "src": "resources/js/Pages/BrandOffice/Billing/BranchBillingDashboard.jsx",
+    "isDynamicEntry": true,
+    "imports": [
+      "resources/js/app.jsx",
+      "_AuthenticatedLayout-DHjKKdaQ.js",
+      "_Footer-CogazGZy.js"
+    ]
+  },
+  "resources/js/Pages/Contact.jsx": {
+    "file": "assets/Contact-gu89eIRi.js",
+    "name": "Contact",
+    "src": "resources/js/Pages/Contact.jsx",
+    "isDynamicEntry": true,
+    "imports": [
+      "resources/js/app.jsx",
+      "_PublicLayout--JWwhh6_.js",
+      "_Footer-CogazGZy.js"
+    ]
+  },
+  "resources/js/Pages/Dashboard.jsx": {
+    "file": "assets/Dashboard-DxbZJ6t7.js",
+    "name": "Dashboard",
+    "src": "resources/js/Pages/Dashboard.jsx",
+    "isDynamicEntry": true,
+    "imports": [
+      "resources/js/app.jsx",
+      "_AuthenticatedLayout-DHjKKdaQ.js",
+      "_Footer-CogazGZy.js"
+    ]
+  },
+  "resources/js/Pages/Dashboards/Admin/DashboardComponent.jsx": {
+    "file": "assets/DashboardComponent-CeLvrGCQ.js",
+    "name": "DashboardComponent",
+    "src": "resources/js/Pages/Dashboards/Admin/DashboardComponent.jsx",
+    "isDynamicEntry": true,
+    "imports": [
+      "resources/js/app.jsx"
+    ]
+  },
+  "resources/js/Pages/FAQ.jsx": {
+    "file": "assets/FAQ-HWzoCKg8.js",
+    "name": "FAQ",
+    "src": "resources/js/Pages/FAQ.jsx",
+    "isDynamicEntry": true,
+    "imports": [
+      "resources/js/app.jsx",
+      "_PublicLayout--JWwhh6_.js",
+      "_Footer-CogazGZy.js"
+    ]
+  },
+  "resources/js/Pages/HeadOffice/Account/AccountUserDashboard.jsx": {
+    "file": "assets/AccountUserDashboard-DEGQUjAm.js",
+    "name": "AccountUserDashboard",
+    "src": "resources/js/Pages/HeadOffice/Account/AccountUserDashboard.jsx",
+    "isDynamicEntry": true,
+    "imports": [
+      "resources/js/app.jsx",
+      "resources/js/Pages/HeadOffice/AdminComponents/AdminDashboardLayout.jsx",
+      "resources/js/Pages/HeadOffice/AdminComponents/AdminHeader.jsx",
+      "resources/js/Pages/HeadOffice/AdminComponents/AdminFooter.jsx",
+      "resources/js/Pages/HeadOffice/AdminComponents/AdminSidebar.jsx"
+    ]
+  },
+  "resources/js/Pages/HeadOffice/Admin/AdminUserDashboard.jsx": {
+    "file": "assets/AdminUserDashboard-CxTAw2zb.js",
+    "name": "AdminUserDashboard",
+    "src": "resources/js/Pages/HeadOffice/Admin/AdminUserDashboard.jsx",
+    "isDynamicEntry": true,
+    "imports": [
+      "resources/js/app.jsx",
+      "resources/js/Pages/HeadOffice/AdminComponents/AdminDashboardLayout.jsx",
+      "resources/js/Pages/HeadOffice/AdminComponents/AdminHeader.jsx",
+      "resources/js/Pages/HeadOffice/AdminComponents/AdminFooter.jsx",
+      "resources/js/Pages/HeadOffice/AdminComponents/AdminSidebar.jsx"
+    ]
+  },
+  "resources/js/Pages/HeadOffice/AdminComponents/AdminDashboardLayout.jsx": {
+    "file": "assets/AdminDashboardLayout-BpZyWZxY.js",
+    "name": "AdminDashboardLayout",
+    "src": "resources/js/Pages/HeadOffice/AdminComponents/AdminDashboardLayout.jsx",
+    "isDynamicEntry": true,
+    "imports": [
+      "resources/js/app.jsx",
+      "resources/js/Pages/HeadOffice/AdminComponents/AdminHeader.jsx",
+      "resources/js/Pages/HeadOffice/AdminComponents/AdminFooter.jsx",
+      "resources/js/Pages/HeadOffice/AdminComponents/AdminSidebar.jsx"
+    ]
+  },
+  "resources/js/Pages/HeadOffice/AdminComponents/AdminFooter.jsx": {
+    "file": "assets/AdminFooter-DakFZbq2.js",
+    "name": "AdminFooter",
+    "src": "resources/js/Pages/HeadOffice/AdminComponents/AdminFooter.jsx",
+    "isDynamicEntry": true,
+    "imports": [
+      "resources/js/app.jsx"
+    ]
+  },
+  "resources/js/Pages/HeadOffice/AdminComponents/AdminHeader.jsx": {
+    "file": "assets/AdminHeader-BaURRXR2.js",
+    "name": "AdminHeader",
+    "src": "resources/js/Pages/HeadOffice/AdminComponents/AdminHeader.jsx",
+    "isDynamicEntry": true,
+    "imports": [
+      "resources/js/app.jsx"
+    ]
+  },
+  "resources/js/Pages/HeadOffice/AdminComponents/AdminSidebar.jsx": {
+    "file": "assets/AdminSidebar-DeOPduxW.js",
+    "name": "AdminSidebar",
+    "src": "resources/js/Pages/HeadOffice/AdminComponents/AdminSidebar.jsx",
+    "isDynamicEntry": true,
+    "imports": [
+      "resources/js/app.jsx"
+    ]
+  },
+  "resources/js/Pages/HeadOffice/Billing/BillingUserDashboard.jsx": {
+    "file": "assets/BillingUserDashboard-DEqjpYC0.js",
+    "name": "BillingUserDashboard",
+    "src": "resources/js/Pages/HeadOffice/Billing/BillingUserDashboard.jsx",
+    "isDynamicEntry": true,
+    "imports": [
+      "resources/js/app.jsx",
+      "resources/js/Pages/HeadOffice/AdminComponents/AdminDashboardLayout.jsx",
+      "resources/js/Pages/HeadOffice/AdminComponents/AdminHeader.jsx",
+      "resources/js/Pages/HeadOffice/AdminComponents/AdminFooter.jsx",
+      "resources/js/Pages/HeadOffice/AdminComponents/AdminSidebar.jsx"
+    ]
+  },
+  "resources/js/Pages/HeadOffice/CashOutManagement.jsx": {
+    "file": "assets/CashOutManagement-Cp7On6a8.js",
+    "name": "CashOutManagement",
+    "src": "resources/js/Pages/HeadOffice/CashOutManagement.jsx",
+    "isDynamicEntry": true,
+    "imports": [
+      "resources/js/app.jsx",
+      "resources/js/Pages/HeadOffice/AdminComponents/AdminDashboardLayout.jsx",
+      "resources/js/Pages/Members/Components/Breadcrumb.jsx",
+      "resources/js/Pages/HeadOffice/Components/PayOutComponent.jsx",
+      "resources/js/Pages/HeadOffice/AdminComponents/AdminHeader.jsx",
+      "resources/js/Pages/HeadOffice/AdminComponents/AdminFooter.jsx",
+      "resources/js/Pages/HeadOffice/AdminComponents/AdminSidebar.jsx",
+      "_PrimaryButton-DE4opROf.js",
+      "_TextInput-BJH9GNUA.js",
+      "_InputLabel-CYYTd4Xb.js"
+    ]
+  },
+  "resources/js/Pages/HeadOffice/Components/PayOutComponent.jsx": {
+    "file": "assets/PayOutComponent-CM3K3JpN.js",
+    "name": "PayOutComponent",
+    "src": "resources/js/Pages/HeadOffice/Components/PayOutComponent.jsx",
+    "isDynamicEntry": true,
+    "imports": [
+      "resources/js/app.jsx",
+      "_PrimaryButton-DE4opROf.js",
+      "_TextInput-BJH9GNUA.js",
+      "_InputLabel-CYYTd4Xb.js"
+    ]
+  },
+  "resources/js/Pages/HeadOffice/Super/BillPayment.jsx": {
+    "file": "assets/BillPayment-CdUSzgmk.js",
+    "name": "BillPayment",
+    "src": "resources/js/Pages/HeadOffice/Super/BillPayment.jsx",
+    "isDynamicEntry": true,
+    "imports": [
+      "resources/js/app.jsx",
+      "resources/js/Pages/HeadOffice/AdminComponents/AdminDashboardLayout.jsx",
+      "resources/js/Pages/BillPaymentComponents/ManageBillPaymentComponents.jsx",
+      "resources/js/Pages/HeadOffice/AdminComponents/AdminHeader.jsx",
+      "resources/js/Pages/HeadOffice/AdminComponents/AdminFooter.jsx",
+      "resources/js/Pages/HeadOffice/AdminComponents/AdminSidebar.jsx",
+      "resources/js/Pages/BillPaymentComponents/ViewItemsComponents.jsx",
+      "resources/js/Pages/BillPaymentComponents/AddMenuItemComponents.jsx",
+      "resources/js/Pages/BillPaymentComponents/EditMenuItemComponents.jsx",
+      "resources/js/Pages/BillPaymentComponents/DeleteMenuItemComponents.jsx",
+      "resources/js/Pages/BillPaymentComponents/PayBillComponents.jsx",
+      "resources/js/Pages/BillPaymentComponents/FindMemberComponent.jsx",
+      "resources/js/Pages/BillPaymentComponents/PrintReceiptComponents.jsx",
+      "resources/js/Pages/BillPaymentComponents/TableUserConfirmComponent.jsx"
+    ]
+  },
+  "resources/js/Pages/HeadOffice/Super/BranchManagement.jsx": {
+    "file": "assets/BranchManagement-mPGLDqwe.js",
+    "name": "BranchManagement",
+    "src": "resources/js/Pages/HeadOffice/Super/BranchManagement.jsx",
+    "isDynamicEntry": true,
+    "imports": [
+      "resources/js/app.jsx",
+      "resources/js/Pages/HeadOffice/AdminComponents/AdminDashboardLayout.jsx",
+      "resources/js/Pages/OfficeProfileComponents/MangeOfficeProfileComponent.jsx",
+      "resources/js/Pages/HeadOffice/AdminComponents/AdminHeader.jsx",
+      "resources/js/Pages/HeadOffice/AdminComponents/AdminFooter.jsx",
+      "resources/js/Pages/HeadOffice/AdminComponents/AdminSidebar.jsx",
+      "resources/js/Pages/OfficeProfileComponents/CreateOfficeProfileComponent.jsx",
+      "resources/js/Pages/OfficeProfileComponents/EditOfficeProfileComponent.jsx",
+      "resources/js/Pages/OfficeProfileComponents/DeleteOfficeProfileComponent.jsx"
+    ]
+  },
+  "resources/js/Pages/HeadOffice/Super/LatestPackageDemo.jsx": {
+    "file": "assets/LatestPackageDemo-DAx_tS4N.js",
+    "name": "LatestPackageDemo",
+    "src": "resources/js/Pages/HeadOffice/Super/LatestPackageDemo.jsx",
+    "isDynamicEntry": true,
+    "imports": [
+      "resources/js/app.jsx",
+      "resources/js/Pages/HeadOffice/AdminComponents/AdminDashboardLayout.jsx",
+      "resources/js/Pages/ManagePackageComponent/LatestActivePackageCard.jsx",
+      "resources/js/Pages/HeadOffice/AdminComponents/AdminHeader.jsx",
+      "resources/js/Pages/HeadOffice/AdminComponents/AdminFooter.jsx",
+      "resources/js/Pages/HeadOffice/AdminComponents/AdminSidebar.jsx"
+    ]
+  },
+  "resources/js/Pages/HeadOffice/Super/ManageMembers.jsx": {
+    "file": "assets/ManageMembers-DfQ1IWsA.js",
+    "name": "ManageMembers",
+    "src": "resources/js/Pages/HeadOffice/Super/ManageMembers.jsx",
+    "isDynamicEntry": true,
+    "imports": [
+      "resources/js/app.jsx",
+      "resources/js/Pages/HeadOffice/AdminComponents/AdminDashboardLayout.jsx",
+      "resources/js/Pages/ManageMemberComponents/MemberManagementPage.jsx",
+      "resources/js/Pages/HeadOffice/AdminComponents/AdminHeader.jsx",
+      "resources/js/Pages/HeadOffice/AdminComponents/AdminFooter.jsx",
+      "resources/js/Pages/HeadOffice/AdminComponents/AdminSidebar.jsx",
+      "resources/js/Pages/ManageMemberComponents/ViewMemberModal.jsx",
+      "resources/js/Pages/ManageMemberComponents/EditMemberModal.jsx",
+      "resources/js/Pages/ManageMemberComponents/ResetPasswordModal.jsx"
+    ]
+  },
+  "resources/js/Pages/HeadOffice/Super/ManagePackageSettings.jsx": {
+    "file": "assets/ManagePackageSettings-B6WFD_C0.js",
+    "name": "ManagePackageSettings",
+    "src": "resources/js/Pages/HeadOffice/Super/ManagePackageSettings.jsx",
+    "isDynamicEntry": true,
+    "imports": [
+      "resources/js/app.jsx",
+      "resources/js/Pages/HeadOffice/AdminComponents/AdminDashboardLayout.jsx",
+      "resources/js/Pages/ManagePackageComponent/AddPackageComponent.jsx",
+      "resources/js/Pages/ManagePackageComponent/EditPackageComponent.jsx",
+      "resources/js/Pages/ManagePackageComponent/DeletePackageComponent.jsx",
+      "resources/js/Pages/ManagePackageComponent/DeletePackageConfirmation.jsx",
+      "resources/js/Pages/ManagePackageComponent/LatestActivePackageCard.jsx",
+      "resources/js/Pages/HeadOffice/AdminComponents/AdminHeader.jsx",
+      "resources/js/Pages/HeadOffice/AdminComponents/AdminFooter.jsx",
+      "resources/js/Pages/HeadOffice/AdminComponents/AdminSidebar.jsx"
+    ]
+  },
+  "resources/js/Pages/HeadOffice/Super/ManagePayments.jsx": {
+    "file": "assets/ManagePayments-C8Zg83h2.js",
+    "name": "ManagePayments",
+    "src": "resources/js/Pages/HeadOffice/Super/ManagePayments.jsx",
+    "isDynamicEntry": true,
+    "imports": [
+      "resources/js/app.jsx",
+      "resources/js/Pages/HeadOffice/AdminComponents/AdminDashboardLayout.jsx",
+      "resources/js/Pages/HeadOffice/AdminComponents/AdminHeader.jsx",
+      "resources/js/Pages/HeadOffice/AdminComponents/AdminFooter.jsx",
+      "resources/js/Pages/HeadOffice/AdminComponents/AdminSidebar.jsx"
+    ]
+  },
+  "resources/js/Pages/HeadOffice/Super/ManageTablesSettings.jsx": {
+    "file": "assets/ManageTablesSettings-CHQQWB2c.js",
+    "name": "ManageTablesSettings",
+    "src": "resources/js/Pages/HeadOffice/Super/ManageTablesSettings.jsx",
+    "isDynamicEntry": true,
+    "imports": [
+      "resources/js/app.jsx",
+      "resources/js/Pages/HeadOffice/AdminComponents/AdminDashboardLayout.jsx",
+      "resources/js/Pages/SettingComponents/RestaurantTableComponents/ManageRestaurantTableComponent.jsx",
+      "resources/js/Pages/HeadOffice/AdminComponents/AdminHeader.jsx",
+      "resources/js/Pages/HeadOffice/AdminComponents/AdminFooter.jsx",
+      "resources/js/Pages/HeadOffice/AdminComponents/AdminSidebar.jsx",
+      "resources/js/Pages/SettingComponents/RestaurantTableComponents/CreateRestaurantTableComponent.jsx",
+      "resources/js/Pages/SettingComponents/RestaurantTableComponents/EditRestaurantTableComponent.jsx",
+      "resources/js/Pages/SettingComponents/RestaurantTableComponents/DeleteRestaurantTableComponent.jsx"
+    ]
+  },
+  "resources/js/Pages/HeadOffice/Super/MemberTransactions.jsx": {
+    "file": "assets/MemberTransactions-B8S-EkB6.js",
+    "name": "MemberTransactions",
+    "src": "resources/js/Pages/HeadOffice/Super/MemberTransactions.jsx",
+    "isDynamicEntry": true,
+    "imports": [
+      "resources/js/app.jsx",
+      "resources/js/Pages/HeadOffice/AdminComponents/AdminDashboardLayout.jsx",
+      "resources/js/Pages/TransactionComponent/TopupFundComponent.jsx",
+      "resources/js/Pages/HeadOffice/AdminComponents/AdminHeader.jsx",
+      "resources/js/Pages/HeadOffice/AdminComponents/AdminFooter.jsx",
+      "resources/js/Pages/HeadOffice/AdminComponents/AdminSidebar.jsx"
+    ]
+  },
+  "resources/js/Pages/HeadOffice/Super/MenuManagement.jsx": {
+    "file": "assets/MenuManagement-BJIDt93Y.js",
+    "name": "MenuManagement",
+    "src": "resources/js/Pages/HeadOffice/Super/MenuManagement.jsx",
+    "isDynamicEntry": true,
+    "imports": [
+      "resources/js/app.jsx",
+      "resources/js/Pages/HeadOffice/AdminComponents/AdminDashboardLayout.jsx",
+      "resources/js/Pages/MenuComponents/ManageMenuComponents.jsx",
+      "resources/js/Pages/HeadOffice/AdminComponents/AdminHeader.jsx",
+      "resources/js/Pages/HeadOffice/AdminComponents/AdminFooter.jsx",
+      "resources/js/Pages/HeadOffice/AdminComponents/AdminSidebar.jsx",
+      "resources/js/Pages/MenuComponents/CreateMenuComponents.jsx",
+      "resources/js/Pages/MenuComponents/ViewMenuComponents.jsx",
+      "resources/js/Pages/MenuComponents/EditMenuComponents.jsx",
+      "resources/js/Pages/MenuComponents/DeleteMenuComponents.jsx"
+    ]
+  },
+  "resources/js/Pages/HeadOffice/Super/OrderManagement.jsx": {
+    "file": "assets/OrderManagement-BapCi6lp.js",
+    "name": "OrderManagement",
+    "src": "resources/js/Pages/HeadOffice/Super/OrderManagement.jsx",
+    "isDynamicEntry": true,
+    "imports": [
+      "resources/js/app.jsx",
+      "resources/js/Pages/HeadOffice/AdminComponents/AdminDashboardLayout.jsx",
+      "resources/js/Pages/OrderManagement/ManageOrderComponents.jsx",
+      "resources/js/Pages/HeadOffice/AdminComponents/AdminHeader.jsx",
+      "resources/js/Pages/HeadOffice/AdminComponents/AdminFooter.jsx",
+      "resources/js/Pages/HeadOffice/AdminComponents/AdminSidebar.jsx",
+      "resources/js/Pages/OrderManagement/ViewOrderComponents.jsx",
+      "resources/js/Pages/OrderManagement/ViewOrderItemComponents.jsx",
+      "resources/js/Pages/BillPaymentComponents/PrintReceiptComponents.jsx"
+    ]
+  },
+  "resources/js/Pages/HeadOffice/Super/OtpOrders.jsx": {
+    "file": "assets/OtpOrders-B4N7km2k.js",
+    "name": "OtpOrders",
+    "src": "resources/js/Pages/HeadOffice/Super/OtpOrders.jsx",
+    "isDynamicEntry": true,
+    "imports": [
+      "resources/js/app.jsx",
+      "_AuthenticatedLayout-DHjKKdaQ.js",
+      "_Footer-CogazGZy.js"
+    ]
+  },
+  "resources/js/Pages/HeadOffice/Super/ReportsAnalytics.jsx": {
+    "file": "assets/ReportsAnalytics-qIlkzhtb.js",
+    "name": "ReportsAnalytics",
+    "src": "resources/js/Pages/HeadOffice/Super/ReportsAnalytics.jsx",
+    "isDynamicEntry": true,
+    "imports": [
+      "resources/js/app.jsx",
+      "resources/js/Pages/HeadOffice/AdminComponents/AdminDashboardLayout.jsx",
+      "resources/js/Pages/HeadOffice/AdminComponents/AdminHeader.jsx",
+      "resources/js/Pages/HeadOffice/AdminComponents/AdminFooter.jsx",
+      "resources/js/Pages/HeadOffice/AdminComponents/AdminSidebar.jsx"
+    ]
+  },
+  "resources/js/Pages/HeadOffice/Super/Settings.jsx": {
+    "file": "assets/Settings-DWAX4Zib.js",
+    "name": "Settings",
+    "src": "resources/js/Pages/HeadOffice/Super/Settings.jsx",
+    "isDynamicEntry": true,
+    "imports": [
+      "resources/js/app.jsx",
+      "resources/js/Pages/HeadOffice/AdminComponents/AdminDashboardLayout.jsx",
+      "resources/js/Pages/HeadOffice/AdminComponents/AdminHeader.jsx",
+      "resources/js/Pages/HeadOffice/AdminComponents/AdminFooter.jsx",
+      "resources/js/Pages/HeadOffice/AdminComponents/AdminSidebar.jsx"
+    ]
+  },
+  "resources/js/Pages/HeadOffice/Super/StockItemSettings.jsx": {
+    "file": "assets/StockItemSettings-D4hEaCpZ.js",
+    "name": "StockItemSettings",
+    "src": "resources/js/Pages/HeadOffice/Super/StockItemSettings.jsx",
+    "isDynamicEntry": true,
+    "imports": [
+      "resources/js/app.jsx",
+      "resources/js/Pages/HeadOffice/AdminComponents/AdminDashboardLayout.jsx",
+      "resources/js/Pages/SettingComponents/StockItemSettingsComponents/ManageStockItemSettingsComponent.jsx",
+      "resources/js/Pages/HeadOffice/AdminComponents/AdminHeader.jsx",
+      "resources/js/Pages/HeadOffice/AdminComponents/AdminFooter.jsx",
+      "resources/js/Pages/HeadOffice/AdminComponents/AdminSidebar.jsx",
+      "resources/js/Pages/SettingComponents/StockItemSettingsComponents/CreateStockItemSettingsComponent.jsx",
+      "resources/js/Pages/SettingComponents/StockItemSettingsComponents/EditStockItemSettingsComponent.jsx",
+      "resources/js/Pages/SettingComponents/StockItemSettingsComponents/DeleteStockItemSettingsComponent.jsx"
+    ]
+  },
+  "resources/js/Pages/HeadOffice/Super/StockManagement.jsx": {
+    "file": "assets/StockManagement-BJWAEAvd.js",
+    "name": "StockManagement",
+    "src": "resources/js/Pages/HeadOffice/Super/StockManagement.jsx",
+    "isDynamicEntry": true,
+    "imports": [
+      "resources/js/app.jsx",
+      "resources/js/Pages/HeadOffice/AdminComponents/AdminDashboardLayout.jsx",
+      "resources/js/Pages/StockRecordComponents/ManageStockRecordComponents.jsx",
+      "resources/js/Pages/HeadOffice/AdminComponents/AdminHeader.jsx",
+      "resources/js/Pages/HeadOffice/AdminComponents/AdminFooter.jsx",
+      "resources/js/Pages/HeadOffice/AdminComponents/AdminSidebar.jsx",
+      "resources/js/Pages/StockRecordComponents/CreateStockRecordComponents.jsx",
+      "resources/js/Pages/StockRecordComponents/ViewStockRecordComponents.jsx",
+      "resources/js/Pages/StockRecordComponents/EditStockRecordComponents.jsx",
+      "resources/js/Pages/StockRecordComponents/DeleteStockRecordComponents.jsx"
+    ]
+  },
+  "resources/js/Pages/HeadOffice/Super/SuperUserDashboard.jsx": {
+    "file": "assets/SuperUserDashboard-CW-Nrnfn.js",
+    "name": "SuperUserDashboard",
+    "src": "resources/js/Pages/HeadOffice/Super/SuperUserDashboard.jsx",
+    "isDynamicEntry": true,
+    "imports": [
+      "resources/js/app.jsx",
+      "resources/js/Pages/HeadOffice/AdminComponents/AdminDashboardLayout.jsx",
+      "resources/js/Pages/Dashboards/Admin/DashboardComponent.jsx",
+      "resources/js/Pages/HeadOffice/AdminComponents/AdminHeader.jsx",
+      "resources/js/Pages/HeadOffice/AdminComponents/AdminFooter.jsx",
+      "resources/js/Pages/HeadOffice/AdminComponents/AdminSidebar.jsx"
+    ]
+  },
+  "resources/js/Pages/HeadOffice/Super/TodayOTPView.jsx": {
+    "file": "assets/TodayOTPView-D47pbOCt.js",
+    "name": "TodayOTPView",
+    "src": "resources/js/Pages/HeadOffice/Super/TodayOTPView.jsx",
+    "isDynamicEntry": true,
+    "imports": [
+      "resources/js/app.jsx",
+      "resources/js/Pages/HeadOffice/AdminComponents/AdminDashboardLayout.jsx",
+      "resources/js/Pages/HeadOffice/AdminComponents/AdminHeader.jsx",
+      "resources/js/Pages/HeadOffice/AdminComponents/AdminFooter.jsx",
+      "resources/js/Pages/HeadOffice/AdminComponents/AdminSidebar.jsx"
+    ]
+  },
+  "resources/js/Pages/HeadOffice/Super/UsersTracking.jsx": {
+    "file": "assets/UsersTracking-C2kW20uQ.js",
+    "name": "UsersTracking",
+    "src": "resources/js/Pages/HeadOffice/Super/UsersTracking.jsx",
+    "isDynamicEntry": true,
+    "imports": [
+      "resources/js/app.jsx",
+      "resources/js/Pages/HeadOffice/AdminComponents/AdminDashboardLayout.jsx",
+      "resources/js/Pages/UserComponents/ManageUserControlComponents.jsx",
+      "resources/js/Pages/HeadOffice/AdminComponents/AdminHeader.jsx",
+      "resources/js/Pages/HeadOffice/AdminComponents/AdminFooter.jsx",
+      "resources/js/Pages/HeadOffice/AdminComponents/AdminSidebar.jsx",
+      "resources/js/Pages/UserComponents/CreateUserControlComponents.jsx",
+      "resources/js/Pages/UserComponents/ViewUserControlComponents.jsx",
+      "resources/js/Pages/UserComponents/EditUserControlComponents.jsx",
+      "resources/js/Pages/UserComponents/DeleteUserControlComponents.jsx",
+      "resources/js/Pages/UserComponents/ChangePasswordComponents.jsx",
+      "resources/js/Pages/UserComponents/ChangeRoleComponents.jsx"
+    ]
+  },
+  "resources/js/Pages/HeadOffice/Super/WalletManagement.jsx": {
+    "file": "assets/WalletManagement-x-LPUsPn.js",
+    "name": "WalletManagement",
+    "src": "resources/js/Pages/HeadOffice/Super/WalletManagement.jsx",
+    "isDynamicEntry": true,
+    "imports": [
+      "resources/js/app.jsx",
+      "resources/js/Pages/HeadOffice/AdminComponents/AdminDashboardLayout.jsx",
+      "resources/js/Pages/HeadOffice/AdminComponents/AdminHeader.jsx",
+      "resources/js/Pages/HeadOffice/AdminComponents/AdminFooter.jsx",
+      "resources/js/Pages/HeadOffice/AdminComponents/AdminSidebar.jsx"
+    ]
+  },
+  "resources/js/Pages/ManageMemberComponents/EditMemberModal.jsx": {
+    "file": "assets/EditMemberModal-9JSz_v5h.js",
+    "name": "EditMemberModal",
+    "src": "resources/js/Pages/ManageMemberComponents/EditMemberModal.jsx",
+    "isDynamicEntry": true,
+    "imports": [
+      "resources/js/app.jsx"
+    ]
+  },
+  "resources/js/Pages/ManageMemberComponents/MemberManagementPage.jsx": {
+    "file": "assets/MemberManagementPage-DreFAQWp.js",
+    "name": "MemberManagementPage",
+    "src": "resources/js/Pages/ManageMemberComponents/MemberManagementPage.jsx",
+    "isDynamicEntry": true,
+    "imports": [
+      "resources/js/app.jsx",
+      "resources/js/Pages/ManageMemberComponents/ViewMemberModal.jsx",
+      "resources/js/Pages/ManageMemberComponents/EditMemberModal.jsx",
+      "resources/js/Pages/ManageMemberComponents/ResetPasswordModal.jsx"
+    ]
+  },
+  "resources/js/Pages/ManageMemberComponents/ResetPasswordModal.jsx": {
+    "file": "assets/ResetPasswordModal-B5IedDoL.js",
+    "name": "ResetPasswordModal",
+    "src": "resources/js/Pages/ManageMemberComponents/ResetPasswordModal.jsx",
+    "isDynamicEntry": true,
+    "imports": [
+      "resources/js/app.jsx"
+    ]
+  },
+  "resources/js/Pages/ManageMemberComponents/ViewMemberModal.jsx": {
+    "file": "assets/ViewMemberModal-COefJJtU.js",
+    "name": "ViewMemberModal",
+    "src": "resources/js/Pages/ManageMemberComponents/ViewMemberModal.jsx",
+    "isDynamicEntry": true,
+    "imports": [
+      "resources/js/app.jsx"
+    ]
+  },
+  "resources/js/Pages/ManagePackageComponent/AddPackageComponent.jsx": {
+    "file": "assets/AddPackageComponent-Dc7r4Isl.js",
+    "name": "AddPackageComponent",
+    "src": "resources/js/Pages/ManagePackageComponent/AddPackageComponent.jsx",
+    "isDynamicEntry": true,
+    "imports": [
+      "resources/js/app.jsx"
+    ]
+  },
+  "resources/js/Pages/ManagePackageComponent/DeletePackageComponent.jsx": {
+    "file": "assets/DeletePackageComponent-CiAB7-Yy.js",
+    "name": "DeletePackageComponent",
+    "src": "resources/js/Pages/ManagePackageComponent/DeletePackageComponent.jsx",
+    "isDynamicEntry": true,
+    "imports": [
+      "resources/js/app.jsx"
+    ]
+  },
+  "resources/js/Pages/ManagePackageComponent/DeletePackageConfirmation.jsx": {
+    "file": "assets/DeletePackageConfirmation-C633bKXe.js",
+    "name": "DeletePackageConfirmation",
+    "src": "resources/js/Pages/ManagePackageComponent/DeletePackageConfirmation.jsx",
+    "isDynamicEntry": true,
+    "imports": [
+      "resources/js/app.jsx"
+    ]
+  },
+  "resources/js/Pages/ManagePackageComponent/EditPackageComponent.jsx": {
+    "file": "assets/EditPackageComponent-DvGCPQQs.js",
+    "name": "EditPackageComponent",
+    "src": "resources/js/Pages/ManagePackageComponent/EditPackageComponent.jsx",
+    "isDynamicEntry": true,
+    "imports": [
+      "resources/js/app.jsx"
+    ]
+  },
+  "resources/js/Pages/ManagePackageComponent/LatestActivePackageCard.jsx": {
+    "file": "assets/LatestActivePackageCard-BQRMoBDV.js",
+    "name": "LatestActivePackageCard",
+    "src": "resources/js/Pages/ManagePackageComponent/LatestActivePackageCard.jsx",
+    "isDynamicEntry": true,
+    "imports": [
+      "resources/js/app.jsx"
+    ]
+  },
+  "resources/js/Pages/Members/Components/Breadcrumb.jsx": {
+    "file": "assets/Breadcrumb-65Ji4OXl.js",
+    "name": "Breadcrumb",
+    "src": "resources/js/Pages/Members/Components/Breadcrumb.jsx",
+    "isDynamicEntry": true,
+    "imports": [
+      "resources/js/app.jsx"
+    ]
+  },
+  "resources/js/Pages/Members/Components/FreeMemberSidebar.jsx": {
+    "file": "assets/FreeMemberSidebar-DrtQJGoa.js",
+    "name": "FreeMemberSidebar",
+    "src": "resources/js/Pages/Members/Components/FreeMemberSidebar.jsx",
+    "isDynamicEntry": true,
+    "imports": [
+      "resources/js/app.jsx"
+    ]
+  },
+  "resources/js/Pages/Members/Components/MemberDashboardComponent.jsx": {
+    "file": "assets/MemberDashboardComponent-r3-jRVMN.js",
+    "name": "MemberDashboardComponent",
+    "src": "resources/js/Pages/Members/Components/MemberDashboardComponent.jsx",
+    "isDynamicEntry": true,
+    "imports": [
+      "resources/js/app.jsx",
+      "resources/js/Pages/Members/Components/Breadcrumb.jsx"
+    ]
+  },
+  "resources/js/Pages/Members/Components/MemberDashboardLayout.jsx": {
+    "file": "assets/MemberDashboardLayout-CLtaa2FF.js",
+    "name": "MemberDashboardLayout",
+    "src": "resources/js/Pages/Members/Components/MemberDashboardLayout.jsx",
+    "isDynamicEntry": true,
+    "imports": [
+      "resources/js/app.jsx",
+      "resources/js/Pages/Members/Components/MemberHeader.jsx",
+      "resources/js/Pages/Members/Components/MemberSidebar.jsx",
+      "resources/js/Pages/Members/Components/MemberFooter.jsx",
+      "resources/js/Pages/Members/Components/PaidMemberSidebar.jsx",
+      "resources/js/Pages/Members/Components/FreeMemberSidebar.jsx"
+    ]
+  },
+  "resources/js/Pages/Members/Components/MemberFooter.jsx": {
+    "file": "assets/MemberFooter-XlrQ4yVu.js",
+    "name": "MemberFooter",
+    "src": "resources/js/Pages/Members/Components/MemberFooter.jsx",
+    "isDynamicEntry": true,
+    "imports": [
+      "resources/js/app.jsx"
+    ]
+  },
+  "resources/js/Pages/Members/Components/MemberHeader.jsx": {
+    "file": "assets/MemberHeader-DKisl_KS.js",
+    "name": "MemberHeader",
+    "src": "resources/js/Pages/Members/Components/MemberHeader.jsx",
+    "isDynamicEntry": true,
+    "imports": [
+      "resources/js/app.jsx"
+    ]
+  },
+  "resources/js/Pages/Members/Components/MemberSidebar.jsx": {
+    "file": "assets/MemberSidebar-BUy_vDtK.js",
+    "name": "MemberSidebar",
+    "src": "resources/js/Pages/Members/Components/MemberSidebar.jsx",
+    "isDynamicEntry": true,
+    "imports": [
+      "resources/js/app.jsx",
+      "resources/js/Pages/Members/Components/PaidMemberSidebar.jsx",
+      "resources/js/Pages/Members/Components/FreeMemberSidebar.jsx"
+    ]
+  },
+  "resources/js/Pages/Members/Components/PaidMemberSidebar.jsx": {
+    "file": "assets/PaidMemberSidebar-BPwsytp-.js",
+    "name": "PaidMemberSidebar",
+    "src": "resources/js/Pages/Members/Components/PaidMemberSidebar.jsx",
+    "isDynamicEntry": true,
+    "imports": [
+      "resources/js/app.jsx"
+    ]
+  },
+  "resources/js/Pages/Members/FreeMember/FreeMemberDashboard.jsx": {
+    "file": "assets/FreeMemberDashboard-BRJ6MYIX.js",
+    "name": "FreeMemberDashboard",
+    "src": "resources/js/Pages/Members/FreeMember/FreeMemberDashboard.jsx",
+    "isDynamicEntry": true,
+    "imports": [
+      "resources/js/app.jsx",
+      "resources/js/Pages/Members/Components/MemberDashboardLayout.jsx",
+      "resources/js/Pages/Members/Components/MemberDashboardComponent.jsx",
+      "resources/js/Pages/Members/Components/MemberHeader.jsx",
+      "resources/js/Pages/Members/Components/MemberSidebar.jsx",
+      "resources/js/Pages/Members/Components/PaidMemberSidebar.jsx",
+      "resources/js/Pages/Members/Components/FreeMemberSidebar.jsx",
+      "resources/js/Pages/Members/Components/MemberFooter.jsx",
+      "resources/js/Pages/Members/Components/Breadcrumb.jsx"
+    ]
+  },
+  "resources/js/Pages/Members/FreeMember/ShareReferral.jsx": {
+    "file": "assets/ShareReferral-R2H-PRKE.js",
+    "name": "ShareReferral",
+    "src": "resources/js/Pages/Members/FreeMember/ShareReferral.jsx",
+    "isDynamicEntry": true,
+    "imports": [
+      "resources/js/app.jsx",
+      "resources/js/Pages/Members/Components/MemberDashboardLayout.jsx",
+      "resources/js/Pages/Members/Components/Breadcrumb.jsx",
+      "resources/js/Pages/Members/Components/MemberHeader.jsx",
+      "resources/js/Pages/Members/Components/MemberSidebar.jsx",
+      "resources/js/Pages/Members/Components/PaidMemberSidebar.jsx",
+      "resources/js/Pages/Members/Components/FreeMemberSidebar.jsx",
+      "resources/js/Pages/Members/Components/MemberFooter.jsx"
+    ]
+  },
+  "resources/js/Pages/Members/FreeMember/TrackOrdersFree.jsx": {
+    "file": "assets/TrackOrdersFree-BTWvfGl-.js",
+    "name": "TrackOrdersFree",
+    "src": "resources/js/Pages/Members/FreeMember/TrackOrdersFree.jsx",
+    "isDynamicEntry": true,
+    "imports": [
+      "resources/js/app.jsx",
+      "resources/js/Pages/Members/Components/MemberDashboardLayout.jsx",
+      "resources/js/Pages/Members/Components/Breadcrumb.jsx",
+      "resources/js/Pages/Members/OrdersComponents.jsx",
+      "resources/js/Pages/Members/Components/MemberHeader.jsx",
+      "resources/js/Pages/Members/Components/MemberSidebar.jsx",
+      "resources/js/Pages/Members/Components/PaidMemberSidebar.jsx",
+      "resources/js/Pages/Members/Components/FreeMemberSidebar.jsx",
+      "resources/js/Pages/Members/Components/MemberFooter.jsx"
+    ]
+  },
+  "resources/js/Pages/Members/FreeMember/Transactions.jsx": {
+    "file": "assets/Transactions-Bl8Un2Jk.js",
+    "name": "Transactions",
+    "src": "resources/js/Pages/Members/FreeMember/Transactions.jsx",
+    "isDynamicEntry": true,
+    "imports": [
+      "resources/js/app.jsx",
+      "resources/js/Pages/Members/Components/MemberDashboardLayout.jsx",
+      "resources/js/Pages/Members/Components/Breadcrumb.jsx",
+      "resources/js/Pages/Members/Components/MemberHeader.jsx",
+      "resources/js/Pages/Members/Components/MemberSidebar.jsx",
+      "resources/js/Pages/Members/Components/PaidMemberSidebar.jsx",
+      "resources/js/Pages/Members/Components/FreeMemberSidebar.jsx",
+      "resources/js/Pages/Members/Components/MemberFooter.jsx"
+    ]
+  },
+  "resources/js/Pages/Members/FreeMember/TreeViewMember.jsx": {
+    "file": "assets/TreeViewMember-BmqGsjA2.js",
+    "name": "TreeViewMember",
+    "src": "resources/js/Pages/Members/FreeMember/TreeViewMember.jsx",
+    "isDynamicEntry": true,
+    "imports": [
+      "resources/js/app.jsx",
+      "resources/js/Pages/Members/Components/MemberDashboardLayout.jsx",
+      "resources/js/Pages/Members/Components/Breadcrumb.jsx",
+      "_index.module-B3GOSOof.js",
+      "resources/js/Pages/Members/Components/MemberHeader.jsx",
+      "resources/js/Pages/Members/Components/MemberSidebar.jsx",
+      "resources/js/Pages/Members/Components/PaidMemberSidebar.jsx",
+      "resources/js/Pages/Members/Components/FreeMemberSidebar.jsx",
+      "resources/js/Pages/Members/Components/MemberFooter.jsx"
+    ]
+  },
+  "resources/js/Pages/Members/OrdersComponents.jsx": {
+    "file": "assets/OrdersComponents-CmDGbOi8.js",
+    "name": "OrdersComponents",
+    "src": "resources/js/Pages/Members/OrdersComponents.jsx",
+    "isDynamicEntry": true,
+    "imports": [
+      "resources/js/app.jsx"
+    ]
+  },
+  "resources/js/Pages/Members/PaidMember/CashWallet.jsx": {
+    "file": "assets/CashWallet-wvnuTMBM.js",
+    "name": "CashWallet",
+    "src": "resources/js/Pages/Members/PaidMember/CashWallet.jsx",
+    "isDynamicEntry": true,
+    "imports": [
+      "resources/js/app.jsx",
+      "resources/js/Pages/Members/Components/MemberDashboardLayout.jsx",
+      "resources/js/Pages/Members/Components/Breadcrumb.jsx",
+      "resources/js/Pages/Members/PaidMember/Components/RequestCashOutComponent.jsx",
+      "resources/js/Pages/Members/PaidMember/Components/TransferPurchaseBalanceComponent.jsx",
+      "resources/js/Pages/Members/Components/MemberHeader.jsx",
+      "resources/js/Pages/Members/Components/MemberSidebar.jsx",
+      "resources/js/Pages/Members/Components/PaidMemberSidebar.jsx",
+      "resources/js/Pages/Members/Components/FreeMemberSidebar.jsx",
+      "resources/js/Pages/Members/Components/MemberFooter.jsx",
+      "_PrimaryButton-DE4opROf.js",
+      "_TextInput-BJH9GNUA.js",
+      "_InputLabel-CYYTd4Xb.js"
+    ]
+  },
+  "resources/js/Pages/Members/PaidMember/Components/RequestCashOutComponent.jsx": {
+    "file": "assets/RequestCashOutComponent-Kqr8oNgV.js",
+    "name": "RequestCashOutComponent",
+    "src": "resources/js/Pages/Members/PaidMember/Components/RequestCashOutComponent.jsx",
+    "isDynamicEntry": true,
+    "imports": [
+      "resources/js/app.jsx",
+      "_PrimaryButton-DE4opROf.js",
+      "_TextInput-BJH9GNUA.js",
+      "_InputLabel-CYYTd4Xb.js"
+    ]
+  },
+  "resources/js/Pages/Members/PaidMember/Components/TransferPurchaseBalanceComponent.jsx": {
+    "file": "assets/TransferPurchaseBalanceComponent-BpszRLGr.js",
+    "name": "TransferPurchaseBalanceComponent",
+    "src": "resources/js/Pages/Members/PaidMember/Components/TransferPurchaseBalanceComponent.jsx",
+    "isDynamicEntry": true,
+    "imports": [
+      "resources/js/app.jsx",
+      "_PrimaryButton-DE4opROf.js",
+      "_TextInput-BJH9GNUA.js",
+      "_InputLabel-CYYTd4Xb.js"
+    ]
+  },
+  "resources/js/Pages/Members/PaidMember/Earnings.jsx": {
+    "file": "assets/Earnings-DbCOMT5t.js",
+    "name": "Earnings",
+    "src": "resources/js/Pages/Members/PaidMember/Earnings.jsx",
+    "isDynamicEntry": true,
+    "imports": [
+      "resources/js/app.jsx",
+      "resources/js/Pages/Members/Components/MemberDashboardLayout.jsx",
+      "_PrimaryButton-DE4opROf.js",
+      "resources/js/Pages/Members/PaidMember/WithdrawComponent.jsx",
+      "resources/js/Pages/Members/Components/Breadcrumb.jsx",
+      "resources/js/Pages/Members/Components/MemberHeader.jsx",
+      "resources/js/Pages/Members/Components/MemberSidebar.jsx",
+      "resources/js/Pages/Members/Components/PaidMemberSidebar.jsx",
+      "resources/js/Pages/Members/Components/FreeMemberSidebar.jsx",
+      "resources/js/Pages/Members/Components/MemberFooter.jsx",
+      "_TextInput-BJH9GNUA.js",
+      "_InputLabel-CYYTd4Xb.js"
+    ]
+  },
+  "resources/js/Pages/Members/PaidMember/MemberBadges.jsx": {
+    "file": "assets/MemberBadges-B6UPpG8P.js",
+    "name": "MemberBadges",
+    "src": "resources/js/Pages/Members/PaidMember/MemberBadges.jsx",
+    "isDynamicEntry": true,
+    "imports": [
+      "resources/js/app.jsx",
+      "resources/js/Pages/Members/Components/MemberDashboardLayout.jsx",
+      "resources/js/Pages/Members/Components/Breadcrumb.jsx",
+      "resources/js/Pages/Members/Components/MemberHeader.jsx",
+      "resources/js/Pages/Members/Components/MemberSidebar.jsx",
+      "resources/js/Pages/Members/Components/PaidMemberSidebar.jsx",
+      "resources/js/Pages/Members/Components/FreeMemberSidebar.jsx",
+      "resources/js/Pages/Members/Components/MemberFooter.jsx"
+    ]
+  },
+  "resources/js/Pages/Members/PaidMember/PaidMemberDashboard.jsx": {
+    "file": "assets/PaidMemberDashboard-B0tVOQGN.js",
+    "name": "PaidMemberDashboard",
+    "src": "resources/js/Pages/Members/PaidMember/PaidMemberDashboard.jsx",
+    "isDynamicEntry": true,
+    "imports": [
+      "resources/js/app.jsx",
+      "resources/js/Pages/Members/Components/MemberDashboardLayout.jsx",
+      "resources/js/Pages/Members/Components/MemberDashboardComponent.jsx",
+      "resources/js/Pages/Members/Components/MemberHeader.jsx",
+      "resources/js/Pages/Members/Components/MemberSidebar.jsx",
+      "resources/js/Pages/Members/Components/PaidMemberSidebar.jsx",
+      "resources/js/Pages/Members/Components/FreeMemberSidebar.jsx",
+      "resources/js/Pages/Members/Components/MemberFooter.jsx",
+      "resources/js/Pages/Members/Components/Breadcrumb.jsx"
+    ]
+  },
+  "resources/js/Pages/Members/PaidMember/ShareReferral.jsx": {
+    "file": "assets/ShareReferral-fsTvIlGH.js",
+    "name": "ShareReferral",
+    "src": "resources/js/Pages/Members/PaidMember/ShareReferral.jsx",
+    "isDynamicEntry": true,
+    "imports": [
+      "resources/js/app.jsx",
+      "resources/js/Pages/Members/Components/MemberDashboardLayout.jsx",
+      "resources/js/Pages/Members/Components/Breadcrumb.jsx",
+      "resources/js/Pages/Members/Components/MemberHeader.jsx",
+      "resources/js/Pages/Members/Components/MemberSidebar.jsx",
+      "resources/js/Pages/Members/Components/PaidMemberSidebar.jsx",
+      "resources/js/Pages/Members/Components/FreeMemberSidebar.jsx",
+      "resources/js/Pages/Members/Components/MemberFooter.jsx"
+    ]
+  },
+  "resources/js/Pages/Members/PaidMember/TrackOrdersPaid.jsx": {
+    "file": "assets/TrackOrdersPaid-DjtZzs_u.js",
+    "name": "TrackOrdersPaid",
+    "src": "resources/js/Pages/Members/PaidMember/TrackOrdersPaid.jsx",
+    "isDynamicEntry": true,
+    "imports": [
+      "resources/js/app.jsx",
+      "resources/js/Pages/Members/Components/MemberDashboardLayout.jsx",
+      "resources/js/Pages/Members/Components/Breadcrumb.jsx",
+      "resources/js/Pages/Members/OrdersComponents.jsx",
+      "resources/js/Pages/Members/Components/MemberHeader.jsx",
+      "resources/js/Pages/Members/Components/MemberSidebar.jsx",
+      "resources/js/Pages/Members/Components/PaidMemberSidebar.jsx",
+      "resources/js/Pages/Members/Components/FreeMemberSidebar.jsx",
+      "resources/js/Pages/Members/Components/MemberFooter.jsx"
+    ]
+  },
+  "resources/js/Pages/Members/PaidMember/Transactions.jsx": {
+    "file": "assets/Transactions-D1hD_Phz.js",
+    "name": "Transactions",
+    "src": "resources/js/Pages/Members/PaidMember/Transactions.jsx",
+    "isDynamicEntry": true,
+    "imports": [
+      "resources/js/app.jsx",
+      "resources/js/Pages/Members/Components/MemberDashboardLayout.jsx",
+      "resources/js/Pages/Members/Components/Breadcrumb.jsx",
+      "resources/js/Pages/Members/Components/MemberHeader.jsx",
+      "resources/js/Pages/Members/Components/MemberSidebar.jsx",
+      "resources/js/Pages/Members/Components/PaidMemberSidebar.jsx",
+      "resources/js/Pages/Members/Components/FreeMemberSidebar.jsx",
+      "resources/js/Pages/Members/Components/MemberFooter.jsx"
+    ]
+  },
+  "resources/js/Pages/Members/PaidMember/TreeViewMember.jsx": {
+    "file": "assets/TreeViewMember-DMJywE7e.js",
+    "name": "TreeViewMember",
+    "src": "resources/js/Pages/Members/PaidMember/TreeViewMember.jsx",
+    "isDynamicEntry": true,
+    "imports": [
+      "resources/js/app.jsx",
+      "resources/js/Pages/Members/Components/MemberDashboardLayout.jsx",
+      "resources/js/Pages/Members/Components/Breadcrumb.jsx",
+      "_index.module-B3GOSOof.js",
+      "resources/js/Pages/Members/Components/MemberHeader.jsx",
+      "resources/js/Pages/Members/Components/MemberSidebar.jsx",
+      "resources/js/Pages/Members/Components/PaidMemberSidebar.jsx",
+      "resources/js/Pages/Members/Components/FreeMemberSidebar.jsx",
+      "resources/js/Pages/Members/Components/MemberFooter.jsx"
+    ]
+  },
+  "resources/js/Pages/Members/PaidMember/WithdrawComponent.jsx": {
+    "file": "assets/WithdrawComponent-BmbW7WvJ.js",
+    "name": "WithdrawComponent",
+    "src": "resources/js/Pages/Members/PaidMember/WithdrawComponent.jsx",
+    "isDynamicEntry": true,
+    "imports": [
+      "resources/js/app.jsx",
+      "_PrimaryButton-DE4opROf.js",
+      "_TextInput-BJH9GNUA.js",
+      "_InputLabel-CYYTd4Xb.js"
+    ]
+  },
+  "resources/js/Pages/Members/PrivacyPolicy.jsx": {
+    "file": "assets/PrivacyPolicy-BjVKhodZ.js",
+    "name": "PrivacyPolicy",
+    "src": "resources/js/Pages/Members/PrivacyPolicy.jsx",
+    "isDynamicEntry": true,
+    "imports": [
+      "resources/js/app.jsx",
+      "resources/js/Pages/Members/Components/MemberDashboardLayout.jsx",
+      "resources/js/Pages/Members/Components/Breadcrumb.jsx",
+      "resources/js/Pages/Members/Components/MemberHeader.jsx",
+      "resources/js/Pages/Members/Components/MemberSidebar.jsx",
+      "resources/js/Pages/Members/Components/PaidMemberSidebar.jsx",
+      "resources/js/Pages/Members/Components/FreeMemberSidebar.jsx",
+      "resources/js/Pages/Members/Components/MemberFooter.jsx"
+    ]
+  },
+  "resources/js/Pages/Members/Profile/ChangePassword.jsx": {
+    "file": "assets/ChangePassword-Jx4S6Sn9.js",
+    "name": "ChangePassword",
+    "src": "resources/js/Pages/Members/Profile/ChangePassword.jsx",
+    "isDynamicEntry": true,
+    "imports": [
+      "resources/js/app.jsx",
+      "resources/js/Pages/Members/Components/MemberDashboardLayout.jsx",
+      "resources/js/Pages/Members/Components/Breadcrumb.jsx",
+      "resources/js/Pages/Members/Components/MemberHeader.jsx",
+      "resources/js/Pages/Members/Components/MemberSidebar.jsx",
+      "resources/js/Pages/Members/Components/PaidMemberSidebar.jsx",
+      "resources/js/Pages/Members/Components/FreeMemberSidebar.jsx",
+      "resources/js/Pages/Members/Components/MemberFooter.jsx"
+    ]
+  },
+  "resources/js/Pages/Members/Profile/ChangeReferral.jsx": {
+    "file": "assets/ChangeReferral-3jn_UNow.js",
+    "name": "ChangeReferral",
+    "src": "resources/js/Pages/Members/Profile/ChangeReferral.jsx",
+    "isDynamicEntry": true,
+    "imports": [
+      "resources/js/app.jsx",
+      "resources/js/Pages/Members/Components/MemberDashboardLayout.jsx",
+      "resources/js/Pages/Members/Components/Breadcrumb.jsx",
+      "resources/js/Pages/Members/Components/MemberHeader.jsx",
+      "resources/js/Pages/Members/Components/MemberSidebar.jsx",
+      "resources/js/Pages/Members/Components/PaidMemberSidebar.jsx",
+      "resources/js/Pages/Members/Components/FreeMemberSidebar.jsx",
+      "resources/js/Pages/Members/Components/MemberFooter.jsx"
+    ]
+  },
+  "resources/js/Pages/Members/Profile/Edit.jsx": {
+    "file": "assets/Edit-Bg9eZHcw.js",
+    "name": "Edit",
+    "src": "resources/js/Pages/Members/Profile/Edit.jsx",
+    "isDynamicEntry": true,
+    "imports": [
+      "resources/js/app.jsx",
+      "_AuthenticatedLayout-DHjKKdaQ.js",
+      "resources/js/Pages/Members/Profile/Partials/DeleteUserForm.jsx",
+      "resources/js/Pages/Members/Profile/Partials/UpdatePasswordForm.jsx",
+      "resources/js/Pages/Members/Profile/Partials/UpdateProfileInformationForm.jsx",
+      "_Footer-CogazGZy.js",
+      "_InputError-DKcHRhAT.js",
+      "_InputLabel-CYYTd4Xb.js",
+      "_transition-dkTcfCa-.js",
+      "_TextInput-BJH9GNUA.js",
+      "_PrimaryButton-DE4opROf.js"
+    ]
+  },
+  "resources/js/Pages/Members/Profile/Partials/DeleteUserForm.jsx": {
+    "file": "assets/DeleteUserForm-BGsU4YaP.js",
+    "name": "DeleteUserForm",
+    "src": "resources/js/Pages/Members/Profile/Partials/DeleteUserForm.jsx",
+    "isDynamicEntry": true,
+    "imports": [
+      "resources/js/app.jsx",
+      "_InputError-DKcHRhAT.js",
+      "_InputLabel-CYYTd4Xb.js",
+      "_transition-dkTcfCa-.js",
+      "_TextInput-BJH9GNUA.js"
+    ]
+  },
+  "resources/js/Pages/Members/Profile/Partials/UpdatePasswordForm.jsx": {
+    "file": "assets/UpdatePasswordForm-CsWZMxgP.js",
+    "name": "UpdatePasswordForm",
+    "src": "resources/js/Pages/Members/Profile/Partials/UpdatePasswordForm.jsx",
+    "isDynamicEntry": true,
+    "imports": [
+      "resources/js/app.jsx",
+      "_InputError-DKcHRhAT.js",
+      "_InputLabel-CYYTd4Xb.js",
+      "_PrimaryButton-DE4opROf.js",
+      "_TextInput-BJH9GNUA.js",
+      "_transition-dkTcfCa-.js"
+    ]
+  },
+  "resources/js/Pages/Members/Profile/Partials/UpdateProfileInformationForm.jsx": {
+    "file": "assets/UpdateProfileInformationForm-DnLIfi_3.js",
+    "name": "UpdateProfileInformationForm",
+    "src": "resources/js/Pages/Members/Profile/Partials/UpdateProfileInformationForm.jsx",
+    "isDynamicEntry": true,
+    "imports": [
+      "resources/js/app.jsx",
+      "_InputError-DKcHRhAT.js",
+      "_InputLabel-CYYTd4Xb.js",
+      "_PrimaryButton-DE4opROf.js",
+      "_TextInput-BJH9GNUA.js",
+      "_transition-dkTcfCa-.js"
+    ]
+  },
+  "resources/js/Pages/Members/Profile/ProfileSettings.jsx": {
+    "file": "assets/ProfileSettings-CUIrZiDT.js",
+    "name": "ProfileSettings",
+    "src": "resources/js/Pages/Members/Profile/ProfileSettings.jsx",
+    "isDynamicEntry": true,
+    "imports": [
+      "resources/js/app.jsx",
+      "resources/js/Pages/Members/Components/MemberDashboardLayout.jsx",
+      "resources/js/Pages/Members/Components/Breadcrumb.jsx",
+      "resources/js/Pages/Members/Components/MemberHeader.jsx",
+      "resources/js/Pages/Members/Components/MemberSidebar.jsx",
+      "resources/js/Pages/Members/Components/PaidMemberSidebar.jsx",
+      "resources/js/Pages/Members/Components/FreeMemberSidebar.jsx",
+      "resources/js/Pages/Members/Components/MemberFooter.jsx"
+    ]
+  },
+  "resources/js/Pages/Members/Support.jsx": {
+    "file": "assets/Support-BLqqbNja.js",
+    "name": "Support",
+    "src": "resources/js/Pages/Members/Support.jsx",
+    "isDynamicEntry": true,
+    "imports": [
+      "resources/js/app.jsx",
+      "resources/js/Pages/Members/Components/MemberDashboardLayout.jsx",
+      "resources/js/Pages/Members/Components/Breadcrumb.jsx",
+      "resources/js/Pages/Members/Components/MemberHeader.jsx",
+      "resources/js/Pages/Members/Components/MemberSidebar.jsx",
+      "resources/js/Pages/Members/Components/PaidMemberSidebar.jsx",
+      "resources/js/Pages/Members/Components/FreeMemberSidebar.jsx",
+      "resources/js/Pages/Members/Components/MemberFooter.jsx"
+    ]
+  },
+  "resources/js/Pages/Members/TermsOfService.jsx": {
+    "file": "assets/TermsOfService-i_sqzJbV.js",
+    "name": "TermsOfService",
+    "src": "resources/js/Pages/Members/TermsOfService.jsx",
+    "isDynamicEntry": true,
+    "imports": [
+      "resources/js/app.jsx",
+      "resources/js/Pages/Members/Components/MemberDashboardLayout.jsx",
+      "resources/js/Pages/Members/Components/Breadcrumb.jsx",
+      "resources/js/Pages/Members/Components/MemberHeader.jsx",
+      "resources/js/Pages/Members/Components/MemberSidebar.jsx",
+      "resources/js/Pages/Members/Components/PaidMemberSidebar.jsx",
+      "resources/js/Pages/Members/Components/FreeMemberSidebar.jsx",
+      "resources/js/Pages/Members/Components/MemberFooter.jsx"
+    ]
+  },
+  "resources/js/Pages/MenuComponents/CreateMenuComponents.jsx": {
+    "file": "assets/CreateMenuComponents-BF-12mxq.js",
+    "name": "CreateMenuComponents",
+    "src": "resources/js/Pages/MenuComponents/CreateMenuComponents.jsx",
+    "isDynamicEntry": true,
+    "imports": [
+      "resources/js/app.jsx"
+    ]
+  },
+  "resources/js/Pages/MenuComponents/DeleteMenuComponents.jsx": {
+    "file": "assets/DeleteMenuComponents-C4rbgfvp.js",
+    "name": "DeleteMenuComponents",
+    "src": "resources/js/Pages/MenuComponents/DeleteMenuComponents.jsx",
+    "isDynamicEntry": true,
+    "imports": [
+      "resources/js/app.jsx"
+    ]
+  },
+  "resources/js/Pages/MenuComponents/EditMenuComponents.jsx": {
+    "file": "assets/EditMenuComponents-BBdnh6wS.js",
+    "name": "EditMenuComponents",
+    "src": "resources/js/Pages/MenuComponents/EditMenuComponents.jsx",
+    "isDynamicEntry": true,
+    "imports": [
+      "resources/js/app.jsx"
+    ]
+  },
+  "resources/js/Pages/MenuComponents/ManageMenuComponents.jsx": {
+    "file": "assets/ManageMenuComponents-B6P22Zcc.js",
+    "name": "ManageMenuComponents",
+    "src": "resources/js/Pages/MenuComponents/ManageMenuComponents.jsx",
+    "isDynamicEntry": true,
+    "imports": [
+      "resources/js/app.jsx",
+      "resources/js/Pages/MenuComponents/CreateMenuComponents.jsx",
+      "resources/js/Pages/MenuComponents/ViewMenuComponents.jsx",
+      "resources/js/Pages/MenuComponents/EditMenuComponents.jsx",
+      "resources/js/Pages/MenuComponents/DeleteMenuComponents.jsx"
+    ]
+  },
+  "resources/js/Pages/MenuComponents/ViewMenuComponents.jsx": {
+    "file": "assets/ViewMenuComponents-DiYJZjOi.js",
+    "name": "ViewMenuComponents",
+    "src": "resources/js/Pages/MenuComponents/ViewMenuComponents.jsx",
+    "isDynamicEntry": true,
+    "imports": [
+      "resources/js/app.jsx"
+    ]
+  },
+  "resources/js/Pages/OfficeProfileComponents/CreateOfficeProfileComponent.jsx": {
+    "file": "assets/CreateOfficeProfileComponent-DK75KxwN.js",
+    "name": "CreateOfficeProfileComponent",
+    "src": "resources/js/Pages/OfficeProfileComponents/CreateOfficeProfileComponent.jsx",
+    "isDynamicEntry": true,
+    "imports": [
+      "resources/js/app.jsx"
+    ]
+  },
+  "resources/js/Pages/OfficeProfileComponents/DeleteOfficeProfileComponent.jsx": {
+    "file": "assets/DeleteOfficeProfileComponent-DZ8JwZ5Y.js",
+    "name": "DeleteOfficeProfileComponent",
+    "src": "resources/js/Pages/OfficeProfileComponents/DeleteOfficeProfileComponent.jsx",
+    "isDynamicEntry": true,
+    "imports": [
+      "resources/js/app.jsx"
+    ]
+  },
+  "resources/js/Pages/OfficeProfileComponents/EditOfficeProfileComponent.jsx": {
+    "file": "assets/EditOfficeProfileComponent-CJwPnWQV.js",
+    "name": "EditOfficeProfileComponent",
+    "src": "resources/js/Pages/OfficeProfileComponents/EditOfficeProfileComponent.jsx",
+    "isDynamicEntry": true,
+    "imports": [
+      "resources/js/app.jsx"
+    ]
+  },
+  "resources/js/Pages/OfficeProfileComponents/MangeOfficeProfileComponent.jsx": {
+    "file": "assets/MangeOfficeProfileComponent-FEqE9q8E.js",
+    "name": "MangeOfficeProfileComponent",
+    "src": "resources/js/Pages/OfficeProfileComponents/MangeOfficeProfileComponent.jsx",
+    "isDynamicEntry": true,
+    "imports": [
+      "resources/js/app.jsx",
+      "resources/js/Pages/OfficeProfileComponents/CreateOfficeProfileComponent.jsx",
+      "resources/js/Pages/OfficeProfileComponents/EditOfficeProfileComponent.jsx",
+      "resources/js/Pages/OfficeProfileComponents/DeleteOfficeProfileComponent.jsx"
+    ]
+  },
+  "resources/js/Pages/OrderManagement/ManageOrderComponents.jsx": {
+    "file": "assets/ManageOrderComponents-JpvvLaC9.js",
+    "name": "ManageOrderComponents",
+    "src": "resources/js/Pages/OrderManagement/ManageOrderComponents.jsx",
+    "isDynamicEntry": true,
+    "imports": [
+      "resources/js/app.jsx",
+      "resources/js/Pages/OrderManagement/ViewOrderComponents.jsx",
+      "resources/js/Pages/BillPaymentComponents/PrintReceiptComponents.jsx",
+      "resources/js/Pages/OrderManagement/ViewOrderItemComponents.jsx"
+    ]
+  },
+  "resources/js/Pages/OrderManagement/ViewOrderComponents.jsx": {
+    "file": "assets/ViewOrderComponents-B-9R-djj.js",
+    "name": "ViewOrderComponents",
+    "src": "resources/js/Pages/OrderManagement/ViewOrderComponents.jsx",
+    "isDynamicEntry": true,
+    "imports": [
+      "resources/js/app.jsx",
+      "resources/js/Pages/OrderManagement/ViewOrderItemComponents.jsx"
+    ]
+  },
+  "resources/js/Pages/OrderManagement/ViewOrderItemComponents.jsx": {
+    "file": "assets/ViewOrderItemComponents-E53miaZr.js",
+    "name": "ViewOrderItemComponents",
+    "src": "resources/js/Pages/OrderManagement/ViewOrderItemComponents.jsx",
+    "isDynamicEntry": true,
+    "imports": [
+      "resources/js/app.jsx"
+    ]
+  },
+  "resources/js/Pages/Services.jsx": {
+    "file": "assets/Services-cPRrxSLF.js",
+    "name": "Services",
+    "src": "resources/js/Pages/Services.jsx",
+    "isDynamicEntry": true,
+    "imports": [
+      "resources/js/app.jsx",
+      "_PublicLayout--JWwhh6_.js",
+      "_Footer-CogazGZy.js"
+    ]
+  },
+  "resources/js/Pages/SettingComponents/RestaurantTableComponents/CreateRestaurantTableComponent.jsx": {
+    "file": "assets/CreateRestaurantTableComponent-D4Z0UcHD.js",
+    "name": "CreateRestaurantTableComponent",
+    "src": "resources/js/Pages/SettingComponents/RestaurantTableComponents/CreateRestaurantTableComponent.jsx",
+    "isDynamicEntry": true,
+    "imports": [
+      "resources/js/app.jsx"
+    ]
+  },
+  "resources/js/Pages/SettingComponents/RestaurantTableComponents/DeleteRestaurantTableComponent.jsx": {
+    "file": "assets/DeleteRestaurantTableComponent-HrQfbqiE.js",
+    "name": "DeleteRestaurantTableComponent",
+    "src": "resources/js/Pages/SettingComponents/RestaurantTableComponents/DeleteRestaurantTableComponent.jsx",
+    "isDynamicEntry": true,
+    "imports": [
+      "resources/js/app.jsx"
+    ]
+  },
+  "resources/js/Pages/SettingComponents/RestaurantTableComponents/EditRestaurantTableComponent.jsx": {
+    "file": "assets/EditRestaurantTableComponent-CZgYB_ym.js",
+    "name": "EditRestaurantTableComponent",
+    "src": "resources/js/Pages/SettingComponents/RestaurantTableComponents/EditRestaurantTableComponent.jsx",
+    "isDynamicEntry": true,
+    "imports": [
+      "resources/js/app.jsx"
+    ]
+  },
+  "resources/js/Pages/SettingComponents/RestaurantTableComponents/ManageRestaurantTableComponent.jsx": {
+    "file": "assets/ManageRestaurantTableComponent-CQkS9W1J.js",
+    "name": "ManageRestaurantTableComponent",
+    "src": "resources/js/Pages/SettingComponents/RestaurantTableComponents/ManageRestaurantTableComponent.jsx",
+    "isDynamicEntry": true,
+    "imports": [
+      "resources/js/app.jsx",
+      "resources/js/Pages/SettingComponents/RestaurantTableComponents/CreateRestaurantTableComponent.jsx",
+      "resources/js/Pages/SettingComponents/RestaurantTableComponents/EditRestaurantTableComponent.jsx",
+      "resources/js/Pages/SettingComponents/RestaurantTableComponents/DeleteRestaurantTableComponent.jsx"
+    ]
+  },
+  "resources/js/Pages/SettingComponents/StockItemSettingsComponents/CreateStockItemSettingsComponent.jsx": {
+    "file": "assets/CreateStockItemSettingsComponent-BAPOY6v2.js",
+    "name": "CreateStockItemSettingsComponent",
+    "src": "resources/js/Pages/SettingComponents/StockItemSettingsComponents/CreateStockItemSettingsComponent.jsx",
+    "isDynamicEntry": true,
+    "imports": [
+      "resources/js/app.jsx"
+    ]
+  },
+  "resources/js/Pages/SettingComponents/StockItemSettingsComponents/DeleteStockItemSettingsComponent.jsx": {
+    "file": "assets/DeleteStockItemSettingsComponent-Br4WnSv_.js",
+    "name": "DeleteStockItemSettingsComponent",
+    "src": "resources/js/Pages/SettingComponents/StockItemSettingsComponents/DeleteStockItemSettingsComponent.jsx",
+    "isDynamicEntry": true,
+    "imports": [
+      "resources/js/app.jsx"
+    ]
+  },
+  "resources/js/Pages/SettingComponents/StockItemSettingsComponents/EditStockItemSettingsComponent.jsx": {
+    "file": "assets/EditStockItemSettingsComponent-CXwC_90Q.js",
+    "name": "EditStockItemSettingsComponent",
+    "src": "resources/js/Pages/SettingComponents/StockItemSettingsComponents/EditStockItemSettingsComponent.jsx",
+    "isDynamicEntry": true,
+    "imports": [
+      "resources/js/app.jsx"
+    ]
+  },
+  "resources/js/Pages/SettingComponents/StockItemSettingsComponents/ManageStockItemSettingsComponent.jsx": {
+    "file": "assets/ManageStockItemSettingsComponent-jgmwWNUM.js",
+    "name": "ManageStockItemSettingsComponent",
+    "src": "resources/js/Pages/SettingComponents/StockItemSettingsComponents/ManageStockItemSettingsComponent.jsx",
+    "isDynamicEntry": true,
+    "imports": [
+      "resources/js/app.jsx",
+      "resources/js/Pages/SettingComponents/StockItemSettingsComponents/CreateStockItemSettingsComponent.jsx",
+      "resources/js/Pages/SettingComponents/StockItemSettingsComponents/EditStockItemSettingsComponent.jsx",
+      "resources/js/Pages/SettingComponents/StockItemSettingsComponents/DeleteStockItemSettingsComponent.jsx"
+    ]
+  },
+  "resources/js/Pages/StockRecordComponents/CreateStockRecordComponents.jsx": {
+    "file": "assets/CreateStockRecordComponents-CrzGzkxR.js",
+    "name": "CreateStockRecordComponents",
+    "src": "resources/js/Pages/StockRecordComponents/CreateStockRecordComponents.jsx",
+    "isDynamicEntry": true,
+    "imports": [
+      "resources/js/app.jsx"
+    ]
+  },
+  "resources/js/Pages/StockRecordComponents/DeleteStockRecordComponents.jsx": {
+    "file": "assets/DeleteStockRecordComponents-Cl7Lh9Qc.js",
+    "name": "DeleteStockRecordComponents",
+    "src": "resources/js/Pages/StockRecordComponents/DeleteStockRecordComponents.jsx",
+    "isDynamicEntry": true,
+    "imports": [
+      "resources/js/app.jsx"
+    ]
+  },
+  "resources/js/Pages/StockRecordComponents/EditStockRecordComponents.jsx": {
+    "file": "assets/EditStockRecordComponents-DiYFuFD9.js",
+    "name": "EditStockRecordComponents",
+    "src": "resources/js/Pages/StockRecordComponents/EditStockRecordComponents.jsx",
+    "isDynamicEntry": true,
+    "imports": [
+      "resources/js/app.jsx"
+    ]
+  },
+  "resources/js/Pages/StockRecordComponents/ManageStockRecordComponents.jsx": {
+    "file": "assets/ManageStockRecordComponents-BAUy5l3X.js",
+    "name": "ManageStockRecordComponents",
+    "src": "resources/js/Pages/StockRecordComponents/ManageStockRecordComponents.jsx",
+    "isDynamicEntry": true,
+    "imports": [
+      "resources/js/app.jsx",
+      "resources/js/Pages/StockRecordComponents/CreateStockRecordComponents.jsx",
+      "resources/js/Pages/StockRecordComponents/ViewStockRecordComponents.jsx",
+      "resources/js/Pages/StockRecordComponents/EditStockRecordComponents.jsx",
+      "resources/js/Pages/StockRecordComponents/DeleteStockRecordComponents.jsx"
+    ]
+  },
+  "resources/js/Pages/StockRecordComponents/ViewStockRecordComponents.jsx": {
+    "file": "assets/ViewStockRecordComponents-BSeJKGqu.js",
+    "name": "ViewStockRecordComponents",
+    "src": "resources/js/Pages/StockRecordComponents/ViewStockRecordComponents.jsx",
+    "isDynamicEntry": true,
+    "imports": [
+      "resources/js/app.jsx"
+    ]
+  },
+  "resources/js/Pages/TestUsers.jsx": {
+    "file": "assets/TestUsers-DzAC3ntn.js",
+    "name": "TestUsers",
+    "src": "resources/js/Pages/TestUsers.jsx",
+    "isDynamicEntry": true,
+    "imports": [
+      "resources/js/app.jsx"
+    ]
+  },
+  "resources/js/Pages/TransactionComponent/TopupFundComponent.jsx": {
+    "file": "assets/TopupFundComponent-Bc-WW3rW.js",
+    "name": "TopupFundComponent",
+    "src": "resources/js/Pages/TransactionComponent/TopupFundComponent.jsx",
+    "isDynamicEntry": true,
+    "imports": [
+      "resources/js/app.jsx"
+    ]
+  },
+  "resources/js/Pages/UserComponents/ChangePasswordComponents.jsx": {
+    "file": "assets/ChangePasswordComponents-D7UOfdfm.js",
+    "name": "ChangePasswordComponents",
+    "src": "resources/js/Pages/UserComponents/ChangePasswordComponents.jsx",
+    "isDynamicEntry": true,
+    "imports": [
+      "resources/js/app.jsx"
+    ]
+  },
+  "resources/js/Pages/UserComponents/ChangeRoleComponents.jsx": {
+    "file": "assets/ChangeRoleComponents-CPfw6VMz.js",
+    "name": "ChangeRoleComponents",
+    "src": "resources/js/Pages/UserComponents/ChangeRoleComponents.jsx",
+    "isDynamicEntry": true,
+    "imports": [
+      "resources/js/app.jsx"
+    ]
+  },
+  "resources/js/Pages/UserComponents/CreateUserControlComponents.jsx": {
+    "file": "assets/CreateUserControlComponents-DQZ8CnCj.js",
+    "name": "CreateUserControlComponents",
+    "src": "resources/js/Pages/UserComponents/CreateUserControlComponents.jsx",
+    "isDynamicEntry": true,
+    "imports": [
+      "resources/js/app.jsx"
+    ]
+  },
+  "resources/js/Pages/UserComponents/DeleteUserControlComponents.jsx": {
+    "file": "assets/DeleteUserControlComponents-D8ZnCB1g.js",
+    "name": "DeleteUserControlComponents",
+    "src": "resources/js/Pages/UserComponents/DeleteUserControlComponents.jsx",
+    "isDynamicEntry": true,
+    "imports": [
+      "resources/js/app.jsx"
+    ]
+  },
+  "resources/js/Pages/UserComponents/EditUserControlComponents.jsx": {
+    "file": "assets/EditUserControlComponents-DvxcMkc2.js",
+    "name": "EditUserControlComponents",
+    "src": "resources/js/Pages/UserComponents/EditUserControlComponents.jsx",
+    "isDynamicEntry": true,
+    "imports": [
+      "resources/js/app.jsx"
+    ]
+  },
+  "resources/js/Pages/UserComponents/ManageUserControlComponents.jsx": {
+    "file": "assets/ManageUserControlComponents-CrHIY6u_.js",
+    "name": "ManageUserControlComponents",
+    "src": "resources/js/Pages/UserComponents/ManageUserControlComponents.jsx",
+    "isDynamicEntry": true,
+    "imports": [
+      "resources/js/app.jsx",
+      "resources/js/Pages/UserComponents/CreateUserControlComponents.jsx",
+      "resources/js/Pages/UserComponents/ViewUserControlComponents.jsx",
+      "resources/js/Pages/UserComponents/EditUserControlComponents.jsx",
+      "resources/js/Pages/UserComponents/DeleteUserControlComponents.jsx",
+      "resources/js/Pages/UserComponents/ChangePasswordComponents.jsx",
+      "resources/js/Pages/UserComponents/ChangeRoleComponents.jsx"
+    ]
+  },
+  "resources/js/Pages/UserComponents/ViewUserControlComponents.jsx": {
+    "file": "assets/ViewUserControlComponents-DRjBinjw.js",
+    "name": "ViewUserControlComponents",
+    "src": "resources/js/Pages/UserComponents/ViewUserControlComponents.jsx",
+    "isDynamicEntry": true,
+    "imports": [
+      "resources/js/app.jsx"
+    ]
+  },
+  "resources/js/Pages/Welcome.jsx": {
+    "file": "assets/Welcome-CUplJ0yx.js",
+    "name": "Welcome",
+    "src": "resources/js/Pages/Welcome.jsx",
+    "isDynamicEntry": true,
+    "imports": [
+      "resources/js/app.jsx",
+      "_PublicLayout--JWwhh6_.js",
+      "_Footer-CogazGZy.js"
+    ]
+  },
+  "resources/js/app.jsx": {
+    "file": "assets/app-Cy0UIO-x.js",
+    "name": "app",
+    "src": "resources/js/app.jsx",
+    "isEntry": true,
+    "dynamicImports": [
+      "resources/js/Pages/About.jsx",
+      "resources/js/Pages/Auth/ConfirmPassword.jsx",
+      "resources/js/Pages/Auth/ForgotPassword.jsx",
+      "resources/js/Pages/Auth/InvalidReferralCode.jsx",
+      "resources/js/Pages/Auth/Login.jsx",
+      "resources/js/Pages/Auth/Register.jsx",
+      "resources/js/Pages/Auth/ResetPassword.jsx",
+      "resources/js/Pages/Auth/VerifyEmail.jsx",
+      "resources/js/Pages/BillPaymentComponents/AddMenuItemComponents.jsx",
+      "resources/js/Pages/BillPaymentComponents/DeleteMenuItemComponents.jsx",
+      "resources/js/Pages/BillPaymentComponents/EditMenuItemComponents.jsx",
+      "resources/js/Pages/BillPaymentComponents/FindMemberComponent.jsx",
+      "resources/js/Pages/BillPaymentComponents/ManageBillPaymentComponents.jsx",
+      "resources/js/Pages/BillPaymentComponents/PayBillComponents.jsx",
+      "resources/js/Pages/BillPaymentComponents/PrintReceiptComponents.jsx",
+      "resources/js/Pages/BillPaymentComponents/TableUserConfirmComponent.jsx",
+      "resources/js/Pages/BillPaymentComponents/ViewItemsComponents.jsx",
+      "resources/js/Pages/BrandOffice/Admin/BranchAdminDashboard.jsx",
+      "resources/js/Pages/BrandOffice/Billing/BranchBillingDashboard.jsx",
+      "resources/js/Pages/Contact.jsx",
+      "resources/js/Pages/Dashboard.jsx",
+      "resources/js/Pages/Dashboards/Admin/DashboardComponent.jsx",
+      "resources/js/Pages/FAQ.jsx",
+      "resources/js/Pages/HeadOffice/Account/AccountUserDashboard.jsx",
+      "resources/js/Pages/HeadOffice/Admin/AdminUserDashboard.jsx",
+      "resources/js/Pages/HeadOffice/AdminComponents/AdminDashboardLayout.jsx",
+      "resources/js/Pages/HeadOffice/AdminComponents/AdminFooter.jsx",
+      "resources/js/Pages/HeadOffice/AdminComponents/AdminHeader.jsx",
+      "resources/js/Pages/HeadOffice/AdminComponents/AdminSidebar.jsx",
+      "resources/js/Pages/HeadOffice/Billing/BillingUserDashboard.jsx",
+      "resources/js/Pages/HeadOffice/CashOutManagement.jsx",
+      "resources/js/Pages/HeadOffice/Components/PayOutComponent.jsx",
+      "resources/js/Pages/HeadOffice/Super/BillPayment.jsx",
+      "resources/js/Pages/HeadOffice/Super/BranchManagement.jsx",
+      "resources/js/Pages/HeadOffice/Super/LatestPackageDemo.jsx",
+      "resources/js/Pages/HeadOffice/Super/ManageMembers.jsx",
+      "resources/js/Pages/HeadOffice/Super/ManagePackageSettings.jsx",
+      "resources/js/Pages/HeadOffice/Super/ManagePayments.jsx",
+      "resources/js/Pages/HeadOffice/Super/ManageTablesSettings.jsx",
+      "resources/js/Pages/HeadOffice/Super/MemberTransactions.jsx",
+      "resources/js/Pages/HeadOffice/Super/MenuManagement.jsx",
+      "resources/js/Pages/HeadOffice/Super/OrderManagement.jsx",
+      "resources/js/Pages/HeadOffice/Super/OtpOrders.jsx",
+      "resources/js/Pages/HeadOffice/Super/ReportsAnalytics.jsx",
+      "resources/js/Pages/HeadOffice/Super/Settings.jsx",
+      "resources/js/Pages/HeadOffice/Super/StockItemSettings.jsx",
+      "resources/js/Pages/HeadOffice/Super/StockManagement.jsx",
+      "resources/js/Pages/HeadOffice/Super/SuperUserDashboard.jsx",
+      "resources/js/Pages/HeadOffice/Super/TodayOTPView.jsx",
+      "resources/js/Pages/HeadOffice/Super/UsersTracking.jsx",
+      "resources/js/Pages/HeadOffice/Super/WalletManagement.jsx",
+      "resources/js/Pages/ManageMemberComponents/EditMemberModal.jsx",
+      "resources/js/Pages/ManageMemberComponents/MemberManagementPage.jsx",
+      "resources/js/Pages/ManageMemberComponents/ResetPasswordModal.jsx",
+      "resources/js/Pages/ManageMemberComponents/ViewMemberModal.jsx",
+      "resources/js/Pages/ManagePackageComponent/AddPackageComponent.jsx",
+      "resources/js/Pages/ManagePackageComponent/DeletePackageComponent.jsx",
+      "resources/js/Pages/ManagePackageComponent/DeletePackageConfirmation.jsx",
+      "resources/js/Pages/ManagePackageComponent/EditPackageComponent.jsx",
+      "resources/js/Pages/ManagePackageComponent/LatestActivePackageCard.jsx",
+      "resources/js/Pages/Members/Components/Breadcrumb.jsx",
+      "resources/js/Pages/Members/Components/FreeMemberSidebar.jsx",
+      "resources/js/Pages/Members/Components/MemberDashboardComponent.jsx",
+      "resources/js/Pages/Members/Components/MemberDashboardLayout.jsx",
+      "resources/js/Pages/Members/Components/MemberFooter.jsx",
+      "resources/js/Pages/Members/Components/MemberHeader.jsx",
+      "resources/js/Pages/Members/Components/MemberSidebar.jsx",
+      "resources/js/Pages/Members/Components/PaidMemberSidebar.jsx",
+      "resources/js/Pages/Members/FreeMember/FreeMemberDashboard.jsx",
+      "resources/js/Pages/Members/FreeMember/ShareReferral.jsx",
+      "resources/js/Pages/Members/FreeMember/TrackOrdersFree.jsx",
+      "resources/js/Pages/Members/FreeMember/Transactions.jsx",
+      "resources/js/Pages/Members/FreeMember/TreeViewMember.jsx",
+      "resources/js/Pages/Members/OrdersComponents.jsx",
+      "resources/js/Pages/Members/PaidMember/CashWallet.jsx",
+      "resources/js/Pages/Members/PaidMember/Components/RequestCashOutComponent.jsx",
+      "resources/js/Pages/Members/PaidMember/Components/TransferPurchaseBalanceComponent.jsx",
+      "resources/js/Pages/Members/PaidMember/Earnings.jsx",
+      "resources/js/Pages/Members/PaidMember/MemberBadges.jsx",
+      "resources/js/Pages/Members/PaidMember/PaidMemberDashboard.jsx",
+      "resources/js/Pages/Members/PaidMember/ShareReferral.jsx",
+      "resources/js/Pages/Members/PaidMember/TrackOrdersPaid.jsx",
+      "resources/js/Pages/Members/PaidMember/Transactions.jsx",
+      "resources/js/Pages/Members/PaidMember/TreeViewMember.jsx",
+      "resources/js/Pages/Members/PaidMember/WithdrawComponent.jsx",
+      "resources/js/Pages/Members/PrivacyPolicy.jsx",
+      "resources/js/Pages/Members/Profile/ChangePassword.jsx",
+      "resources/js/Pages/Members/Profile/ChangeReferral.jsx",
+      "resources/js/Pages/Members/Profile/Edit.jsx",
+      "resources/js/Pages/Members/Profile/Partials/DeleteUserForm.jsx",
+      "resources/js/Pages/Members/Profile/Partials/UpdatePasswordForm.jsx",
+      "resources/js/Pages/Members/Profile/Partials/UpdateProfileInformationForm.jsx",
+      "resources/js/Pages/Members/Profile/ProfileSettings.jsx",
+      "resources/js/Pages/Members/Support.jsx",
+      "resources/js/Pages/Members/TermsOfService.jsx",
+      "resources/js/Pages/MenuComponents/CreateMenuComponents.jsx",
+      "resources/js/Pages/MenuComponents/DeleteMenuComponents.jsx",
+      "resources/js/Pages/MenuComponents/EditMenuComponents.jsx",
+      "resources/js/Pages/MenuComponents/ManageMenuComponents.jsx",
+      "resources/js/Pages/MenuComponents/ViewMenuComponents.jsx",
+      "resources/js/Pages/OfficeProfileComponents/CreateOfficeProfileComponent.jsx",
+      "resources/js/Pages/OfficeProfileComponents/DeleteOfficeProfileComponent.jsx",
+      "resources/js/Pages/OfficeProfileComponents/EditOfficeProfileComponent.jsx",
+      "resources/js/Pages/OfficeProfileComponents/MangeOfficeProfileComponent.jsx",
+      "resources/js/Pages/OrderManagement/ManageOrderComponents.jsx",
+      "resources/js/Pages/OrderManagement/ViewOrderComponents.jsx",
+      "resources/js/Pages/OrderManagement/ViewOrderItemComponents.jsx",
+      "resources/js/Pages/Services.jsx",
+      "resources/js/Pages/SettingComponents/RestaurantTableComponents/CreateRestaurantTableComponent.jsx",
+      "resources/js/Pages/SettingComponents/RestaurantTableComponents/DeleteRestaurantTableComponent.jsx",
+      "resources/js/Pages/SettingComponents/RestaurantTableComponents/EditRestaurantTableComponent.jsx",
+      "resources/js/Pages/SettingComponents/RestaurantTableComponents/ManageRestaurantTableComponent.jsx",
+      "resources/js/Pages/SettingComponents/StockItemSettingsComponents/CreateStockItemSettingsComponent.jsx",
+      "resources/js/Pages/SettingComponents/StockItemSettingsComponents/DeleteStockItemSettingsComponent.jsx",
+      "resources/js/Pages/SettingComponents/StockItemSettingsComponents/EditStockItemSettingsComponent.jsx",
+      "resources/js/Pages/SettingComponents/StockItemSettingsComponents/ManageStockItemSettingsComponent.jsx",
+      "resources/js/Pages/StockRecordComponents/CreateStockRecordComponents.jsx",
+      "resources/js/Pages/StockRecordComponents/DeleteStockRecordComponents.jsx",
+      "resources/js/Pages/StockRecordComponents/EditStockRecordComponents.jsx",
+      "resources/js/Pages/StockRecordComponents/ManageStockRecordComponents.jsx",
+      "resources/js/Pages/StockRecordComponents/ViewStockRecordComponents.jsx",
+      "resources/js/Pages/TestUsers.jsx",
+      "resources/js/Pages/TransactionComponent/TopupFundComponent.jsx",
+      "resources/js/Pages/UserComponents/ChangePasswordComponents.jsx",
+      "resources/js/Pages/UserComponents/ChangeRoleComponents.jsx",
+      "resources/js/Pages/UserComponents/CreateUserControlComponents.jsx",
+      "resources/js/Pages/UserComponents/DeleteUserControlComponents.jsx",
+      "resources/js/Pages/UserComponents/EditUserControlComponents.jsx",
+      "resources/js/Pages/UserComponents/ManageUserControlComponents.jsx",
+      "resources/js/Pages/UserComponents/ViewUserControlComponents.jsx",
+      "resources/js/Pages/Welcome.jsx"
+    ],
+    "css": [
+      "assets/app-DMTUuvPM.css"
+    ]
+  }
+}
