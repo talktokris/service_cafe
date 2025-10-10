@@ -537,15 +537,19 @@ class CronMemberActivationController extends Controller
      */
     private function processThreeStarPromotion($currentUplineUserId)
     {
-        // Check eligibility: count users with referral_count = 0
+        // Check eligibility: count users with referral_count = 0, user_type='member' and member_type='paid'
         $findThreeStarEligible = User::where('referred_by', $currentUplineUserId)
             ->where('referral_count', 0)
+            ->where('user_type', 'member')
+            ->where('member_type', 'paid')
             ->count();
 
         if ($findThreeStarEligible >= 2) {
             // Get only 2 eligible users (limit to 2) in ascending order by ID
             $eligibleUsers = User::where('referred_by', $currentUplineUserId)
                 ->where('referral_count', 0)
+                ->where('user_type', 'member')
+                ->where('member_type', 'paid')
                 ->orderBy('id', 'asc')
                 ->limit(2)
                 ->pluck('id')
@@ -561,6 +565,8 @@ class CronMemberActivationController extends Controller
             // Update referral_count to 1 for only 2 eligible users in ascending order by ID
             User::where('referred_by', $currentUplineUserId)
                 ->where('referral_count', 0)
+                ->where('user_type', 'member')
+                ->where('member_type', 'paid')
                 ->orderBy('id', 'asc')
                 ->limit(2)
                 ->update(['referral_count' => 1]);
