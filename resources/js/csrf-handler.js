@@ -30,7 +30,11 @@ class CSRFHandler {
         XMLHttpRequest.prototype.send = function(data) {
             this.addEventListener('readystatechange', function() {
                 if (this.readyState === 4 && this.status === 419) {
-                    CSRFHandler.handle419Error(this._method, this._url, data);
+                    // Skip handling for auth routes
+                    const skipRoutes = ['/login', '/register', '/forgot-password', '/reset-password'];
+                    if (!skipRoutes.some(route => this._url.includes(route))) {
+                        CSRFHandler.handle419Error(this._method, this._url, data);
+                    }
                 }
             });
             return originalXHRSend.apply(this, [data]);
@@ -38,6 +42,12 @@ class CSRFHandler {
     }
 
     async handleRequest(originalFetch, url, options = {}) {
+        // Skip auto-retry for auth routes
+        const skipRoutes = ['/login', '/register', '/forgot-password', '/reset-password'];
+        if (skipRoutes.some(route => url.includes(route))) {
+            return originalFetch(url, options);
+        }
+
         let retryCount = 0;
 
         while (retryCount < this.maxRetries) {

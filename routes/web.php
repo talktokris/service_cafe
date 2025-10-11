@@ -1498,4 +1498,11 @@ Route::get('/refresh-csrf', function() {
     ]);
 })->name('refresh.csrf');
 
+// Login fix route - ensures fresh CSRF token for login
+Route::get('/login-fix', function() {
+    session()->regenerate();
+    session()->regenerateToken();
+    return redirect()->route('login')->with('success', 'Login page refreshed with new session.');
+})->name('login.fix');
+
 require __DIR__.'/auth.php';

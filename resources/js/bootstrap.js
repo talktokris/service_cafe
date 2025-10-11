@@ -19,6 +19,15 @@ window.axios.interceptors.response.use(
     response => response,
     error => {
         if (error.response && error.response.status === 419) {
+            // Skip auto-retry for login and authentication routes
+            const url = error.config?.url || '';
+            const skipRoutes = ['/login', '/register', '/forgot-password', '/reset-password'];
+            
+            if (skipRoutes.some(route => url.includes(route))) {
+                console.log('CSRF error on auth route, not auto-retrying');
+                return Promise.reject(error);
+            }
+            
             console.log('CSRF token mismatch detected, refreshing token...');
             
             // Try to refresh CSRF token
@@ -43,9 +52,11 @@ window.axios.interceptors.response.use(
                 })
                 .catch(refreshError => {
                     console.error('Failed to refresh CSRF token:', refreshError);
-                    // Show user-friendly error
-                    if (confirm('Your session has expired. Would you like to refresh the page?')) {
-                        window.location.reload();
+                    // Only show popup for non-auth routes
+                    if (!skipRoutes.some(route => url.includes(route))) {
+                        if (confirm('Your session has expired. Would you like to refresh the page?')) {
+                            window.location.reload();
+                        }
                     }
                     throw error;
                 });
