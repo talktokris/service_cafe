@@ -5,6 +5,10 @@
 
 echo "🚀 Starting manual deployment..."
 
+# Backup cron jobs before deployment
+echo "🛡️ Backing up cron jobs..."
+crontab -l > /home4/servi5ne/cron_backup.txt 2>/dev/null || echo "No existing cron jobs found"
+
 # Navigate to project directory
 cd /home4/servi5ne/repositories/service_cafe || exit 1
 
@@ -52,6 +56,20 @@ ln -sfn "$(pwd)/public" "/home4/servi5ne/public_html/sys/app/public"
 # Test application
 echo "🧪 Testing application..."
 php artisan route:list > /dev/null 2>&1 && echo "✅ Application test passed" || echo "⚠️ Application test failed"
+
+# Restore cron jobs after deployment
+echo "🔄 Restoring cron jobs..."
+if [ -f "/home4/servi5ne/cron_backup.txt" ]; then
+    crontab /home4/servi5ne/cron_backup.txt
+    echo "✅ Cron jobs restored successfully"
+else
+    echo "⚠️ No cron backup found, adding essential cron jobs..."
+    # Add essential cron jobs if backup doesn't exist
+    (crontab -l 2>/dev/null; echo "* * * * * curl -s https://servecafe.com/cron/activate-member-package") | crontab -
+    (crontab -l 2>/dev/null; echo "* * * * * curl -s https://servecafe.com/cron/leadership-chaque-match") | crontab -
+    (crontab -l 2>/dev/null; echo "0 3 1 1,4,7,10 * curl -s https://servecafe.com/cron/global-pool-distribution") | crontab -
+    echo "✅ Essential cron jobs added"
+fi
 
 echo "✅ Manual deployment completed successfully!"
 echo "🌐 Application is available at: https://servecafe.com"
