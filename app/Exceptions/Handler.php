@@ -36,8 +36,13 @@ class Handler extends ExceptionHandler
                 ], 419);
             }
 
-            // For regular requests, show a user-friendly error page
-            return response()->view('errors.419', [], 419);
+            // For login requests, redirect to login page instead of showing error page
+            if ($request->is('login') || $request->routeIs('login')) {
+                return redirect()->route('login')->with('error', 'Your session has expired. Please try logging in again.');
+            }
+
+            // For other requests, redirect back with error message
+            return redirect()->back()->with('error', 'Your session has expired. Please try again.');
         });
 
         $this->renderable(function (HttpException $e, Request $request) {

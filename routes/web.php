@@ -1505,4 +1505,14 @@ Route::get('/login-fix', function() {
     return redirect()->route('login')->with('success', 'Login page refreshed with new session.');
 })->name('login.fix');
 
+// Session test route - check if session is working
+Route::get('/session-test', function() {
+    return response()->json([
+        'session_id' => session()->getId(),
+        'csrf_token' => csrf_token(),
+        'session_data' => session()->all(),
+        'timestamp' => now()
+    ]);
+})->name('session.test');
+
 require __DIR__.'/auth.php';

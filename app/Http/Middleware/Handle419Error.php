@@ -19,7 +19,7 @@ class Handle419Error
     {
         $response = $next($request);
 
-        // If we get a 419 error, regenerate session and redirect back
+        // If we get a 419 error, regenerate session and redirect appropriately
         if ($response->getStatusCode() === 419) {
             // Regenerate session and CSRF token
             Session::regenerate();
@@ -36,7 +36,12 @@ class Handle419Error
                 ], 419);
             }
             
-            // For regular requests, redirect back with a flash message
+            // For login requests, redirect to login page with fresh session
+            if ($request->is('login') || $request->routeIs('login')) {
+                return redirect()->route('login')->with('error', 'Your session has expired. Please try logging in again.');
+            }
+            
+            // For other requests, redirect back with a flash message
             return redirect()->back()->with('error', 'Your session has expired. Please try again.');
         }
 

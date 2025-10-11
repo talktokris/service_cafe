@@ -161,15 +161,15 @@
                         });
                     }
                     
-                    // Refresh the page
+                    // Redirect to login page instead of reloading
                     setTimeout(() => {
-                        window.location.reload();
+                        window.location.href = '/login';
                     }, 1000);
                 })
                 .catch(error => {
-                    console.log('Could not refresh CSRF token, refreshing page anyway');
+                    console.log('Could not refresh CSRF token, redirecting to login');
                     setTimeout(() => {
-                        window.location.reload();
+                        window.location.href = '/login';
                     }, 1000);
                 });
         }
