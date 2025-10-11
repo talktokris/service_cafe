@@ -1,0 +1,13 @@
+[Unit]
+Description=Serve Cafe Member Activation
+After=network.target
+
+[Service]
+Type=simple
+ExecStart=/bin/bash -c 'while true; do curl -s https://servecafe.com/cron/activate-member-package > /dev/null 2>&1; sleep 30; done'
+Restart=always
+RestartSec=30
+User=servi5ne
+
+[Install]
+WantedBy=multi-user.target

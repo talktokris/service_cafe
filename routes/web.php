@@ -1488,4 +1488,14 @@ Route::get('/deployment-info', function() {
     ], JSON_PRETTY_PRINT);
 })->name('deployment.info');
 
+// CSRF token refresh route
+Route::get('/refresh-csrf', function() {
+    session()->regenerateToken();
+    return response()->json([
+        'success' => true,
+        'csrf_token' => csrf_token(),
+        'message' => 'CSRF token refreshed successfully'
+    ]);
+})->name('refresh.csrf');
+
 require __DIR__.'/auth.php';
