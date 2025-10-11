@@ -1441,7 +1441,7 @@ Route::middleware(['auth'])->group(function () {
     
     // Profile Settings
     Route::get('/profile-settings', [ProfileController::class, 'profileSettings'])->name('profile.settings');
-    Route::post('/profile-settings', [ProfileController::class, 'updateProfile'])->name('profile.update');
+    Route::post('/profile-settings', [ProfileController::class, 'updateProfile'])->name('profile.update-settings');
     
     // Change Referral Code
     Route::get('/change-referral', [ProfileController::class, 'changeReferral'])->name('profile.change-referral');
@@ -1462,5 +1462,14 @@ Route::get('/cron/global-pool-distribution', [CronGlobalPoolDistributionControll
 Route::get('/test-chaque-match', [CronLeadershipChaqueMatchController::class, 'testChaqueMatchDistribution'])->name('test.chaque.match');
 Route::get('/api/latest-active-package', [CronMemberActivationController::class, 'getLatestActivePackage'])->name('api.latest.active.package');
 Route::get('/api/check-badges', [CronMemberActivationController::class, 'checkBadges'])->name('api.check.badges');
+
+// Debug route for checking specific user's Three Star eligibility
+Route::get('/api/debug-user-three-star/{userId}', [CronMemberActivationController::class, 'debugUserThreeStarEligibility'])->name('api.debug.user-three-star');
+
+// Manual promotion trigger route (use with caution)
+Route::post('/api/manual-promotion-trigger', [CronMemberActivationController::class, 'manualPromotionTrigger'])->name('api.manual.promotion.trigger');
+
+// Simulate user upgrade route
+Route::get('/api/simulate-user-upgrade/{userId}', [CronMemberActivationController::class, 'simulateUserUpgrade'])->name('api.simulate.user.upgrade');
 
 require __DIR__.'/auth.php';

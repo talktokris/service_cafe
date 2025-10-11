@@ -72,37 +72,33 @@ class CronMemberActivationController extends Controller
                         $uplineRankResult = null;
                         $promotionResult = null;
                         
-                        // Only run findUplineRank if rankFindStatus = 0
-                        if ($rankFindStatus == 0) {
-                            $uplineRankResult = $this->findUplineRank($user->id, $packageAmount);
-                            // Update rankFindStatus to 1 after completion
-                            $currentUser->update(['rankFindStatus' => 1]);
-                        } else {
-                            $uplineRankResult = [
-                                'skipped' => true,
-                                'message' => 'Rank find already completed',
-                                'rankFindStatus' => $rankFindStatus
-                            ];
-                        }
-                        
-                        // Only run memberPromotion if promotionRunStatus = 0
-                        if ($promotionRunStatus == 0) {
-                            $promotionResult = $this->memberPromotion($user->id);
-                            // Update promotionRunStatus to 1 after completion
-                            $currentUser->update(['promotionRunStatus' => 1]);
-                        } else {
-                            $promotionResult = [
-                                'skipped' => true,
-                                'message' => 'Promotion run already completed',
-                                'promotionRunStatus' => $promotionRunStatus
-                            ];
-                        }
-                        
-                        // Finally, update member_type to 'paid' and activeStatus to 1
-                        $currentUser->update([
-                            'member_type' => 'paid',
-                            'activeStatus' => 1
-                        ]);
+                    // FIRST: Update member_type to 'paid' and activeStatus to 1
+                    // This MUST happen before memberPromotion so the user is counted in their upline's referrals
+                    $currentUser->update([
+                        'member_type' => 'paid',
+                        'activeStatus' => 1
+                    ]);
+                    
+                    // Only run findUplineRank if rankFindStatus = 0
+                    if ($rankFindStatus == 0) {
+                        $uplineRankResult = $this->findUplineRank($user->id, $packageAmount);
+                        // Update rankFindStatus to 1 after completion
+                        $currentUser->update(['rankFindStatus' => 1]);
+                    } else {
+                        $uplineRankResult = [
+                            'skipped' => true,
+                            'message' => 'Rank find already completed',
+                            'rankFindStatus' => $rankFindStatus
+                        ];
+                    }
+                    
+                    // ALWAYS run memberPromotion when a user upgrades to paid
+                    // This ensures upline promotions are processed every time
+                    $promotionResult = $this->memberPromotion($user->id);
+                    
+                    // Update promotionRunStatus to 1 after completion
+                    // This prevents duplicate processing for the upgrading user themselves
+                    $currentUser->update(['promotionRunStatus' => 1]);
                         
                         $eligibleUsers[] = [
                             'user_id' => $user->id,
@@ -403,6 +399,7 @@ class CronMemberActivationController extends Controller
 
     /**
      * Member promotion function - Traverse upline hierarchy and process promotions
+     * This function ALWAYS processes upline promotions when a user upgrades, regardless of upline users' promotionRunStatus
      */
     private function memberPromotion($userId)
     {
@@ -430,7 +427,8 @@ class CronMemberActivationController extends Controller
             $isPaidAndActive = ($uplineUser->member_type === 'paid' && $uplineUser->activeStatus == 1);
             
             if ($isPaidAndActive) {
-                // Process promotions for current upline user (only for paid and active members)
+                // IMPORTANT: Always process promotions for upline users when downlines upgrade
+                // The promotionRunStatus flag only affects the upgrading user, not their upline hierarchy
                 $promotionResults = $this->processUserPromotions($currentUplineUserId);
                 
                 // Display current upline user ID with promotion results
@@ -439,7 +437,9 @@ class CronMemberActivationController extends Controller
                     'current_upline_user_id' => $currentUplineUserId,
                     'member_type' => $uplineUser->member_type,
                     'activeStatus' => $uplineUser->activeStatus,
-                    'promotion_results' => $promotionResults
+                    'promotionRunStatus' => $uplineUser->promotionRunStatus, // For debugging
+                    'promotion_results' => $promotionResults,
+                    'note' => 'Processed upline promotions (promotionRunStatus ignored for upline)'
                 ];
             } else {
                 // Skip free or inactive members
@@ -468,6 +468,7 @@ class CronMemberActivationController extends Controller
             $isPaidAndActive = ($rootUser && $rootUser->member_type === 'paid' && $rootUser->activeStatus == 1);
             
             if ($isPaidAndActive) {
+                // IMPORTANT: Always process promotions for root user when downlines upgrade
                 $promotionResults = $this->processUserPromotions(1);
                 $uplineTraversal[] = [
                     'iteration' => $iteration + 1,
@@ -475,7 +476,9 @@ class CronMemberActivationController extends Controller
                     'note' => 'Reached root user (ID = 1)',
                     'member_type' => $rootUser->member_type,
                     'activeStatus' => $rootUser->activeStatus,
-                    'promotion_results' => $promotionResults
+                    'promotionRunStatus' => $rootUser->promotionRunStatus, // For debugging
+                    'promotion_results' => $promotionResults,
+                    'note' => 'Processed root user promotions (promotionRunStatus ignored for upline)'
                 ];
             } else {
                 $uplineTraversal[] = [
@@ -490,7 +493,7 @@ class CronMemberActivationController extends Controller
             }
         }
 
-        // Note: promotionRunStatus is updated in the main activateMemberPackage function
+        // Note: promotionRunStatus is updated in the main activateMemberPackage function for the UPGRADING USER only
 
         return [
             'success' => true,
@@ -498,7 +501,8 @@ class CronMemberActivationController extends Controller
             'user_id' => $userId,
             'total_iterations' => count($uplineTraversal),
             'upline_traversal' => $uplineTraversal,
-            'reached_root' => $currentUplineUserId == 1
+            'reached_root' => $currentUplineUserId == 1,
+            'note' => 'Upline promotions are always processed regardless of upline users promotionRunStatus'
         ];
     }
 
@@ -537,11 +541,13 @@ class CronMemberActivationController extends Controller
      */
     private function processThreeStarPromotion($currentUplineUserId)
     {
-        // Check eligibility: count users with referral_count = 0, user_type='member' and member_type='paid'
+        // Check eligibility: count users with referral_count = 0, user_type='member', member_type='paid', and activeStatus=1
+        // referral_count = 0 ensures each referral is only used for ONE Three Star badge (prevents duplicate counting)
         $findThreeStarEligible = User::where('referred_by', $currentUplineUserId)
             ->where('referral_count', 0)
             ->where('user_type', 'member')
             ->where('member_type', 'paid')
+            ->where('activeStatus', 1)
             ->count();
 
         if ($findThreeStarEligible >= 2) {
@@ -550,6 +556,7 @@ class CronMemberActivationController extends Controller
                 ->where('referral_count', 0)
                 ->where('user_type', 'member')
                 ->where('member_type', 'paid')
+                ->where('activeStatus', 1)
                 ->orderBy('id', 'asc')
                 ->limit(2)
                 ->pluck('id')
@@ -563,10 +570,12 @@ class CronMemberActivationController extends Controller
             ]);
 
             // Update referral_count to 1 for only 2 eligible users in ascending order by ID
+            // This prevents these users from being counted again for another Three Star badge
             User::where('referred_by', $currentUplineUserId)
                 ->where('referral_count', 0)
                 ->where('user_type', 'member')
                 ->where('member_type', 'paid')
+                ->where('activeStatus', 1)
                 ->orderBy('id', 'asc')
                 ->limit(2)
                 ->update(['referral_count' => 1]);
@@ -814,6 +823,181 @@ class CronMemberActivationController extends Controller
                 'success' => true,
                 'badge_counts' => $badges,
                 'badge_users' => $badgeUsers
+            ]);
+
+        } catch (\Exception $e) {
+            return response()->json([
+                'success' => false,
+                'error' => $e->getMessage()
+            ]);
+        }
+    }
+
+    /**
+     * Debug function to check why a specific user hasn't received Three Star badge
+     */
+    public function debugUserThreeStarEligibility($userId)
+    {
+        try {
+            $user = User::find($userId);
+            if (!$user) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'User not found'
+                ]);
+            }
+
+            // Check user's basic info
+            $userInfo = [
+                'id' => $user->id,
+                'name' => $user->name,
+                'email' => $user->email,
+                'user_type' => $user->user_type,
+                'member_type' => $user->member_type,
+                'activeStatus' => $user->activeStatus,
+                'referred_by' => $user->referred_by,
+                'referral_count' => $user->referral_count,
+                'rankFindStatus' => $user->rankFindStatus,
+                'promotionRunStatus' => $user->promotionRunStatus
+            ];
+
+            // Check if user already has Three Star badge
+            $hasThreeStarBadge = BadgeThreeStars::where('user_id', $userId)->exists();
+            
+            // Check user's direct referrals
+            $directReferrals = User::where('referred_by', $userId)->get();
+            
+            // Check paid referrals with referral_count = 0
+            $eligibleReferrals = User::where('referred_by', $userId)
+                ->where('referral_count', 0)
+                ->where('user_type', 'member')
+                ->where('member_type', 'paid')
+                ->get();
+
+            // Count eligible referrals
+            $eligibleCount = $eligibleReferrals->count();
+
+            // Test the Three Star promotion logic
+            $promotionResult = $this->processThreeStarPromotion($userId);
+
+            return response()->json([
+                'success' => true,
+                'user_info' => $userInfo,
+                'has_three_star_badge' => $hasThreeStarBadge,
+                'total_direct_referrals' => $directReferrals->count(),
+                'eligible_referrals_count' => $eligibleCount,
+                'eligible_referrals' => $eligibleReferrals->map(function($ref) {
+                    return [
+                        'id' => $ref->id,
+                        'name' => $ref->name,
+                        'email' => $ref->email,
+                        'user_type' => $ref->user_type,
+                        'member_type' => $ref->member_type,
+                        'referral_count' => $ref->referral_count,
+                        'activeStatus' => $ref->activeStatus
+                    ];
+                }),
+                'promotion_result' => $promotionResult,
+                'analysis' => [
+                    'is_paid_and_active' => ($user->member_type === 'paid' && $user->activeStatus == 1),
+                    'has_sufficient_referrals' => $eligibleCount >= 2,
+                    'reason_not_eligible' => $eligibleCount < 2 ? 'Less than 2 paid referrals with referral_count=0' : 'Should be eligible'
+                ]
+            ]);
+
+        } catch (\Exception $e) {
+            return response()->json([
+                'success' => false,
+                'error' => $e->getMessage()
+            ]);
+        }
+    }
+
+    /**
+     * Manually trigger promotions for all eligible users
+     * This function can be used to retroactively process promotions
+     */
+    public function manualPromotionTrigger()
+    {
+        try {
+            // Find all paid and active users
+            $paidActiveUsers = User::where('user_type', 'member')
+                ->where('member_type', 'paid')
+                ->where('activeStatus', 1)
+                ->get();
+
+            $results = [];
+            $totalProcessed = 0;
+            $totalBadgesCreated = 0;
+
+            foreach ($paidActiveUsers as $user) {
+                $promotionResults = $this->processUserPromotions($user->id);
+                
+                $badgesCreated = 0;
+                foreach ($promotionResults as $badgeType => $result) {
+                    if (isset($result['eligible']) && $result['eligible']) {
+                        $badgesCreated++;
+                    }
+                }
+
+                $results[] = [
+                    'user_id' => $user->id,
+                    'name' => $user->name,
+                    'email' => $user->email,
+                    'promotion_results' => $promotionResults,
+                    'badges_created' => $badgesCreated
+                ];
+
+                $totalProcessed++;
+                $totalBadgesCreated += $badgesCreated;
+            }
+
+            return response()->json([
+                'success' => true,
+                'message' => 'Manual promotion trigger completed',
+                'summary' => [
+                    'total_users_processed' => $totalProcessed,
+                    'total_badges_created' => $totalBadgesCreated
+                ],
+                'results' => $results
+            ]);
+
+        } catch (\Exception $e) {
+            return response()->json([
+                'success' => false,
+                'error' => $e->getMessage()
+            ]);
+        }
+    }
+
+    /**
+     * Simulate what should happen when a user upgrades to paid
+     * This shows the upline promotion flow
+     */
+    public function simulateUserUpgrade($userId)
+    {
+        try {
+            $user = User::find($userId);
+            if (!$user) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'User not found'
+                ]);
+            }
+
+            // Simulate the memberPromotion function for this user
+            $promotionResult = $this->memberPromotion($userId);
+
+            return response()->json([
+                'success' => true,
+                'message' => "Simulated promotion flow for user {$userId}",
+                'user_info' => [
+                    'id' => $user->id,
+                    'name' => $user->name,
+                    'email' => $user->email,
+                    'referred_by' => $user->referred_by
+                ],
+                'promotion_result' => $promotionResult
             ]);
 
         } catch (\Exception $e) {
