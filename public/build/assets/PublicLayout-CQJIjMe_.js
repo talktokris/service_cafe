@@ -1,1 +1,0 @@
-import{j as e,H as r}from"./app-C-EhCx0Q.js";import{H as t,F as o}from"./Footer-Wp0ESzA3.js";function l({children:s,title:a="Serve Cafe"}){return e.jsxs("div",{className:"min-h-screen flex flex-col bg-base-100","data-theme":"light",children:[e.jsx(r,{title:a}),e.jsx(t,{}),e.jsx("main",{className:"flex-1",children:s}),e.jsx(o,{})]})}export{l as P};

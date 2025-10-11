@@ -1,0 +1,1 @@
+import{j as m}from"./app-GQ-hLdfW.js";import a from"./PaidMemberSidebar-DDEQodzl.js";import o from"./FreeMemberSidebar-BxCXBBEn.js";function p({isOpen:r,onClose:e,user:i,memberType:t}){return t==="paid"?m.jsx(a,{isOpen:r,onClose:e,user:i}):m.jsx(o,{isOpen:r,onClose:e,user:i})}export{p as default};
