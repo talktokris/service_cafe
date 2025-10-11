@@ -4,9 +4,11 @@ namespace App\Http\Controllers\Auth;
 
 use App\Http\Controllers\Controller;
 use App\Models\User;
+use App\Mail\WelcomeEmail;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Validator;
+use Illuminate\Support\Facades\Mail;
 use Illuminate\Validation\Rule;
 use Inertia\Inertia;
 
@@ -90,11 +92,19 @@ class RegisterController extends Controller
         // Create user
         $user = User::create($sanitizedData);
 
+        // Send welcome email
+        try {
+            Mail::to($user->email)->send(new WelcomeEmail($user));
+        } catch (\Exception $e) {
+            // Log the error but don't fail registration
+            \Log::error('Failed to send welcome email: ' . $e->getMessage());
+        }
+
         // Assign default role (if you have role system)
         // You can add role assignment logic here if needed
 
         return redirect()->route('register.with.referral', ['referral_code' => $referral_code])
-            ->with('success', 'Registration successful! You can now log in with your credentials.');
+            ->with('success', 'Registration successful! A welcome email has been sent to your inbox. You can now log in with your credentials.');
     }
 
     /**
