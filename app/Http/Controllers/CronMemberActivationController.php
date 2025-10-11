@@ -602,39 +602,52 @@ class CronMemberActivationController extends Controller
      */
     private function processFiveStarPromotion($currentUplineUserId)
     {
-        // Check eligibility: count from badge_three_stars where countStatus = 0
-        $findFiveStarEligible = BadgeThreeStars::where('user_id', $currentUplineUserId)
+        // First, find all users who were referred by the current upline user
+        $referredUsers = User::where('referred_by', $currentUplineUserId)
+            ->where('user_type', 'member')
+            ->where('member_type', 'paid')
+            ->where('activeStatus', 1)
+            ->pluck('id')
+            ->toArray();
+
+        if (empty($referredUsers)) {
+            return [
+                'eligible' => false,
+                'count' => 0,
+                'required' => 5,
+                'message' => 'No referred users found'
+            ];
+        }
+
+        // Now check which of these referred users have Three Star badges (where countStatus = 0)
+        $usersWithThreeStars = BadgeThreeStars::whereIn('user_id', $referredUsers)
             ->where('countStatus', 0)
-            ->count();
+            ->pluck('user_id')
+            ->toArray();
+
+        $findFiveStarEligible = count($usersWithThreeStars);
 
         if ($findFiveStarEligible >= 5) {
-            // Get only 5 eligible three star badges in ascending order by ID
-            $eligibleThreeStars = BadgeThreeStars::where('user_id', $currentUplineUserId)
-                ->where('countStatus', 0)
-                ->orderBy('id', 'asc')
-                ->limit(5)
-                ->pluck('id')
-                ->toArray();
+            // Get only 5 eligible users with three star badges (in ascending order by user_id)
+            $eligibleUsers = array_slice($usersWithThreeStars, 0, 5);
 
             // Insert into badge_five_stars table
             $badgeFiveStars = BadgeFiveStars::create([
                 'user_id' => $currentUplineUserId,
                 'countStatus' => 0,
-                'refer_three_stars' => json_encode($eligibleThreeStars)
+                'refer_three_stars' => json_encode($eligibleUsers)
             ]);
 
-            // Update countStatus to 1 for only 5 eligible three star badges in ascending order by ID
-            BadgeThreeStars::where('user_id', $currentUplineUserId)
+            // Update countStatus to 1 for all three star badges of these 5 eligible users
+            BadgeThreeStars::whereIn('user_id', $eligibleUsers)
                 ->where('countStatus', 0)
-                ->orderBy('id', 'asc')
-                ->limit(5)
                 ->update(['countStatus' => 1]);
 
             return [
                 'eligible' => true,
                 'count' => $findFiveStarEligible,
                 'badge_id' => $badgeFiveStars->id,
-                'refer_three_stars' => $eligibleThreeStars,
+                'refer_three_stars' => $eligibleUsers,
                 'message' => 'Five Star badge created successfully'
             ];
         }
@@ -643,7 +656,7 @@ class CronMemberActivationController extends Controller
             'eligible' => false,
             'count' => $findFiveStarEligible,
             'required' => 5,
-            'message' => 'Not eligible for Five Star promotion'
+            'message' => 'Not eligible for Five Star promotion - need 5 users with Three Star badges'
         ];
     }
 
