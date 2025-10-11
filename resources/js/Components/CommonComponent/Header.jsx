@@ -4,18 +4,18 @@ import { Link } from "@inertiajs/react";
 export default function Header({ user = null }) {
     return (
         <div className="bg-white shadow shadow-slate-200 drop-shadow-lg">
-            <div className="container mx-auto px-4">
-                <div className="navbar min-h-20">
+            <div className="container mx-auto px-3 sm:px-4">
+                <div className="navbar min-h-16 sm:min-h-20">
                     <div className="navbar-start">
                         <div className="dropdown">
                             <div
                                 tabIndex={0}
                                 role="button"
-                                className="btn btn-ghost lg:hidden text-gray-700 hover:bg-gray-100"
+                                className="btn btn-ghost lg:hidden text-gray-700 hover:bg-gray-100 p-2 touch-manipulation"
                             >
                                 <svg
                                     xmlns="http://www.w3.org/2000/svg"
-                                    className="h-5 w-5"
+                                    className="h-6 w-6"
                                     fill="none"
                                     viewBox="0 0 24 24"
                                     stroke="currentColor"
@@ -30,12 +30,12 @@ export default function Header({ user = null }) {
                             </div>
                             <ul
                                 tabIndex={0}
-                                className="menu menu-sm dropdown-content mt-3 z-[1] p-2 shadow-lg bg-white rounded-box w-52"
+                                className="menu menu-sm dropdown-content mt-3 z-[1] p-2 shadow-lg bg-white rounded-box w-56 right-0"
                             >
                                 <li>
                                     <Link
                                         href="/"
-                                        className="text-gray-700 hover:bg-red-50 hover:text-red-600"
+                                        className="text-gray-700 hover:bg-red-50 hover:text-red-600 py-3 px-4 touch-manipulation"
                                     >
                                         Home
                                     </Link>
@@ -43,7 +43,7 @@ export default function Header({ user = null }) {
                                 <li>
                                     <Link
                                         href="/about"
-                                        className="text-gray-700 hover:bg-red-50 hover:text-red-600"
+                                        className="text-gray-700 hover:bg-red-50 hover:text-red-600 py-3 px-4 touch-manipulation"
                                     >
                                         About
                                     </Link>
@@ -51,7 +51,7 @@ export default function Header({ user = null }) {
                                 <li>
                                     <Link
                                         href="/services"
-                                        className="text-gray-700 hover:bg-red-50 hover:text-red-600"
+                                        className="text-gray-700 hover:bg-red-50 hover:text-red-600 py-3 px-4 touch-manipulation"
                                     >
                                         Services
                                     </Link>
@@ -59,7 +59,7 @@ export default function Header({ user = null }) {
                                 <li>
                                     <Link
                                         href="/faq"
-                                        className="text-gray-700 hover:bg-red-50 hover:text-red-600"
+                                        className="text-gray-700 hover:bg-red-50 hover:text-red-600 py-3 px-4 touch-manipulation"
                                     >
                                         FAQ
                                     </Link>
@@ -67,7 +67,7 @@ export default function Header({ user = null }) {
                                 <li>
                                     <Link
                                         href="/contact"
-                                        className="text-gray-700 hover:bg-red-50 hover:text-red-600"
+                                        className="text-gray-700 hover:bg-red-50 hover:text-red-600 py-3 px-4 touch-manipulation"
                                     >
                                         Contact
                                     </Link>
@@ -76,18 +76,21 @@ export default function Header({ user = null }) {
                         </div>
                         <Link
                             href="/"
-                            className="btn btn-ghost text-xl hover:bg-gray-50"
+                            className="btn btn-ghost text-xl hover:bg-gray-50 p-1 sm:p-2"
                         >
-                            <div className="flex items-center space-x-3">
+                            <div className="flex items-center space-x-2 sm:space-x-3">
                                 <img
                                     src="/assets/logo.png"
                                     alt="Serve Cafe Logo"
-                                    className="w-12 h-12 object-contain"
+                                    className="w-8 h-8 sm:w-10 sm:h-10 md:w-12 md:h-12 object-contain flex-shrink-0"
                                 />
-                                <div className="text-red-800">
-                                    <h1 className="text-xl font-bold">
+                                <div className="text-red-800 min-w-0">
+                                    <h1 className="text-sm sm:text-lg md:text-xl font-bold truncate">
                                         SERVE CAFE
                                     </h1>
+                                    <p className="text-xs text-red-600 hidden sm:block">
+                                        Your Flavor Haven
+                                    </p>
                                 </div>
                             </div>
                         </Link>
@@ -142,17 +145,17 @@ export default function Header({ user = null }) {
                                 <div
                                     tabIndex={0}
                                     role="button"
-                                    className="btn btn-ghost btn-circle avatar hover:bg-gray-100"
+                                    className="btn btn-ghost btn-circle avatar hover:bg-gray-100 p-1 touch-manipulation"
                                 >
-                                    <div className="w-10 rounded-full bg-red-600 text-white flex items-center justify-center">
-                                        <span className="text-sm font-semibold">
+                                    <div className="w-8 h-8 sm:w-10 sm:h-10 rounded-full bg-red-600 text-white flex items-center justify-center">
+                                        <span className="text-xs sm:text-sm font-semibold">
                                             {user.name.charAt(0).toUpperCase()}
                                         </span>
                                     </div>
                                 </div>
                                 <ul
                                     tabIndex={0}
-                                    className="mt-3 z-[1] p-2 shadow-lg menu menu-sm dropdown-content bg-white rounded-box w-52"
+                                    className="mt-3 z-[1] p-2 shadow-lg menu menu-sm dropdown-content bg-white rounded-box w-56 right-0"
                                 >
                                     <li>
                                         <Link
@@ -201,18 +204,21 @@ export default function Header({ user = null }) {
                                 </ul>
                             </div>
                         ) : (
-                            <div className="flex items-center space-x-3">
+                            <div className="flex items-center space-x-2 sm:space-x-3">
                                 <Link
                                     href="/contact"
-                                    className="btn btn-outline border-amber-800 text-amber-800 hover:bg-amber-800 hover:text-white"
+                                    className="btn btn-outline border-amber-800 text-amber-800 hover:bg-amber-800 hover:text-white text-xs sm:text-sm px-2 sm:px-4 py-1 sm:py-2 touch-manipulation"
                                 >
-                                    Contact Us
+                                    <span className="hidden sm:inline">
+                                        Contact Us
+                                    </span>
+                                    <span className="sm:hidden">Contact</span>
                                 </Link>
                                 <Link
-                                    href="/subscribe"
-                                    className="btn bg-amber-800 text-white hover:bg-amber-700 font-semibold"
+                                    href="/login"
+                                    className="btn bg-amber-800 text-white hover:bg-amber-700 font-semibold text-xs sm:text-sm px-3 sm:px-4 py-1 sm:py-2 touch-manipulation"
                                 >
-                                    Subscribe Now
+                                    Login
                                 </Link>
                             </div>
                         )}

@@ -1,4 +1,5 @@
 import React from "react";
+import { Link } from "@inertiajs/react";
 import Breadcrumb from "./Breadcrumb";
 
 export default function MemberDashboardComponent({ user, stats, memberType }) {
@@ -14,7 +15,7 @@ export default function MemberDashboardComponent({ user, stats, memberType }) {
         {
             title: "Place Order",
             description: "Browse menu and place new order",
-            href: "/menu",
+            href: memberType === "paid" ? "/paid-orders" : "/free-orders",
             icon: (
                 <svg
                     className="h-8 w-8"
@@ -35,7 +36,7 @@ export default function MemberDashboardComponent({ user, stats, memberType }) {
         {
             title: "Share Referral",
             description: "Share your referral code with friends",
-            href: "/referral-network",
+            href: "/share-referral",
             icon: (
                 <svg
                     className="h-8 w-8"
@@ -56,7 +57,7 @@ export default function MemberDashboardComponent({ user, stats, memberType }) {
         {
             title: "View Orders",
             description: "Track your order history",
-            href: "/my-orders",
+            href: memberType === "paid" ? "/paid-orders" : "/free-orders",
             icon: (
                 <svg
                     className="h-8 w-8"
@@ -333,7 +334,7 @@ export default function MemberDashboardComponent({ user, stats, memberType }) {
                         </h3>
                         <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                             {quickActions.map((action, index) => (
-                                <a
+                                <Link
                                     key={index}
                                     href={action.href}
                                     className={`${action.color} text-white p-4 rounded-lg hover:shadow-lg transition-shadow duration-200`}
@@ -351,7 +352,7 @@ export default function MemberDashboardComponent({ user, stats, memberType }) {
                                             </p>
                                         </div>
                                     </div>
-                                </a>
+                                </Link>
                             ))}
                         </div>
                     </div>

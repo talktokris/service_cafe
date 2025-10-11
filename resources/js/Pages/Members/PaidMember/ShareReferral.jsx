@@ -55,7 +55,7 @@ export default function ShareReferral({ auth, memberType }) {
                     ]}
                 />
 
-                <div className="mx-auto max-w-6xl sm:px-6 lg:px-8 py-6">
+                <div className="mx-auto max-w-6xl sm:px-6 lg:px-8 py-6 w-[100vw]">
                     {/* Compact Header + Setup Note + Referral Link */}
                     <div className="overflow-hidden bg-white shadow-sm sm:rounded-lg mb-4">
                         <div className="p-4">

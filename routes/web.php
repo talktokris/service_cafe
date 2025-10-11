@@ -1515,4 +1515,52 @@ Route::get('/session-test', function() {
     ]);
 })->name('session.test');
 
+// Complete session reset route
+Route::get('/reset-session', function() {
+    session()->flush();
+    session()->regenerate();
+    session()->regenerateToken();
+    
+    return redirect()->route('login')->with('success', 'Session completely reset. Please try logging in again.');
+})->name('reset.session');
+
+// Simple login test route
+Route::post('/test-login', function(\Illuminate\Http\Request $request) {
+    $email = $request->input('email');
+    $password = $request->input('password');
+    
+    \Log::info('Test login attempt', [
+        'email' => $email,
+        'session_id' => session()->getId(),
+        'csrf_token' => $request->input('_token'),
+        'all_input' => $request->all()
+    ]);
+    
+    if (\Illuminate\Support\Facades\Auth::attempt(['email' => $email, 'password' => $password])) {
+        $request->session()->regenerate();
+        return response()->json([
+            'success' => true,
+            'message' => 'Login successful',
+            'user' => \Illuminate\Support\Facades\Auth::user(),
+            'session_id' => session()->getId()
+        ]);
+    }
+    
+    return response()->json([
+        'success' => false,
+        'message' => 'Invalid credentials'
+    ], 401);
+})->name('test.login');
+
+// Debug route to check what's happening
+Route::get('/debug-login', function() {
+    return response()->json([
+        'session_id' => session()->getId(),
+        'csrf_token' => csrf_token(),
+        'auth_check' => \Illuminate\Support\Facades\Auth::check(),
+        'auth_user' => \Illuminate\Support\Facades\Auth::user(),
+        'session_data' => session()->all()
+    ]);
+})->name('debug.login');
+
 require __DIR__.'/auth.php';

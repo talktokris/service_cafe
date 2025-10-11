@@ -159,57 +159,7 @@ export default function Login({ status, canResetPassword }) {
                                         </Link>
                                     </div>
                                 )}
-
-                                <div className="divider">OR</div>
-
-                                <div className="text-center">
-                                    <p className="text-sm text-base-content/70 mb-3">
-                                        Don't have an account?
-                                    </p>
-                                    <Link
-                                        href={route("register")}
-                                        className="btn btn-outline border-amber-800 text-amber-800 hover:bg-amber-800 hover:text-white w-full"
-                                    >
-                                        Create Account
-                                    </Link>
-                                </div>
                             </form>
-
-                            {/* Test Users Info */}
-                            <div className="collapse collapse-arrow bg-base-200 mt-4">
-                                <input type="checkbox" />
-                                <div className="collapse-title text-sm font-medium">
-                                    🧪 Test User Credentials
-                                </div>
-                                <div className="collapse-content">
-                                    <div className="text-xs space-y-2">
-                                        <p className="font-semibold">
-                                            HeadOffice:
-                                        </p>
-                                        <p>
-                                            • super@servecafe.com (Super Admin)
-                                        </p>
-                                        <p>
-                                            • admin@servecafe.com (System Admin)
-                                        </p>
-                                        <p className="font-semibold mt-2">
-                                            BrandOffice:
-                                        </p>
-                                        <p>
-                                            • branch.admin@servecafe.com (Branch
-                                            Manager)
-                                        </p>
-                                        <p className="font-semibold mt-2">
-                                            Members:
-                                        </p>
-                                        <p>• john@example.com (Paid Member)</p>
-                                        <p>• bob@example.com (Free Member)</p>
-                                        <p className="text-amber-800 font-semibold mt-2">
-                                            Password: password
-                                        </p>
-                                    </div>
-                                </div>
-                            </div>
                         </div>
                     </div>
                 </div>

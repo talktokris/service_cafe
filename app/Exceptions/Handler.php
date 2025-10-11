@@ -25,39 +25,35 @@ class Handler extends ExceptionHandler
      */
     public function register(): void
     {
+        // Simple CSRF error handling - just redirect instead of showing error page
         $this->renderable(function (TokenMismatchException $e, Request $request) {
-            // Handle CSRF token mismatch (419 error)
+            // For AJAX requests, return JSON
             if ($request->ajax() || $request->wantsJson()) {
                 return response()->json([
                     'error' => 'CSRF token mismatch',
                     'message' => 'Your session has expired. Please refresh the page.',
-                    'code' => 419,
-                    'refresh_required' => true
+                    'code' => 419
                 ], 419);
             }
 
-            // For login requests, redirect to login page instead of showing error page
-            if ($request->is('login') || $request->routeIs('login')) {
-                return redirect()->route('login')->with('error', 'Your session has expired. Please try logging in again.');
-            }
-
-            // For other requests, redirect back with error message
+            // For regular requests, just redirect back with a simple message
             return redirect()->back()->with('error', 'Your session has expired. Please try again.');
         });
 
-        $this->renderable(function (HttpException $e, Request $request) {
-            if ($e->getStatusCode() === 419) {
-                if ($request->ajax() || $request->wantsJson()) {
-                    return response()->json([
-                        'error' => 'Page expired',
-                        'message' => 'Your session has expired. Please refresh the page.',
-                        'code' => 419,
-                        'refresh_required' => true
-                    ], 419);
-                }
+        // Disabled custom 419 error handling to prevent duplicate pages
+        // $this->renderable(function (HttpException $e, Request $request) {
+        //     if ($e->getStatusCode() === 419) {
+        //         if ($request->ajax() || $request->wantsJson()) {
+        //             return response()->json([
+        //                 'error' => 'Page expired',
+        //                 'message' => 'Your session has expired. Please refresh the page.',
+        //                 'code' => 419,
+        //                 'refresh_required' => true
+        //             ], 419);
+        //         }
 
-                return response()->view('errors.419', [], 419);
-            }
-        });
+        //         return response()->view('errors.419', [], 419);
+        //     }
+        // });
     }
 }

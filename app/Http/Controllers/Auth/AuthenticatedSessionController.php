@@ -18,9 +18,7 @@ class AuthenticatedSessionController extends Controller
      */
     public function create(): Response
     {
-        // Ensure fresh session for login
-        session()->regenerateToken();
-        
+        // Simple approach - just render the login page
         return Inertia::render('Auth/Login', [
             'canResetPassword' => Route::has('password.request'),
             'status' => session('status'),
@@ -32,9 +30,23 @@ class AuthenticatedSessionController extends Controller
      */
     public function store(LoginRequest $request): RedirectResponse
     {
+        // Log the login attempt for debugging
+        \Log::info('Login attempt', [
+            'email' => $request->email,
+            'session_id_before' => session()->getId(),
+            'csrf_token' => $request->input('_token'),
+            'user_agent' => $request->userAgent()
+        ]);
+
         $request->authenticate();
 
         $request->session()->regenerate();
+
+        // Log successful authentication
+        \Log::info('Login successful', [
+            'user_id' => Auth::id(),
+            'session_id_after' => session()->getId()
+        ]);
 
         // Get the authenticated user
         $user = Auth::user();

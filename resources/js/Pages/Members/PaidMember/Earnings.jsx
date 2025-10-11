@@ -163,15 +163,15 @@ export default function Earnings({
                 />
 
                 {/* Main Content */}
-                <div className="p-3 sm:p-4 lg:p-6 space-y-4 sm:space-y-6">
+                <div className="px-3 sm:px-4 lg:px-6 py-4 sm:py-6 space-y-4 sm:space-y-6 w-[100vw] overflow-hidden">
                     {/* Summary Cards */}
-                    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6">
+                    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4 lg:gap-6 w-full">
                         {/* Total Earnings */}
-                        <div className="bg-green-50 border border-green-200 rounded-lg p-4 sm:p-6">
-                            <div className="flex items-center">
+                        <div className="bg-green-50 border border-green-200 rounded-lg p-3 sm:p-4 lg:p-6 min-w-0">
+                            <div className="flex items-center min-w-0">
                                 <div className="flex-shrink-0">
                                     <svg
-                                        className="h-6 w-6 sm:h-8 sm:w-8 text-green-600"
+                                        className="h-5 w-5 sm:h-6 sm:w-6 lg:h-8 lg:w-8 text-green-600"
                                         fill="none"
                                         stroke="currentColor"
                                         viewBox="0 0 24 24"
@@ -184,18 +184,18 @@ export default function Earnings({
                                         />
                                     </svg>
                                 </div>
-                                <div className="ml-3 sm:ml-4">
-                                    <p className="text-xs sm:text-sm font-medium text-green-600">
+                                <div className="ml-2 sm:ml-3 lg:ml-4 min-w-0 flex-1">
+                                    <p className="text-xs sm:text-sm font-medium text-green-600 truncate">
                                         Total Earnings
                                     </p>
-                                    <p className="text-lg sm:text-xl lg:text-2xl font-bold text-green-900">
+                                    <p className="text-sm sm:text-lg lg:text-xl xl:text-2xl font-bold text-green-900 truncate">
                                         {formatCurrency(
                                             currentSummary.total_earnings || 0
                                         )}
                                     </p>
                                 </div>
                             </div>
-                            <div className="mt-2 text-xs text-gray-500">
+                            <div className="mt-2 text-xs text-gray-500 truncate">
                                 This month:{" "}
                                 {formatCurrency(
                                     currentSummary.month_earnings || 0
@@ -204,11 +204,11 @@ export default function Earnings({
                         </div>
 
                         {/* Total Withdrawals */}
-                        <div className="bg-red-50 border border-red-200 rounded-lg p-4 sm:p-6">
-                            <div className="flex items-center">
+                        <div className="bg-red-50 border border-red-200 rounded-lg p-3 sm:p-4 lg:p-6 min-w-0">
+                            <div className="flex items-center min-w-0">
                                 <div className="flex-shrink-0">
                                     <svg
-                                        className="h-6 w-6 sm:h-8 sm:w-8 text-red-600"
+                                        className="h-5 w-5 sm:h-6 sm:w-6 lg:h-8 lg:w-8 text-red-600"
                                         fill="none"
                                         stroke="currentColor"
                                         viewBox="0 0 24 24"
@@ -221,11 +221,11 @@ export default function Earnings({
                                         />
                                     </svg>
                                 </div>
-                                <div className="ml-3 sm:ml-4">
-                                    <p className="text-xs sm:text-sm font-medium text-red-600">
+                                <div className="ml-2 sm:ml-3 lg:ml-4 min-w-0 flex-1">
+                                    <p className="text-xs sm:text-sm font-medium text-red-600 truncate">
                                         Total Withdrawals
                                     </p>
-                                    <p className="text-lg sm:text-xl lg:text-2xl font-bold text-red-900">
+                                    <p className="text-sm sm:text-lg lg:text-xl xl:text-2xl font-bold text-red-900 truncate">
                                         {formatCurrency(
                                             currentSummary.total_withdrawals ||
                                                 0
@@ -233,7 +233,7 @@ export default function Earnings({
                                     </p>
                                 </div>
                             </div>
-                            <div className="mt-2 text-xs text-gray-500">
+                            <div className="mt-2 text-xs text-gray-500 truncate">
                                 This month:{" "}
                                 {formatCurrency(
                                     currentSummary.month_withdrawals || 0
@@ -242,11 +242,11 @@ export default function Earnings({
                         </div>
 
                         {/* Total Redistributions */}
-                        <div className="bg-blue-50 border border-blue-200 rounded-lg p-4 sm:p-6">
-                            <div className="flex items-center">
+                        <div className="bg-blue-50 border border-blue-200 rounded-lg p-3 sm:p-4 lg:p-6 min-w-0">
+                            <div className="flex items-center min-w-0">
                                 <div className="flex-shrink-0">
                                     <svg
-                                        className="h-6 w-6 sm:h-8 sm:w-8 text-blue-600"
+                                        className="h-5 w-5 sm:h-6 sm:w-6 lg:h-8 lg:w-8 text-blue-600"
                                         fill="none"
                                         stroke="currentColor"
                                         viewBox="0 0 24 24"
@@ -259,11 +259,11 @@ export default function Earnings({
                                         />
                                     </svg>
                                 </div>
-                                <div className="ml-3 sm:ml-4">
-                                    <p className="text-xs sm:text-sm font-medium text-blue-600">
+                                <div className="ml-2 sm:ml-3 lg:ml-4 min-w-0 flex-1">
+                                    <p className="text-xs sm:text-sm font-medium text-blue-600 truncate">
                                         Total Redistributions
                                     </p>
-                                    <p className="text-lg sm:text-xl lg:text-2xl font-bold text-blue-900">
+                                    <p className="text-sm sm:text-lg lg:text-xl xl:text-2xl font-bold text-blue-900 truncate">
                                         {formatCurrency(
                                             currentSummary.total_redistributions ||
                                                 0
@@ -271,7 +271,7 @@ export default function Earnings({
                                     </p>
                                 </div>
                             </div>
-                            <div className="mt-2 text-xs text-gray-500">
+                            <div className="mt-2 text-xs text-gray-500 truncate">
                                 This month:{" "}
                                 {formatCurrency(
                                     currentSummary.month_redistributions || 0
@@ -280,11 +280,11 @@ export default function Earnings({
                         </div>
 
                         {/* Earning Balance */}
-                        <div className="bg-purple-50 border border-purple-200 rounded-lg p-4 sm:p-6">
-                            <div className="flex items-center">
+                        <div className="bg-purple-50 border border-purple-200 rounded-lg p-3 sm:p-4 lg:p-6 min-w-0">
+                            <div className="flex items-center min-w-0">
                                 <div className="flex-shrink-0">
                                     <svg
-                                        className="h-6 w-6 sm:h-8 sm:w-8 text-purple-600"
+                                        className="h-5 w-5 sm:h-6 sm:w-6 lg:h-8 lg:w-8 text-purple-600"
                                         fill="none"
                                         stroke="currentColor"
                                         viewBox="0 0 24 24"
@@ -297,29 +297,29 @@ export default function Earnings({
                                         />
                                     </svg>
                                 </div>
-                                <div className="ml-3 sm:ml-4">
-                                    <p className="text-xs sm:text-sm font-medium text-purple-600">
+                                <div className="ml-2 sm:ml-3 lg:ml-4 min-w-0 flex-1">
+                                    <p className="text-xs sm:text-sm font-medium text-purple-600 truncate">
                                         Earning Balance
                                     </p>
-                                    <p className="text-lg sm:text-xl lg:text-2xl font-bold text-purple-900">
+                                    <p className="text-sm sm:text-lg lg:text-xl xl:text-2xl font-bold text-purple-900 truncate">
                                         {formatCurrency(
                                             currentSummary.earning_balance || 0
                                         )}
                                     </p>
                                 </div>
                             </div>
-                            <div className="mt-2 text-xs text-gray-500">
+                            <div className="mt-2 text-xs text-gray-500 truncate">
                                 Available for withdrawal
                             </div>
                         </div>
                     </div>
 
                     {/* Search and Filter */}
-                    <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-4 sm:p-6">
+                    <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-3 sm:p-4 lg:p-6 max-w-full overflow-hidden">
                         <h3 className="text-lg font-medium text-gray-900 mb-4">
                             Search Earnings
                         </h3>
-                        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+                        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4 w-full">
                             <div>
                                 <label className="block text-sm font-medium text-gray-700 mb-2">
                                     From Date
@@ -414,108 +414,137 @@ export default function Earnings({
                                     </div>
                                 </div>
                             ) : (
-                                <div className="overflow-x-auto">
-                                    <table className="min-w-full divide-y divide-gray-200">
-                                        <thead className="bg-gray-50">
-                                            <tr>
-                                                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                                                    Date
-                                                </th>
-                                                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                                                    Type
-                                                </th>
-                                                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                                                    Name
-                                                </th>
-                                                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                                                    Description
-                                                </th>
-                                                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                                                    Debit/Credit
-                                                </th>
-                                                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                                                    Amount
-                                                </th>
-                                                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                                                    Status
-                                                </th>
-                                            </tr>
-                                        </thead>
-                                        <tbody className="bg-white divide-y divide-gray-200">
-                                            {filteredEarnings.map((earning) => (
-                                                <tr
-                                                    key={earning.id}
-                                                    className="hover:bg-gray-50"
-                                                >
-                                                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
-                                                        {formatDate(
-                                                            earning.created_at
-                                                        )}
-                                                    </td>
-                                                    <td className="px-6 py-4 whitespace-nowrap">
-                                                        <span
-                                                            className={`inline-flex px-2 py-1 text-xs font-semibold rounded-full ${getTransactionTypeColor(
-                                                                earning.transation_type
-                                                            )}`}
-                                                        >
-                                                            {getTransactionTypeLabel(
-                                                                earning.transation_type
-                                                            )}
-                                                        </span>
-                                                    </td>
-                                                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
-                                                        {earning.earning_name ||
-                                                            "-"}
-                                                    </td>
-                                                    <td className="px-6 py-4 text-sm text-gray-900">
-                                                        {earning.earning_description ||
-                                                            "-"}
-                                                    </td>
-                                                    <td className="px-6 py-4 whitespace-nowrap">
-                                                        <span
-                                                            className={`text-sm font-medium ${getDebitCreditColor(
-                                                                earning.debit_credit
-                                                            )}`}
-                                                        >
-                                                            {getDebitCreditLabel(
-                                                                earning.debit_credit
-                                                            )}
-                                                        </span>
-                                                    </td>
-                                                    <td className="px-6 py-4 whitespace-nowrap text-sm font-medium">
-                                                        <span
-                                                            className={getDebitCreditColor(
-                                                                earning.debit_credit
-                                                            )}
-                                                        >
-                                                            {earning.debit_credit ===
-                                                            1
-                                                                ? "-"
-                                                                : "+"}
-                                                            {formatCurrency(
-                                                                earning.ammout
-                                                            )}
-                                                        </span>
-                                                    </td>
-                                                    <td className="px-6 py-4 whitespace-nowrap">
-                                                        <span
-                                                            className={`inline-flex px-2 py-1 text-xs font-semibold rounded-full ${
-                                                                earning.status ===
-                                                                1
-                                                                    ? "bg-green-100 text-green-800"
-                                                                    : "bg-gray-100 text-gray-800"
-                                                            }`}
-                                                        >
-                                                            {earning.status ===
-                                                            1
-                                                                ? "Active"
-                                                                : "Inactive"}
-                                                        </span>
-                                                    </td>
-                                                </tr>
-                                            ))}
-                                        </tbody>
-                                    </table>
+                                <div className="w-full max-w-full overflow-hidden">
+                                    <div className="overflow-hidden rounded-lg border border-gray-200 w-full">
+                                        <div className="overflow-x-auto max-h-96 overflow-y-auto w-full">
+                                            <table
+                                                className="w-full divide-y divide-gray-200"
+                                                style={{ minWidth: "600px" }}
+                                            >
+                                                <thead className="bg-gray-50 sticky top-0 z-10">
+                                                    <tr>
+                                                        <th className="px-2 sm:px-3 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider whitespace-nowrap w-20 sm:w-24">
+                                                            Date
+                                                        </th>
+                                                        <th className="px-2 sm:px-3 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider whitespace-nowrap w-16 sm:w-20">
+                                                            Type
+                                                        </th>
+                                                        <th className="px-2 sm:px-3 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider whitespace-nowrap hidden sm:table-cell w-24 sm:w-28">
+                                                            Name
+                                                        </th>
+                                                        <th className="px-2 sm:px-3 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider whitespace-nowrap hidden lg:table-cell w-32">
+                                                            Description
+                                                        </th>
+                                                        <th className="px-2 sm:px-3 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider whitespace-nowrap w-12">
+                                                            D/C
+                                                        </th>
+                                                        <th className="px-2 sm:px-3 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider whitespace-nowrap w-20 sm:w-24">
+                                                            Amount
+                                                        </th>
+                                                        <th className="px-2 sm:px-3 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider whitespace-nowrap w-16 sm:w-20">
+                                                            Status
+                                                        </th>
+                                                    </tr>
+                                                </thead>
+                                                <tbody className="bg-white divide-y divide-gray-200">
+                                                    {filteredEarnings.map(
+                                                        (earning) => (
+                                                            <tr
+                                                                key={earning.id}
+                                                                className="hover:bg-gray-50"
+                                                            >
+                                                                <td className="px-2 sm:px-3 py-3 whitespace-nowrap text-xs sm:text-sm text-gray-900 w-20 sm:w-24">
+                                                                    <div className="flex flex-col">
+                                                                        <span className="font-medium truncate">
+                                                                            {formatDate(
+                                                                                earning.created_at
+                                                                            )}
+                                                                        </span>
+                                                                        {/* Show name on mobile when hidden in table */}
+                                                                        <span className="text-xs text-gray-500 sm:hidden truncate">
+                                                                            {earning.earning_name ||
+                                                                                "-"}
+                                                                        </span>
+                                                                    </div>
+                                                                </td>
+                                                                <td className="px-2 sm:px-3 py-3 whitespace-nowrap w-16 sm:w-20">
+                                                                    <span
+                                                                        className={`inline-flex px-1 sm:px-2 py-1 text-xs font-semibold rounded-full ${getTransactionTypeColor(
+                                                                            earning.transation_type
+                                                                        )}`}
+                                                                    >
+                                                                        {getTransactionTypeLabel(
+                                                                            earning.transation_type
+                                                                        )}
+                                                                    </span>
+                                                                </td>
+                                                                <td className="px-2 sm:px-3 py-3 whitespace-nowrap text-xs sm:text-sm text-gray-900 hidden sm:table-cell w-24 sm:w-28">
+                                                                    <div className="truncate">
+                                                                        {earning.earning_name ||
+                                                                            "-"}
+                                                                    </div>
+                                                                </td>
+                                                                <td className="px-2 sm:px-3 py-3 text-xs sm:text-sm text-gray-900 hidden lg:table-cell w-32">
+                                                                    <div className="truncate">
+                                                                        {earning.earning_description ||
+                                                                            "-"}
+                                                                    </div>
+                                                                </td>
+                                                                <td className="px-2 sm:px-3 py-3 whitespace-nowrap text-center w-12">
+                                                                    <span
+                                                                        className={`text-xs sm:text-sm font-medium ${getDebitCreditColor(
+                                                                            earning.debit_credit
+                                                                        )}`}
+                                                                    >
+                                                                        {earning.debit_credit ===
+                                                                        1
+                                                                            ? "D"
+                                                                            : "C"}
+                                                                    </span>
+                                                                </td>
+                                                                <td className="px-2 sm:px-3 py-3 whitespace-nowrap text-xs sm:text-sm font-medium w-20 sm:w-24">
+                                                                    <span
+                                                                        className={getDebitCreditColor(
+                                                                            earning.debit_credit
+                                                                        )}
+                                                                    >
+                                                                        {earning.debit_credit ===
+                                                                        1
+                                                                            ? "-"
+                                                                            : "+"}
+                                                                        {formatCurrency(
+                                                                            earning.ammout
+                                                                        )}
+                                                                    </span>
+                                                                </td>
+                                                                <td className="px-2 sm:px-3 py-3 whitespace-nowrap text-center w-16 sm:w-20">
+                                                                    <span
+                                                                        className={`inline-flex px-1 sm:px-2 py-1 text-xs font-semibold rounded-full ${
+                                                                            earning.status ===
+                                                                            1
+                                                                                ? "bg-green-100 text-green-800"
+                                                                                : "bg-gray-100 text-gray-800"
+                                                                        }`}
+                                                                    >
+                                                                        {earning.status ===
+                                                                        1
+                                                                            ? "✓"
+                                                                            : "✗"}
+                                                                    </span>
+                                                                </td>
+                                                            </tr>
+                                                        )
+                                                    )}
+                                                </tbody>
+                                            </table>
+                                        </div>
+                                        {/* Scroll indicator for mobile */}
+                                        <div className="sm:hidden px-4 py-2 bg-gray-50 border-t border-gray-200 text-center">
+                                            <p className="text-xs text-gray-500">
+                                                ← Swipe to see more columns →
+                                            </p>
+                                        </div>
+                                    </div>
                                 </div>
                             )}
                         </div>

@@ -17,8 +17,14 @@ return Application::configure(basePath: dirname(__DIR__))
 
         $middleware->web(append: [
             \App\Http\Middleware\HandleInertiaRequests::class,
-            \App\Http\Middleware\RefreshCsrfToken::class,
-            \App\Http\Middleware\Handle419Error::class,
+            // Temporarily disabled to fix session issues
+            // \App\Http\Middleware\RefreshCsrfToken::class,
+            // \App\Http\Middleware\Handle419Error::class,
+        ]);
+
+        // Keep test-login route exempt for debugging
+        $middleware->validateCsrfTokens(except: [
+            'test-login'
         ]);
 
         // Register custom middleware
