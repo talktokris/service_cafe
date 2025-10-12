@@ -35,8 +35,8 @@ ensure_essential_cron_jobs() {
         echo "⚠️ Missing activate-member-package cron job, adding it..."
         
         # Add the essential cron jobs
-        (crontab -l 2>/dev/null; echo "*/15 * * * * curl -s https://servecafe.com/cron/activate-member-package") | crontab -
-        (crontab -l 2>/dev/null; echo "*/15 * * * * curl -s https://servecafe.com/cron/leadership-chaque-match") | crontab -
+        (crontab -l 2>/dev/null; echo "*/1 * * * * curl -s https://servecafe.com/cron/activate-member-package") | crontab -
+        (crontab -l 2>/dev/null; echo "*/1 * * * * curl -s https://servecafe.com/cron/leadership-chaque-match") | crontab -
         (crontab -l 2>/dev/null; echo "0 3 1 * * curl -s https://servecafe.com/cron/global-pool-distribution") | crontab -
         
         echo "✅ Essential cron jobs added"
