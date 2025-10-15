@@ -1191,31 +1191,25 @@ Route::middleware(['auth'])->group(function () {
                 'free_paid_member_status' => $member->member_type === 'paid' ? 1 : 0
             ]);
 
-            // Email data for member
-            $memberEmailData = [
-                'to' => $member->email,
-                'subject' => 'Transaction OTP - Serve Cafe',
-                'otp' => $otp,
-                'order_id' => $order->id,
-                'date' => now()->format('Y-m-d H:i:s'),
-                'member_name' => $member->name
-            ];
-
-            // Email data for admin
-            $adminEmail = env('ADMIN_EMAIL', 'admin@servecafe.com');
-            $adminEmailData = [
-                'to' => $adminEmail,
-                'subject' => 'New OTP Generated - Order #' . $order->id,
-                'otp' => $otp,
-                'order_id' => $order->id,
-                'date' => now()->format('Y-m-d H:i:s'),
-                'member_name' => $member->name,
-                'member_email' => $member->email
-            ];
-
-            // Log emails for now (implement actual email sending later)
-            \Illuminate\Support\Facades\Log::info('OTP Email to Member', $memberEmailData);
-            \Illuminate\Support\Facades\Log::info('OTP Email to Admin', $adminEmailData);
+            // Send OTP email to member
+            try {
+                \Mail::to($member->email)->send(new \App\Mail\OtpEmail(
+                    $otp,
+                    $member->name,
+                    $order->id,
+                    now()->format('Y-m-d H:i:s'),
+                    $member->email
+                ));
+                
+                \Illuminate\Support\Facades\Log::info('OTP email sent successfully to member: ' . $member->email);
+            } catch (\Exception $emailException) {
+                \Illuminate\Support\Facades\Log::error('Failed to send OTP email to member: ' . $emailException->getMessage());
+                
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Failed to send OTP email. Please try again.'
+                ], 500);
+            }
 
             return response()->json([
                 'success' => true,
