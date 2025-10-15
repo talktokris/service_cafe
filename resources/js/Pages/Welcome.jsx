@@ -1,7 +1,7 @@
 import { Head, Link } from "@inertiajs/react";
 import PublicLayout from "@/Layouts/PublicLayout";
 
-export default function Welcome({ auth, laravelVersion, phpVersion }) {
+export default function Welcome({ auth, laravelVersion, phpVersion, stats }) {
     return (
         <PublicLayout title="Welcome to Serve Cafe - Your Premier Digital Dining Experience">
             {/* Enhanced Hero Section */}
@@ -89,15 +89,15 @@ export default function Welcome({ auth, laravelVersion, phpVersion }) {
                                     <div className="relative bg-white/10 backdrop-blur-md rounded-3xl p-8 border border-white/20">
                                         <div className="grid grid-cols-2 gap-6">
                                             <div className="bg-white/20 rounded-2xl p-6 text-center">
-                                                <div className="text-3xl font-bold mb-2">2,500+</div>
+                                                <div className="text-3xl font-bold mb-2">{stats?.paidUsers?.toLocaleString() || '0'}</div>
                                                 <div className="text-sm opacity-90">Active Members</div>
                                             </div>
                                             <div className="bg-white/20 rounded-2xl p-6 text-center">
-                                                <div className="text-3xl font-bold mb-2">15</div>
+                                                <div className="text-3xl font-bold mb-2">{stats?.activeBranches || '0'}</div>
                                                 <div className="text-sm opacity-90">Locations</div>
                                             </div>
                                             <div className="bg-white/20 rounded-2xl p-6 text-center">
-                                                <div className="text-3xl font-bold mb-2">50K+</div>
+                                                <div className="text-3xl font-bold mb-2">{stats?.ordersCount?.toLocaleString() || '0'}</div>
                                                 <div className="text-sm opacity-90">Orders Served</div>
                                             </div>
                                             <div className="bg-white/20 rounded-2xl p-6 text-center">
@@ -118,10 +118,10 @@ export default function Welcome({ auth, laravelVersion, phpVersion }) {
                                         Try with referral code for testing:
                                     </p>
                                     <Link
-                                        href="/join/test123"
+                                        href="/join/serveteam"
                                         className="btn btn-sm bg-white/20 border-white/30 text-white hover:bg-white/30"
                                     >
-                                        Join with Code: test123
+                                        Join with Code: serveteam
                                     </Link>
                                 </div>
                             </div>
@@ -313,28 +313,28 @@ export default function Welcome({ auth, laravelVersion, phpVersion }) {
                     <div className="grid grid-cols-2 md:grid-cols-4 gap-8">
                         <div className="text-center">
                             <div className="bg-white/10 backdrop-blur-sm rounded-2xl p-6 mb-4">
-                                <div className="text-4xl md:text-5xl font-bold mb-2">2,647+</div>
+                                <div className="text-4xl md:text-5xl font-bold mb-2">{stats?.paidUsers?.toLocaleString() || '0'}</div>
                                 <div className="text-lg font-medium">Active Members</div>
                                 <div className="text-sm text-white/70 mt-2">
-                                    <span className="text-green-300">↗ 22% growth</span>
+                                    <span className="text-green-300">↗ Growing daily</span>
                                 </div>
                             </div>
                         </div>
                         <div className="text-center">
                             <div className="bg-white/10 backdrop-blur-sm rounded-2xl p-6 mb-4">
-                                <div className="text-4xl md:text-5xl font-bold mb-2">89K+</div>
+                                <div className="text-4xl md:text-5xl font-bold mb-2">{stats?.ordersCount?.toLocaleString() || '0'}</div>
                                 <div className="text-lg font-medium">Orders Completed</div>
                                 <div className="text-sm text-white/70 mt-2">
-                                    <span className="text-green-300">↗ 15% this month</span>
+                                    <span className="text-green-300">↗ Growing daily</span>
                                 </div>
                             </div>
                         </div>
                         <div className="text-center">
                             <div className="bg-white/10 backdrop-blur-sm rounded-2xl p-6 mb-4">
-                                <div className="text-4xl md:text-5xl font-bold mb-2">15</div>
+                                <div className="text-4xl md:text-5xl font-bold mb-2">{stats?.activeBranches || '0'}</div>
                                 <div className="text-lg font-medium">Branch Locations</div>
                                 <div className="text-sm text-white/70 mt-2">
-                                    <span className="text-green-300">3 new this year</span>
+                                    <span className="text-green-300">Expanding network</span>
                                 </div>
                             </div>
                         </div>

@@ -30,17 +30,48 @@ use Illuminate\Support\Facades\Auth;
 use Inertia\Inertia;
 
 Route::get('/', function () {
+    // Fetch real data from database
+    $paidUsersCount = \App\Models\User::where('user_type', 'member')
+        ->where('member_type', 'paid')
+        ->where('activeStatus', 1)
+        ->count();
+    
+    $activeBranchesCount = \App\Models\Branch::where('is_active', 1)->count();
+    
+    $ordersCount = \App\Models\Order::count();
+    
     return Inertia::render('Welcome', [
         'canLogin' => Route::has('login'),
         'canRegister' => Route::has('register'),
         'laravelVersion' => Application::VERSION,
         'phpVersion' => PHP_VERSION,
+        'stats' => [
+            'paidUsers' => $paidUsersCount,
+            'activeBranches' => $activeBranchesCount,
+            'ordersCount' => $ordersCount,
+        ]
     ]);
 });
 
 // Public Pages Routes
 Route::get('/about', function () {
-    return Inertia::render('About');
+    // Fetch real data from database
+    $paidUsersCount = \App\Models\User::where('user_type', 'member')
+        ->where('member_type', 'paid')
+        ->where('activeStatus', 1)
+        ->count();
+    
+    $activeBranchesCount = \App\Models\Branch::where('is_active', 1)->count();
+    
+    $ordersCount = \App\Models\Order::count();
+    
+    return Inertia::render('About', [
+        'stats' => [
+            'paidUsers' => $paidUsersCount,
+            'activeBranches' => $activeBranchesCount,
+            'ordersCount' => $ordersCount,
+        ]
+    ]);
 })->name('about');
 
 Route::get('/services', function () {

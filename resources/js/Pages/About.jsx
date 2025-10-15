@@ -2,7 +2,7 @@ import React from "react";
 import { Head } from "@inertiajs/react";
 import PublicLayout from "@/Layouts/PublicLayout";
 
-export default function About() {
+export default function About({ stats }) {
     return (
         <PublicLayout title="About Us - Serve Cafe">
             <Head title="About Us" />
@@ -54,15 +54,15 @@ export default function About() {
                             <div className="bg-gradient-to-br from-red-500 to-orange-500 rounded-3xl p-8 text-white">
                                 <div className="grid grid-cols-2 gap-6">
                                     <div className="text-center">
-                                        <div className="text-4xl font-bold mb-2">15</div>
+                                        <div className="text-4xl font-bold mb-2">{stats?.activeBranches || '0'}</div>
                                         <div className="text-sm opacity-90">Locations</div>
                                     </div>
                                     <div className="text-center">
-                                        <div className="text-4xl font-bold mb-2">2500+</div>
+                                        <div className="text-4xl font-bold mb-2">{stats?.paidUsers?.toLocaleString() || '0'}</div>
                                         <div className="text-sm opacity-90">Members</div>
                                     </div>
                                     <div className="text-center">
-                                        <div className="text-4xl font-bold mb-2">89K+</div>
+                                        <div className="text-4xl font-bold mb-2">{stats?.ordersCount?.toLocaleString() || '0'}</div>
                                         <div className="text-sm opacity-90">Orders</div>
                                     </div>
                                     <div className="text-center">
