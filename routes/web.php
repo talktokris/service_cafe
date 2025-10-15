@@ -36,7 +36,7 @@ Route::get('/', function () {
         ->where('activeStatus', 1)
         ->count();
     
-    $activeBranchesCount = \App\Models\Branch::where('is_active', 1)->count();
+    $activeBranchesCount = \App\Models\Branch::where('is_active', 1)->count() + 1;
     
     $ordersCount = \App\Models\Order::count();
     
@@ -61,7 +61,7 @@ Route::get('/about', function () {
         ->where('activeStatus', 1)
         ->count();
     
-    $activeBranchesCount = \App\Models\Branch::where('is_active', 1)->count();
+    $activeBranchesCount = \App\Models\Branch::where('is_active', 1)->count() + 1;
     
     $ordersCount = \App\Models\Order::count();
     
@@ -85,6 +85,45 @@ Route::get('/faq', function () {
 Route::get('/contact', function () {
     return Inertia::render('Contact');
 })->name('contact');
+
+Route::post('/contact', function (\Illuminate\Http\Request $request) {
+    $request->validate([
+        'name' => 'required|string|max:255',
+        'email' => 'required|email|max:255',
+        'phone' => 'nullable|string|max:20',
+        'subject' => 'required|string|max:255',
+        'message' => 'required|string|max:1000',
+        'inquiry_type' => 'required|string|in:general,support,business,partnership'
+    ]);
+
+    try {
+        // Send email to info@servecafe.com
+        \Mail::raw(
+            "Name: {$request->name}\n" .
+            "Email: {$request->email}\n" .
+            "Phone: {$request->phone}\n" .
+            "Subject: {$request->subject}\n" .
+            "Inquiry Type: {$request->inquiry_type}\n\n" .
+            "Message:\n{$request->message}",
+            function ($message) use ($request) {
+                $message->to('info@servecafe.com')
+                        ->subject('New Contact Form Submission: ' . $request->subject)
+                        ->from($request->email, $request->name);
+            }
+        );
+
+        return response()->json([
+            'success' => true,
+            'message' => 'Thank you for your message! We\'ll get back to you soon.'
+        ]);
+    } catch (\Exception $e) {
+        \Log::error('Contact form error: ' . $e->getMessage());
+        return response()->json([
+            'success' => false,
+            'message' => 'Sorry, there was an error sending your message. Please try again later.'
+        ], 500);
+    }
+})->name('contact.submit');
 
 // Test Users Page (Admin Only)
 Route::get('/test-users', [UserController::class, 'testUsers'])

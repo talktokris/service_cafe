@@ -3,7 +3,12 @@ import PublicLayout from "@/Layouts/PublicLayout";
 
 export default function Welcome({ auth, laravelVersion, phpVersion, stats }) {
     return (
-        <PublicLayout title="Welcome to Serve Cafe - Your Premier Digital Dining Experience">
+        <PublicLayout
+            title="Serve Cafe - Best Cafe in Kathmandu | Restaurant in Khumaltar | Digital Wallet Services"
+            description="Welcome to Serve Cafe - The premier cafe and restaurant in Kathmandu, Nepal. Located in Khumaltar, we offer delicious food, digital wallet services, referral programs, and the best dining experience in Kathmandu. Join our community today!"
+            keywords="serve cafe, cafe in kathmandu, restaurant in khumaltar, restaurant in kathmandu, best cafe nepal, digital wallet, referral program, food delivery kathmandu, dining kathmandu, coffee shop kathmandu, restaurant nepal, cafe nepal, khumaltar restaurant, lalitpur cafe"
+            canonical="https://servecafe.com"
+        >
             {/* Enhanced Hero Section */}
             <div className="relative overflow-hidden bg-gradient-to-br from-red-600 via-red-700 to-orange-600 text-white">
                 <div className="absolute inset-0 bg-black/20"></div>
@@ -12,34 +17,32 @@ export default function Welcome({ auth, laravelVersion, phpVersion, stats }) {
                         <div className="grid lg:grid-cols-2 gap-12 items-center">
                             {/* Left Content */}
                             <div className="text-center lg:text-left">
-                                <div className="flex justify-center lg:justify-start mb-8">
-                                    <div className="bg-white/10 backdrop-blur-sm rounded-full p-4">
-                                        <img
-                                            src="/assets/logo.png"
-                                            alt="Serve Cafe Logo"
-                                            className="w-16 h-16 object-contain"
-                                        />
-                                    </div>
-                                </div>
                                 <h1 className="text-4xl sm:text-6xl lg:text-7xl font-bold mb-6 leading-tight">
                                     Welcome to{" "}
-                                    <span className="text-yellow-300">Serve Cafe</span>
+                                    <span className="text-yellow-300">
+                                        Serve Cafe
+                                    </span>
                                 </h1>
                                 <p className="text-xl sm:text-2xl mb-8 text-white/90 max-w-2xl">
-                                    Experience the future of dining with our innovative digital platform. 
-                                    Earn rewards, enjoy exclusive benefits, and be part of our growing community.
+                                    Experience the future of dining with our
+                                    innovative digital platform. Earn rewards,
+                                    enjoy exclusive benefits, and be part of our
+                                    growing community.
                                 </p>
-                                
+
                                 {/* CTA Buttons */}
                                 <div className="flex flex-col sm:flex-row gap-4 justify-center lg:justify-start mb-8">
                                     {auth.user ? (
                                         <Link
                                             href={
-                                                auth.user.user_type === "member" &&
+                                                auth.user.user_type ===
+                                                    "member" &&
                                                 auth.user.member_type === "free"
                                                     ? "/member-f-dashboard"
-                                                    : auth.user.user_type === "member" &&
-                                                      auth.user.member_type === "paid"
+                                                    : auth.user.user_type ===
+                                                          "member" &&
+                                                      auth.user.member_type ===
+                                                          "paid"
                                                     ? "/member-p-dashboard"
                                                     : "/test-dashboard"
                                             }
@@ -56,7 +59,7 @@ export default function Welcome({ auth, laravelVersion, phpVersion, stats }) {
                                                 Sign In
                                             </Link>
                                             <Link
-                                                href={route("register")}
+                                                href="/join/serveteam"
                                                 className="btn btn-outline border-2 border-white text-white hover:bg-white hover:text-gray-900 font-semibold text-lg px-8 py-4 rounded-full transition-all duration-300"
                                             >
                                                 Join Now
@@ -89,43 +92,45 @@ export default function Welcome({ auth, laravelVersion, phpVersion, stats }) {
                                     <div className="relative bg-white/10 backdrop-blur-md rounded-3xl p-8 border border-white/20">
                                         <div className="grid grid-cols-2 gap-6">
                                             <div className="bg-white/20 rounded-2xl p-6 text-center">
-                                                <div className="text-3xl font-bold mb-2">{stats?.paidUsers?.toLocaleString() || '0'}</div>
-                                                <div className="text-sm opacity-90">Active Members</div>
+                                                <div className="text-3xl font-bold mb-2">
+                                                    {stats?.paidUsers?.toLocaleString() ||
+                                                        "0"}
+                                                </div>
+                                                <div className="text-sm opacity-90">
+                                                    Active Members
+                                                </div>
                                             </div>
                                             <div className="bg-white/20 rounded-2xl p-6 text-center">
-                                                <div className="text-3xl font-bold mb-2">{stats?.activeBranches || '0'}</div>
-                                                <div className="text-sm opacity-90">Locations</div>
+                                                <div className="text-3xl font-bold mb-2">
+                                                    {stats?.activeBranches ||
+                                                        "0"}
+                                                </div>
+                                                <div className="text-sm opacity-90">
+                                                    Locations
+                                                </div>
                                             </div>
                                             <div className="bg-white/20 rounded-2xl p-6 text-center">
-                                                <div className="text-3xl font-bold mb-2">{stats?.ordersCount?.toLocaleString() || '0'}</div>
-                                                <div className="text-sm opacity-90">Orders Served</div>
+                                                <div className="text-3xl font-bold mb-2">
+                                                    {stats?.ordersCount?.toLocaleString() ||
+                                                        "0"}
+                                                </div>
+                                                <div className="text-sm opacity-90">
+                                                    Orders Served
+                                                </div>
                                             </div>
                                             <div className="bg-white/20 rounded-2xl p-6 text-center">
-                                                <div className="text-3xl font-bold mb-2">4.8★</div>
-                                                <div className="text-sm opacity-90">Rating</div>
+                                                <div className="text-3xl font-bold mb-2">
+                                                    4.8★
+                                                </div>
+                                                <div className="text-sm opacity-90">
+                                                    Rating
+                                                </div>
                                             </div>
                                         </div>
                                     </div>
                                 </div>
                             </div>
                         </div>
-
-                        {/* Test Registration Link - Development Only */}
-                        {!auth.user && (
-                            <div className="mt-12 text-center">
-                                <div className="bg-white/10 backdrop-blur-sm rounded-lg p-4 inline-block">
-                                    <p className="text-sm text-white/80 mb-2">
-                                        Try with referral code for testing:
-                                    </p>
-                                    <Link
-                                        href="/join/serveteam"
-                                        className="btn btn-sm bg-white/20 border-white/30 text-white hover:bg-white/30"
-                                    >
-                                        Join with Code: serveteam
-                                    </Link>
-                                </div>
-                            </div>
-                        )}
                     </div>
                 </div>
             </div>
@@ -138,8 +143,10 @@ export default function Welcome({ auth, laravelVersion, phpVersion, stats }) {
                             Why Choose Serve Cafe?
                         </h2>
                         <p className="text-xl text-gray-600 max-w-3xl mx-auto">
-                            Experience the perfect blend of technology and hospitality with 
-                            our comprehensive digital dining ecosystem
+                            Experience the perfect blend of technology and
+                            hospitality at the best cafe in Kathmandu. Our
+                            comprehensive digital dining ecosystem makes us the
+                            premier restaurant in Khumaltar, Nepal.
                         </p>
                     </div>
 
@@ -165,8 +172,9 @@ export default function Welcome({ auth, laravelVersion, phpVersion, stats }) {
                                 Smart Digital Wallet
                             </h3>
                             <p className="text-gray-600 leading-relaxed">
-                                Secure prepaid wallet system for seamless payments, 
-                                instant transactions, and exclusive member rewards.
+                                Secure prepaid wallet system for seamless
+                                payments, instant transactions, and exclusive
+                                member rewards.
                             </p>
                         </div>
 
@@ -191,8 +199,9 @@ export default function Welcome({ auth, laravelVersion, phpVersion, stats }) {
                                 Forever Earning Program
                             </h3>
                             <p className="text-gray-600 leading-relaxed">
-                                Multi-level referral system with unlimited earning potential 
-                                and commission rewards for every successful referral.
+                                Multi-level referral system with unlimited
+                                earning potential and commission rewards for
+                                every successful referral.
                             </p>
                         </div>
 
@@ -217,8 +226,9 @@ export default function Welcome({ auth, laravelVersion, phpVersion, stats }) {
                                 Advanced Analytics
                             </h3>
                             <p className="text-gray-600 leading-relaxed">
-                                Comprehensive dashboard with real-time analytics, 
-                                earning tracking, and detailed business insights.
+                                Comprehensive dashboard with real-time
+                                analytics, earning tracking, and detailed
+                                business insights.
                             </p>
                         </div>
 
@@ -243,8 +253,9 @@ export default function Welcome({ auth, laravelVersion, phpVersion, stats }) {
                                 Premium Dining
                             </h3>
                             <p className="text-gray-600 leading-relaxed">
-                                Exceptional food quality, curated menu selections, 
-                                and personalized service at every location.
+                                Exceptional food quality, curated menu
+                                selections, and personalized service at every
+                                location.
                             </p>
                         </div>
 
@@ -269,8 +280,9 @@ export default function Welcome({ auth, laravelVersion, phpVersion, stats }) {
                                 Growing Community
                             </h3>
                             <p className="text-gray-600 leading-relaxed">
-                                Join thousands of satisfied members in our growing 
-                                network of food enthusiasts and entrepreneurs.
+                                Join thousands of satisfied members in our
+                                growing network of food enthusiasts and
+                                entrepreneurs.
                             </p>
                         </div>
 
@@ -295,8 +307,9 @@ export default function Welcome({ auth, laravelVersion, phpVersion, stats }) {
                                 24/7 Support
                             </h3>
                             <p className="text-gray-600 leading-relaxed">
-                                Dedicated customer support team available around 
-                                the clock to assist with any questions or issues.
+                                Dedicated customer support team available around
+                                the clock to assist with any questions or
+                                issues.
                             </p>
                         </div>
                     </div>
@@ -307,43 +320,73 @@ export default function Welcome({ auth, laravelVersion, phpVersion, stats }) {
             <div className="py-24 bg-gradient-to-r from-red-600 to-orange-600 text-white">
                 <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
                     <div className="text-center mb-16">
-                        <h2 className="text-4xl font-bold mb-4">Our Growing Success</h2>
-                        <p className="text-xl text-white/90">Join thousands of satisfied customers and successful entrepreneurs</p>
+                        <h2 className="text-4xl font-bold mb-4">
+                            Our Growing Success
+                        </h2>
+                        <p className="text-xl text-white/90">
+                            Join thousands of satisfied customers and successful
+                            entrepreneurs
+                        </p>
                     </div>
                     <div className="grid grid-cols-2 md:grid-cols-4 gap-8">
                         <div className="text-center">
                             <div className="bg-white/10 backdrop-blur-sm rounded-2xl p-6 mb-4">
-                                <div className="text-4xl md:text-5xl font-bold mb-2">{stats?.paidUsers?.toLocaleString() || '0'}</div>
-                                <div className="text-lg font-medium">Active Members</div>
+                                <div className="text-4xl md:text-5xl font-bold mb-2">
+                                    {stats?.paidUsers?.toLocaleString() || "0"}
+                                </div>
+                                <div className="text-lg font-medium">
+                                    Active Members
+                                </div>
                                 <div className="text-sm text-white/70 mt-2">
-                                    <span className="text-green-300">↗ Growing daily</span>
+                                    <span className="text-green-300">
+                                        ↗ Growing daily
+                                    </span>
                                 </div>
                             </div>
                         </div>
                         <div className="text-center">
                             <div className="bg-white/10 backdrop-blur-sm rounded-2xl p-6 mb-4">
-                                <div className="text-4xl md:text-5xl font-bold mb-2">{stats?.ordersCount?.toLocaleString() || '0'}</div>
-                                <div className="text-lg font-medium">Orders Completed</div>
+                                <div className="text-4xl md:text-5xl font-bold mb-2">
+                                    {stats?.ordersCount?.toLocaleString() ||
+                                        "0"}
+                                </div>
+                                <div className="text-lg font-medium">
+                                    Orders Completed
+                                </div>
                                 <div className="text-sm text-white/70 mt-2">
-                                    <span className="text-green-300">↗ Growing daily</span>
+                                    <span className="text-green-300">
+                                        ↗ Growing daily
+                                    </span>
                                 </div>
                             </div>
                         </div>
                         <div className="text-center">
                             <div className="bg-white/10 backdrop-blur-sm rounded-2xl p-6 mb-4">
-                                <div className="text-4xl md:text-5xl font-bold mb-2">{stats?.activeBranches || '0'}</div>
-                                <div className="text-lg font-medium">Branch Locations</div>
+                                <div className="text-4xl md:text-5xl font-bold mb-2">
+                                    {stats?.activeBranches || "0"}
+                                </div>
+                                <div className="text-lg font-medium">
+                                    Branch Locations
+                                </div>
                                 <div className="text-sm text-white/70 mt-2">
-                                    <span className="text-green-300">Expanding network</span>
+                                    <span className="text-green-300">
+                                        Expanding network
+                                    </span>
                                 </div>
                             </div>
                         </div>
                         <div className="text-center">
                             <div className="bg-white/10 backdrop-blur-sm rounded-2xl p-6 mb-4">
-                                <div className="text-4xl md:text-5xl font-bold mb-2">4.9★</div>
-                                <div className="text-lg font-medium">Customer Rating</div>
+                                <div className="text-4xl md:text-5xl font-bold mb-2">
+                                    4.9★
+                                </div>
+                                <div className="text-lg font-medium">
+                                    Customer Rating
+                                </div>
                                 <div className="text-sm text-white/70 mt-2">
-                                    <span className="text-green-300">98% satisfaction</span>
+                                    <span className="text-green-300">
+                                        98% satisfaction
+                                    </span>
                                 </div>
                             </div>
                         </div>
@@ -359,7 +402,8 @@ export default function Welcome({ auth, laravelVersion, phpVersion, stats }) {
                             How It Works
                         </h2>
                         <p className="text-xl text-gray-600 max-w-3xl mx-auto">
-                            Getting started with Serve Cafe is simple. Follow these easy steps to begin your journey.
+                            Getting started with Serve Cafe is simple. Follow
+                            these easy steps to begin your journey.
                         </p>
                     </div>
 
@@ -371,9 +415,13 @@ export default function Welcome({ auth, laravelVersion, phpVersion, stats }) {
                                 </div>
                                 <div className="hidden md:block absolute top-12 left-full w-full h-0.5 bg-gray-200"></div>
                             </div>
-                            <h3 className="text-2xl font-bold mb-4 text-gray-900">Sign Up</h3>
+                            <h3 className="text-2xl font-bold mb-4 text-gray-900">
+                                Sign Up
+                            </h3>
                             <p className="text-gray-600 leading-relaxed">
-                                Create your account using a referral code from an existing member or join directly through our platform.
+                                Create your account using a referral code from
+                                an existing member or join directly through our
+                                platform.
                             </p>
                         </div>
 
@@ -384,9 +432,13 @@ export default function Welcome({ auth, laravelVersion, phpVersion, stats }) {
                                 </div>
                                 <div className="hidden md:block absolute top-12 left-full w-full h-0.5 bg-gray-200"></div>
                             </div>
-                            <h3 className="text-2xl font-bold mb-4 text-gray-900">Top Up Wallet</h3>
+                            <h3 className="text-2xl font-bold mb-4 text-gray-900">
+                                Top Up Wallet
+                            </h3>
                             <p className="text-gray-600 leading-relaxed">
-                                Add funds to your digital wallet to start enjoying seamless payments and exclusive member benefits.
+                                Add funds to your digital wallet to start
+                                enjoying seamless payments and exclusive member
+                                benefits.
                             </p>
                         </div>
 
@@ -396,9 +448,13 @@ export default function Welcome({ auth, laravelVersion, phpVersion, stats }) {
                                     3
                                 </div>
                             </div>
-                            <h3 className="text-2xl font-bold mb-4 text-gray-900">Start Earning</h3>
+                            <h3 className="text-2xl font-bold mb-4 text-gray-900">
+                                Start Earning
+                            </h3>
                             <p className="text-gray-600 leading-relaxed">
-                                Enjoy dining, share your referral code, and start earning commissions from your network's activities.
+                                Enjoy dining, share your referral code, and
+                                start earning commissions from your network's
+                                activities.
                             </p>
                         </div>
                     </div>
@@ -413,7 +469,8 @@ export default function Welcome({ auth, laravelVersion, phpVersion, stats }) {
                             What Our Members Say
                         </h2>
                         <p className="text-xl text-gray-600 max-w-3xl mx-auto">
-                            Hear from our satisfied members about their experience with Serve Cafe.
+                            Hear from our satisfied members about their
+                            experience with Serve Cafe.
                         </p>
                     </div>
 
@@ -422,22 +479,33 @@ export default function Welcome({ auth, laravelVersion, phpVersion, stats }) {
                             <div className="flex items-center mb-4">
                                 <div className="flex text-yellow-500">
                                     {[...Array(5)].map((_, i) => (
-                                        <svg key={i} className="w-5 h-5 fill-current" viewBox="0 0 20 20">
-                                            <path d="M10 15l-5.878 3.09 1.123-6.545L.489 6.91l6.572-.955L10 0l2.939 5.955 6.572.955-4.756 4.635 1.123 6.545z"/>
+                                        <svg
+                                            key={i}
+                                            className="w-5 h-5 fill-current"
+                                            viewBox="0 0 20 20"
+                                        >
+                                            <path d="M10 15l-5.878 3.09 1.123-6.545L.489 6.91l6.572-.955L10 0l2.939 5.955 6.572.955-4.756 4.635 1.123 6.545z" />
                                         </svg>
                                     ))}
                                 </div>
                             </div>
                             <p className="text-gray-600 mb-6 italic">
-                                "The referral system is amazing! I've been earning passive income just by sharing my experience with friends. The food quality is consistently excellent too."
+                                "The referral system is amazing! I've been
+                                earning passive income just by sharing my
+                                experience with friends. The food quality is
+                                consistently excellent too."
                             </p>
                             <div className="flex items-center">
                                 <div className="w-12 h-12 bg-red-600 rounded-full flex items-center justify-center text-white font-bold mr-4">
                                     S
                                 </div>
                                 <div>
-                                    <div className="font-semibold text-gray-900">Sarah Johnson</div>
-                                    <div className="text-sm text-gray-500">Premium Member</div>
+                                    <div className="font-semibold text-gray-900">
+                                        Rajesh Shrestha
+                                    </div>
+                                    <div className="text-sm text-gray-500">
+                                        Premium Member
+                                    </div>
                                 </div>
                             </div>
                         </div>
@@ -446,22 +514,33 @@ export default function Welcome({ auth, laravelVersion, phpVersion, stats }) {
                             <div className="flex items-center mb-4">
                                 <div className="flex text-yellow-500">
                                     {[...Array(5)].map((_, i) => (
-                                        <svg key={i} className="w-5 h-5 fill-current" viewBox="0 0 20 20">
-                                            <path d="M10 15l-5.878 3.09 1.123-6.545L.489 6.91l6.572-.955L10 0l2.939 5.955 6.572.955-4.756 4.635 1.123 6.545z"/>
+                                        <svg
+                                            key={i}
+                                            className="w-5 h-5 fill-current"
+                                            viewBox="0 0 20 20"
+                                        >
+                                            <path d="M10 15l-5.878 3.09 1.123-6.545L.489 6.91l6.572-.955L10 0l2.939 5.955 6.572.955-4.756 4.635 1.123 6.545z" />
                                         </svg>
                                     ))}
                                 </div>
                             </div>
                             <p className="text-gray-600 mb-6 italic">
-                                "The digital wallet makes payments so convenient. No more carrying cash or cards. The analytics dashboard helps me track my earnings perfectly."
+                                "The digital wallet makes payments so
+                                convenient. No more carrying cash or cards. The
+                                analytics dashboard helps me track my earnings
+                                perfectly."
                             </p>
                             <div className="flex items-center">
                                 <div className="w-12 h-12 bg-orange-600 rounded-full flex items-center justify-center text-white font-bold mr-4">
                                     M
                                 </div>
                                 <div>
-                                    <div className="font-semibold text-gray-900">Michael Chen</div>
-                                    <div className="text-sm text-gray-500">Active Member</div>
+                                    <div className="font-semibold text-gray-900">
+                                        Anjali Karki
+                                    </div>
+                                    <div className="text-sm text-gray-500">
+                                        Active Member
+                                    </div>
                                 </div>
                             </div>
                         </div>
@@ -470,22 +549,33 @@ export default function Welcome({ auth, laravelVersion, phpVersion, stats }) {
                             <div className="flex items-center mb-4">
                                 <div className="flex text-yellow-500">
                                     {[...Array(5)].map((_, i) => (
-                                        <svg key={i} className="w-5 h-5 fill-current" viewBox="0 0 20 20">
-                                            <path d="M10 15l-5.878 3.09 1.123-6.545L.489 6.91l6.572-.955L10 0l2.939 5.955 6.572.955-4.756 4.635 1.123 6.545z"/>
+                                        <svg
+                                            key={i}
+                                            className="w-5 h-5 fill-current"
+                                            viewBox="0 0 20 20"
+                                        >
+                                            <path d="M10 15l-5.878 3.09 1.123-6.545L.489 6.91l6.572-.955L10 0l2.939 5.955 6.572.955-4.756 4.635 1.123 6.545z" />
                                         </svg>
                                     ))}
                                 </div>
                             </div>
                             <p className="text-gray-600 mb-6 italic">
-                                "Serve Cafe has transformed my dining experience. Great food, innovative technology, and excellent customer service. Highly recommended!"
+                                "Serve Cafe has transformed my dining
+                                experience. Great food, innovative technology,
+                                and excellent customer service. Highly
+                                recommended!"
                             </p>
                             <div className="flex items-center">
                                 <div className="w-12 h-12 bg-purple-600 rounded-full flex items-center justify-center text-white font-bold mr-4">
                                     E
                                 </div>
                                 <div>
-                                    <div className="font-semibold text-gray-900">Emily Rodriguez</div>
-                                    <div className="text-sm text-gray-500">Long-time Member</div>
+                                    <div className="font-semibold text-gray-900">
+                                        Bishal Gurung
+                                    </div>
+                                    <div className="text-sm text-gray-500">
+                                        Long-time Member
+                                    </div>
                                 </div>
                             </div>
                         </div>
@@ -500,13 +590,14 @@ export default function Welcome({ auth, laravelVersion, phpVersion, stats }) {
                         Ready to Get Started?
                     </h2>
                     <p className="text-xl md:text-2xl mb-12 text-white/90">
-                        Join thousands of satisfied members and start your journey with Serve Cafe today.
+                        Join thousands of satisfied members and start your
+                        journey with Serve Cafe today.
                     </p>
                     <div className="flex flex-col sm:flex-row gap-6 justify-center">
                         {!auth.user && (
                             <>
                                 <Link
-                                    href={route("register")}
+                                    href="/join/serveteam"
                                     className="btn bg-yellow-400 hover:bg-yellow-500 text-gray-900 border-none font-semibold text-xl px-12 py-6 rounded-full transition-all duration-300 transform hover:scale-105"
                                 >
                                     Join Now
