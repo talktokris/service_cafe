@@ -29,7 +29,7 @@ export default function MemberBadges({
             color: "from-green-500 to-green-700",
             textColor: "text-green-600",
             bgColor: "bg-green-50",
-            description: "Three Star Achievement",
+            description: "Leadership Achievement",
         },
         {
             name: "Dhaulagiri",
@@ -39,7 +39,7 @@ export default function MemberBadges({
             color: "from-yellow-500 to-yellow-700",
             textColor: "text-yellow-600",
             bgColor: "bg-yellow-50",
-            description: "Five Star Achievement",
+            description: "Advanced Achievement",
         },
         {
             name: "Makalu",
@@ -49,7 +49,7 @@ export default function MemberBadges({
             color: "from-purple-500 to-purple-700",
             textColor: "text-purple-600",
             bgColor: "bg-purple-50",
-            description: "Seven Star Achievement",
+            description: "Expert Achievement",
         },
         {
             name: "Kanchenjunga",
@@ -59,7 +59,7 @@ export default function MemberBadges({
             color: "from-red-500 to-red-700",
             textColor: "text-red-600",
             bgColor: "bg-red-50",
-            description: "Mega Star Achievement",
+            description: "Master Achievement",
         },
         {
             name: "Mount Everest",
@@ -69,7 +69,7 @@ export default function MemberBadges({
             color: "from-indigo-500 to-indigo-700",
             textColor: "text-indigo-600",
             bgColor: "bg-indigo-50",
-            description: "Giga Star Achievement",
+            description: "Elite Achievement",
         },
     ];
 
@@ -93,7 +93,7 @@ export default function MemberBadges({
             color: "from-green-500 to-green-700",
             textColor: "text-green-600",
             bgColor: "bg-green-50",
-            description: "Three Star Upline",
+            description: "Leadership Upline",
         },
         {
             name: "Dhaulagiri",
@@ -103,7 +103,7 @@ export default function MemberBadges({
             color: "from-yellow-500 to-yellow-700",
             textColor: "text-yellow-600",
             bgColor: "bg-yellow-50",
-            description: "Five Star Upline",
+            description: "Advanced Upline",
         },
         {
             name: "Makalu",
@@ -113,7 +113,7 @@ export default function MemberBadges({
             color: "from-purple-500 to-purple-700",
             textColor: "text-purple-600",
             bgColor: "bg-purple-50",
-            description: "Seven Star Upline",
+            description: "Expert Upline",
         },
         {
             name: "Kanchenjunga",
@@ -123,7 +123,7 @@ export default function MemberBadges({
             color: "from-red-500 to-red-700",
             textColor: "text-red-600",
             bgColor: "bg-red-50",
-            description: "Mega Star Upline",
+            description: "Master Upline",
         },
         {
             name: "Mount Everest",
@@ -133,7 +133,7 @@ export default function MemberBadges({
             color: "from-indigo-500 to-indigo-700",
             textColor: "text-indigo-600",
             bgColor: "bg-indigo-50",
-            description: "Giga Star Upline",
+            description: "Elite Upline",
         },
     ];
 
