@@ -20,30 +20,80 @@ export default function TodayOTPView({
     availableDates = [],
 }) {
     const user = auth?.user;
-    const [searchTerm, setSearchTerm] = useState(filters?.search || "");
+
+    console.log("TodayOTPView initialized with:", {
+        todayOrdersCount: todayOrders.length,
+        availableDates: availableDates.map((d) => ({
+            value: d.value,
+            label: d.label,
+            is_today: d.is_today,
+        })),
+    });
+
+    const [searchTerm, setSearchTerm] = useState("");
     const [filteredOrders, setFilteredOrders] = useState(todayOrders);
-    const [dateFilter, setDateFilter] = useState(
-        filters?.date_filter || "today"
-    );
     const [visibleOtps, setVisibleOtps] = useState(new Set());
     const [copiedOtps, setCopiedOtps] = useState(new Set());
 
     const { data, setData, get, processing } = useForm({
-        search: filters?.search || "",
-        date_filter: filters?.date_filter || "today",
+        search: "",
     });
 
     const [isLoading, setIsLoading] = useState(false);
 
+    // Update filtered orders when data changes from backend
+    useEffect(() => {
+        console.log("Orders data updated from backend:", {
+            ordersCount: todayOrders.length,
+        });
+        setFilteredOrders(todayOrders);
+    }, [todayOrders]);
+
+    // Filter orders based on search term
+    useEffect(() => {
+        if (!searchTerm.trim()) {
+            setFilteredOrders(todayOrders);
+        } else {
+            const filtered = todayOrders.filter((order) => {
+                const searchLower = searchTerm.toLowerCase();
+                return (
+                    order.id.toString().includes(searchLower) ||
+                    order.txn_otp?.includes(searchLower) ||
+                    order.memberUser?.first_name
+                        ?.toLowerCase()
+                        .includes(searchLower) ||
+                    order.memberUser?.last_name
+                        ?.toLowerCase()
+                        .includes(searchLower) ||
+                    order.memberUser?.email
+                        ?.toLowerCase()
+                        .includes(searchLower) ||
+                    order.memberUser?.phone?.includes(searchLower)
+                );
+            });
+            setFilteredOrders(filtered);
+        }
+    }, [searchTerm, todayOrders]);
+
     // Handle reload data
     const handleReloadData = () => {
         setIsLoading(true);
-        get(route("today-otp"), {
-            data: { ...data },
-            preserveState: false, // Force fresh data from server
+
+        get("/today-otp", {
+            preserveState: false,
             replace: false,
+            onStart: () => setIsLoading(true),
             onFinish: () => setIsLoading(false),
+            onError: (errors) => {
+                console.error("Error reloading OTP orders:", errors);
+                setIsLoading(false);
+            },
         });
+    };
+
+    // Handle clear search
+    const handleClearSearch = () => {
+        setSearchTerm("");
     };
 
     // Toggle OTP visibility
@@ -74,75 +124,26 @@ export default function TodayOTPView({
         }, 3000);
     };
 
-    // Handle date filter change
-    const handleDateFilterChange = (filter) => {
-        setDateFilter(filter);
-        setData("date_filter", filter);
-        get(route("today-otp"), {
-            data: { ...data, date_filter: filter, search: searchTerm },
-            preserveState: true,
-            replace: true,
-        });
-    };
-
-    // Handle search functionality
+    // Handle search functionality - now just local filtering
     const handleSearch = () => {
-        get(route("today-otp"), {
-            data: { search: searchTerm, date_filter: dateFilter },
-            preserveState: true,
-            replace: true,
-        });
+        // Search is now handled by useEffect with local filtering
+        // No need for backend requests
+        console.log("Searching locally for:", searchTerm);
     };
 
-    // Filter orders based on search term (for frontend filtering)
+    // Update filtered orders when data changes from backend
     useEffect(() => {
+        console.log("Orders data updated from backend:", {
+            ordersCount: todayOrders.length,
+            orders: todayOrders.map((order) => ({
+                id: order.id,
+                created_at: order.created_at,
+                date: new Date(order.created_at).toLocaleDateString(),
+            })),
+        });
+        // Backend handles all filtering, so just use the data as-is
         setFilteredOrders(todayOrders);
     }, [todayOrders]);
-
-    // Get current filter display label
-    const getCurrentFilterLabel = () => {
-        if (dateFilter === "all") return "All OTP Orders";
-        if (dateFilter === "today") return "Today's OTP Orders";
-
-        // Find the specific date in available dates
-        const selectedDate = availableDates.find(
-            (date) => date.value === dateFilter
-        );
-        if (selectedDate) {
-            return `OTP Orders - ${selectedDate.label}`;
-        }
-
-        return "OTP Orders";
-    };
-
-    // Get current filter description
-    const getCurrentFilterDescription = () => {
-        if (dateFilter === "all")
-            return "View and manage all orders with OTP authentication";
-        if (dateFilter === "today")
-            return "View and manage today's orders with OTP authentication";
-
-        const selectedDate = availableDates.find(
-            (date) => date.value === dateFilter
-        );
-        if (selectedDate) {
-            return `View and manage orders from ${selectedDate.label} with OTP authentication`;
-        }
-
-        return "View and manage orders with OTP authentication";
-    };
-
-    // Get orders count label
-    const getOrdersCountLabel = () => {
-        if (searchTerm) return "Filtered";
-        if (dateFilter === "all") return "All";
-        if (dateFilter === "today") return "Today's";
-
-        const selectedDate = availableDates.find(
-            (date) => date.value === dateFilter
-        );
-        return selectedDate ? selectedDate.label : "Orders";
-    };
 
     // Format currency
     const formatCurrency = (amount) => {
@@ -154,10 +155,10 @@ export default function TodayOTPView({
 
     return (
         <AdminDashboardLayout
-            title={`${getCurrentFilterLabel()} - Serve Cafe`}
+            title="OTP Orders (Past 3 Days) - Serve Cafe"
             user={user}
         >
-            <Head title={getCurrentFilterLabel()} />
+            <Head title="OTP Orders (Past 3 Days)" />
 
             {/* Custom styles for scrollbar */}
             <style dangerouslySetInnerHTML={{ __html: scrollbarHideStyles }} />
@@ -184,10 +185,10 @@ export default function TodayOTPView({
                             </div>
                             <div>
                                 <h1 className="text-xl font-bold text-gray-900">
-                                    {getCurrentFilterLabel()}
+                                    OTP Orders (Past 3 Days)
                                 </h1>
                                 <p className="text-sm text-gray-600">
-                                    {getCurrentFilterDescription()}
+                                    All OTP transactions from the past 3 days
                                 </p>
                             </div>
                         </div>
@@ -196,51 +197,8 @@ export default function TodayOTPView({
                                 {filteredOrders.length}
                             </div>
                             <div className="text-sm text-gray-500">
-                                {getOrdersCountLabel()} Orders
+                                {searchTerm ? "Filtered" : "Total"} Orders
                             </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-
-            {/* Date Filter Tabs */}
-            <div className="mb-6">
-                <div className="bg-white rounded-lg p-4 border border-gray-200 shadow-sm">
-                    <div className="bg-gray-100 p-1 rounded-lg mb-4">
-                        <div className="flex overflow-x-auto scrollbar-hide space-x-1">
-                            {/* All Orders Tab */}
-                            <button
-                                onClick={() => handleDateFilterChange("all")}
-                                className={`flex-shrink-0 px-4 py-2 rounded-md text-sm font-medium transition-colors whitespace-nowrap ${
-                                    dateFilter === "all"
-                                        ? "bg-white text-blue-600 shadow-sm ring-1 ring-blue-200"
-                                        : "text-gray-600 hover:text-blue-600 hover:bg-gray-50"
-                                }`}
-                            >
-                                All
-                            </button>
-
-                            {/* Dynamic Date Tabs */}
-                            {availableDates.map((date) => (
-                                <button
-                                    key={date.value}
-                                    onClick={() =>
-                                        handleDateFilterChange(
-                                            date.is_today ? "today" : date.value
-                                        )
-                                    }
-                                    className={`flex-shrink-0 px-4 py-2 rounded-md text-sm font-medium transition-colors whitespace-nowrap ${
-                                        (date.is_today &&
-                                            dateFilter === "today") ||
-                                        (!date.is_today &&
-                                            dateFilter === date.value)
-                                            ? "bg-white text-blue-600 shadow-sm ring-1 ring-blue-200"
-                                            : "text-gray-600 hover:text-blue-600 hover:bg-gray-50"
-                                    }`}
-                                >
-                                    {date.label}
-                                </button>
-                            ))}
                         </div>
                     </div>
                 </div>
@@ -270,33 +228,13 @@ export default function TodayOTPView({
                                 type="text"
                                 value={searchTerm}
                                 onChange={(e) => setSearchTerm(e.target.value)}
-                                onKeyPress={(e) =>
-                                    e.key === "Enter" && handleSearch()
-                                }
                                 placeholder="Search by Order ID, OTP, member name, or email..."
                                 className="w-full pl-10 pr-3 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent text-sm"
                             />
                         </div>
-                        <button
-                            onClick={handleSearch}
-                            disabled={processing}
-                            className="px-6 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 disabled:opacity-50 transition-colors text-sm font-medium"
-                        >
-                            {processing ? "Searching..." : "Search"}
-                        </button>
                         {searchTerm && (
                             <button
-                                onClick={() => {
-                                    setSearchTerm("");
-                                    get(route("today-otp"), {
-                                        data: {
-                                            search: "",
-                                            date_filter: dateFilter,
-                                        },
-                                        preserveState: true,
-                                        replace: true,
-                                    });
-                                }}
+                                onClick={handleClearSearch}
                                 className="px-4 py-3 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 transition-colors text-sm font-medium"
                             >
                                 Clear
@@ -309,7 +247,7 @@ export default function TodayOTPView({
                             disabled={isLoading || processing}
                             className="px-6 py-3 bg-green-600 text-white rounded-lg hover:bg-green-700 focus:ring-2 focus:ring-green-500 focus:ring-offset-2 disabled:opacity-50 transition-colors text-sm font-medium flex items-center"
                         >
-                            {isLoading ? (
+                            {isLoading || processing ? (
                                 <>
                                     <div className="animate-spin rounded-full h-4 w-4 border-b border-white mr-2"></div>
                                     Loading...
@@ -338,7 +276,21 @@ export default function TodayOTPView({
             </div>
 
             {/* Orders List */}
-            <div className="bg-white rounded-lg shadow-sm border border-gray-200 overflow-hidden">
+            <div className="bg-white rounded-lg shadow-sm border border-gray-200 overflow-hidden relative">
+                {/* Loading Overlay */}
+                {(isLoading || processing) && (
+                    <div className="absolute inset-0 bg-white bg-opacity-75 flex items-center justify-center z-10">
+                        <div className="flex items-center space-x-3">
+                            <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600"></div>
+                            <span className="text-gray-600 font-medium">
+                                {processing
+                                    ? "Searching..."
+                                    : "Loading orders..."}
+                            </span>
+                        </div>
+                    </div>
+                )}
+
                 {filteredOrders.length === 0 ? (
                     <div className="text-center py-12">
                         <svg
@@ -357,16 +309,12 @@ export default function TodayOTPView({
                         <p className="text-lg font-medium text-gray-900 mb-2">
                             {searchTerm
                                 ? "No matching orders found"
-                                : dateFilter === "all"
-                                ? "No OTP orders found"
-                                : dateFilter === "today"
-                                ? "No OTP orders today"
-                                : `No OTP orders for ${getOrdersCountLabel()}`}
+                                : "No OTP orders found"}
                         </p>
                         <p className="text-gray-500">
                             {searchTerm
                                 ? "Try adjusting your search terms"
-                                : "Orders with OTP will appear here"}
+                                : "Orders with OTP from the past 3 days will appear here"}
                         </p>
                     </div>
                 ) : (

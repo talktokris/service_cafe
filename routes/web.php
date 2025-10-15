@@ -670,69 +670,113 @@ Route::middleware(['auth', 'verified', 'user.type:headoffice', 'role:super_user,
     // Users Tracking
     Route::get('/users-tracking', [UserController::class, 'index'])->name('users-tracking');
     
-    // Today OTP with comprehensive date filtering
+    // OTP Orders - Past 3 Days (Simplified)
     Route::get('/today-otp', function (Request $request) {
-        $dateFilter = $request->get('date_filter', 'today'); // 'all', 'today', or specific date (Y-m-d format)
-        $search = $request->get('search', '');
+        try {
+            \Illuminate\Support\Facades\Log::info('OTP Orders Request - Past 3 Days', [
+                'timestamp' => now()
+            ]);
+            
+            // Get all OTP orders from the past 3 days
+            $threeDaysAgo = \Carbon\Carbon::now()->subDays(3)->startOfDay();
+            
+            $orders = \App\Models\Order::where('deleteStatus', 0)
+                ->whereNotNull('txn_otp')
+                ->where('txn_otp', '!=', '')
+                ->where('created_at', '>=', $threeDaysAgo)
+                ->with([
+                    'memberUser:id,first_name,last_name,email,phone,referral_code,user_type,member_type',
+                    'table', 
+                    'headOffice', 
+                    'branch'
+                ])
+                ->orderBy('created_at', 'desc')
+                ->get();
+            
+            \Illuminate\Support\Facades\Log::info('OTP Orders Query Results - Past 3 Days', [
+                'total_orders' => $orders->count(),
+                'three_days_ago' => $threeDaysAgo->format('Y-m-d H:i:s'),
+                'current_time' => now()->format('Y-m-d H:i:s')
+            ]);
         
-        // Build base query for OTP orders
-        $query = \App\Models\Order::where('deleteStatus', 0)
-            ->whereNotNull('txn_otp') // Orders with OTP
-            ->where('txn_otp', '!=', '') // Ensure txn_otp is not empty
-            ->with([
-                'memberUser:id,first_name,last_name,email,phone,referral_code,user_type,member_type',
-                'table', 
-                'headOffice', 
-                'branch'
-            ])
-            ->orderBy('created_at', 'desc');
-        
-        // Apply date filtering
-        if ($dateFilter === 'today') {
-            $query->whereDate('created_at', today());
-        } elseif ($dateFilter === 'all') {
-            // No additional date filtering - show all OTP orders
-        } elseif (\Carbon\Carbon::canBeCreatedFromFormat($dateFilter, 'Y-m-d')) {
-            // Specific date filtering
-            $query->whereDate('created_at', $dateFilter);
+            // Generate available dates for the past 3 days
+            $availableDates = [];
+            for ($i = 0; $i < 3; $i++) {
+                $date = \Carbon\Carbon::now()->subDays($i);
+                $availableDates[] = [
+                    'value' => $date->format('Y-m-d'),
+                    'label' => $i === 0 ? 'Today' : $date->format('jS M'),
+                    'is_today' => $i === 0,
+                    'full_date' => $date->format('Y-m-d H:i:s'),
+                    'day_name' => $date->format('l')
+                ];
+            }
+            
+            return Inertia::render('HeadOffice/Super/TodayOTPView', [
+                'todayOrders' => $orders,
+                'filters' => [
+                    'date_filter' => 'past_3_days',
+                    'search' => '',
+                ],
+                'availableDates' => $availableDates
+            ]);
+            
+        } catch (\Exception $e) {
+            \Illuminate\Support\Facades\Log::error('OTP Orders Error: ' . $e->getMessage(), [
+                'trace' => $e->getTraceAsString()
+            ]);
+            
+            return Inertia::render('HeadOffice/Super/TodayOTPView', [
+                'todayOrders' => collect([]),
+                'filters' => [
+                    'date_filter' => 'past_3_days',
+                    'search' => '',
+                ],
+                'availableDates' => []
+            ]);
         }
-        
-        // Apply search filtering
-        if ($search) {
-            $query->where(function ($q) use ($search) {
-                $q->where('id', 'like', '%' . $search . '%')
-                  ->orWhere('txn_otp', 'like', '%' . $search . '%')
-                  ->orWhereHas('memberUser', function ($memberQuery) use ($search) {
-                      $memberQuery->where('first_name', 'like', '%' . $search . '%')
-                                  ->orWhere('last_name', 'like', '%' . $search . '%')
-                                  ->orWhere('email', 'like', '%' . $search . '%')
-                                  ->orWhere('phone', 'like', '%' . $search . '%');
-                  });
-            });
-        }
-        
-        $orders = $query->get();
-        
-        // Generate available date tabs (last 7 days including today)
-        $availableDates = [];
-        for ($i = 0; $i < 7; $i++) {
-            $date = \Carbon\Carbon::now()->subDays($i);
-            $availableDates[] = [
-                'value' => $date->format('Y-m-d'),
-                'label' => $i === 0 ? 'Today' : $date->format('jS M'),
-                'is_today' => $i === 0
-            ];
-        }
-        
-        return Inertia::render('HeadOffice/Super/TodayOTPView', [
-            'todayOrders' => $orders,
-            'filters' => [
-                'date_filter' => $dateFilter,
-                'search' => $search,
-            ],
-            'availableDates' => $availableDates
-        ]);
     })->name('today-otp');
+    
+    // Test route to create sample OTP orders for different dates (for testing only)
+    Route::get('/test-otp-data', function () {
+        // Create test orders for different dates
+        $dates = [
+            now()->format('Y-m-d'), // Today
+            now()->subDay()->format('Y-m-d'), // Yesterday
+            now()->subDays(2)->format('Y-m-d'), // 2 days ago
+        ];
+        
+        foreach ($dates as $date) {
+            $order = \App\Models\Order::create([
+                'headOfficeId' => 1,
+                'tableId' => 1,
+                'memberUserId' => 1,
+                'menuName' => 'Test Order for ' . $date,
+                'menuType' => 'food',
+                'drinkAmount' => 0,
+                'buyingPrice' => 100,
+                'adminProfitPercentage' => 10,
+                'adminProfitAmount' => 10,
+                'userCommissionPercentage' => 5,
+                'userCommissionAmount' => 5,
+                'sellingPrice' => 110,
+                'govTaxPercentage' => 13,
+                'govTaxAmount' => 14.3,
+                'sellingWithTaxPrice' => 124.3,
+                'activeStatus' => 1,
+                'deleteStatus' => 0,
+                'free_paid_member_status' => 1,
+                'txn_otp' => sprintf('%06d', mt_rand(100000, 999999)),
+                'created_at' => $date . ' ' . mt_rand(10, 18) . ':' . sprintf('%02d', mt_rand(0, 59)) . ':' . sprintf('%02d', mt_rand(0, 59)),
+                'updated_at' => now(),
+            ]);
+        }
+        
+        return response()->json([
+            'message' => 'Test OTP orders created for dates: ' . implode(', ', $dates),
+            'orders_created' => count($dates)
+        ]);
+    })->name('test-otp-data');
     
     
     
