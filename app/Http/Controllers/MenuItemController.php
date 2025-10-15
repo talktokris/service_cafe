@@ -38,10 +38,13 @@ class MenuItemController extends Controller
             'menuType' => 'required|in:food,drink',
             'drinkAmount' => 'nullable|numeric|min:0',
             'buyingPrice' => 'required|numeric|min:0',
-            'adminProfitPercentage' => 'nullable|integer|min:0|max:100',
+            'adminProfitPercentage' => 'nullable|numeric|min:0',
             'adminProfitAmount' => 'nullable|numeric|min:0',
-            'userCommissionPercentage' => 'nullable|integer|min:0|max:100',
+            'userCommissionPercentage' => 'nullable|numeric|min:0',
             'userCommissionAmount' => 'nullable|numeric|min:0',
+            'govTaxPercentage' => 'nullable|numeric|min:0',
+            'govTaxAmount' => 'nullable|numeric|min:0',
+            'sellingWithTaxPrice' => 'nullable|numeric|min:0',
             'sellingPrice' => 'required|numeric|min:0',
             'activeStatus' => 'required|integer|in:0,1'
         ]);
@@ -84,10 +87,13 @@ class MenuItemController extends Controller
             'menuType' => 'required|in:food,drink',
             'drinkAmount' => 'nullable|numeric|min:0',
             'buyingPrice' => 'required|numeric|min:0',
-            'adminProfitPercentage' => 'nullable|integer|min:0|max:100',
+            'adminProfitPercentage' => 'nullable|numeric|min:0',
             'adminProfitAmount' => 'nullable|numeric|min:0',
-            'userCommissionPercentage' => 'nullable|integer|min:0|max:100',
+            'userCommissionPercentage' => 'nullable|numeric|min:0',
             'userCommissionAmount' => 'nullable|numeric|min:0',
+            'govTaxPercentage' => 'nullable|numeric|min:0',
+            'govTaxAmount' => 'nullable|numeric|min:0',
+            'sellingWithTaxPrice' => 'nullable|numeric|min:0',
             'sellingPrice' => 'required|numeric|min:0',
             'activeStatus' => 'required|integer|in:0,1'
         ]);

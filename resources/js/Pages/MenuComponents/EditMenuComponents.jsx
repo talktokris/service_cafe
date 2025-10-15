@@ -54,8 +54,8 @@ export default function EditMenuComponents({
                     menuItem.userCommissionPercentage || 0,
                 userCommissionAmount: menuItem.userCommissionAmount || 0,
                 sellingPrice: menuItem.sellingPrice || 0,
-                govTaxPercentage: menuItem.govTaxPercentage || 0,
-                govTaxAmount: menuItem.govTaxAmount || 0,
+                govTaxPercentage: menuItem.govTaxPercentage || "",
+                govTaxAmount: menuItem.govTaxAmount || "",
                 sellingWithTaxPrice: menuItem.sellingWithTaxPrice || 0,
                 activeStatus: menuItem.activeStatus || 0,
             });
@@ -72,41 +72,63 @@ export default function EditMenuComponents({
                 [name]: newValue,
             };
 
-            // Auto-calculate all fields when Buying Price, Admin Profit Percentage, User Commission Percentage, or Gov Tax Percentage changes
+            // Auto-calculate Admin Profit Percentage and Amount when Buying Price or Selling Price changes
+            if (name === "buyingPrice" || name === "sellingPrice") {
+                const buyingPrice = parseFloat(updatedData.buyingPrice) || 0;
+                const sellingPrice = parseFloat(updatedData.sellingPrice) || 0;
+
+                if (buyingPrice > 0 && sellingPrice > 0) {
+                    // Calculate Admin Profit Amount (Selling Price - Buying Price)
+                    const adminProfitAmount =
+                        Math.round((sellingPrice - buyingPrice) * 100) / 100;
+                    updatedData.adminProfitAmount = adminProfitAmount;
+
+                    // Calculate Admin Profit Percentage ((Profit Amount / Buying Price) * 100)
+                    const adminProfitPercentage =
+                        Math.round(
+                            (adminProfitAmount / buyingPrice) * 100 * 100
+                        ) / 100;
+                    updatedData.adminProfitPercentage = adminProfitPercentage;
+                } else {
+                    updatedData.adminProfitAmount = 0;
+                    updatedData.adminProfitPercentage = 0;
+                }
+
+                // Recalculate other fields based on new selling price
+                const userCommissionPercentage =
+                    parseFloat(prev.userCommissionPercentage) || 0;
+                const govTaxPercentage = parseFloat(prev.govTaxPercentage) || 0;
+
+                // Calculate User Commission Amount
+                const userCommissionAmount =
+                    Math.round(
+                        (userCommissionPercentage / 100) * buyingPrice * 100
+                    ) / 100;
+                updatedData.userCommissionAmount = userCommissionAmount;
+
+                // Calculate Government Tax Amount
+                const govTaxAmount =
+                    Math.round((govTaxPercentage / 100) * sellingPrice * 100) /
+                    100;
+                updatedData.govTaxAmount = govTaxAmount;
+
+                // Calculate Selling Price with Tax
+                const sellingWithTaxPrice =
+                    Math.round((sellingPrice + govTaxAmount) * 100) / 100;
+                updatedData.sellingWithTaxPrice = sellingWithTaxPrice;
+            }
+
+            // Auto-calculate other fields when User Commission Percentage or Gov Tax Percentage changes
             if (
-                name === "buyingPrice" ||
-                name === "adminProfitPercentage" ||
                 name === "userCommissionPercentage" ||
                 name === "govTaxPercentage"
             ) {
-                const buyingPrice =
-                    name === "buyingPrice"
-                        ? parseFloat(newValue) || 0
-                        : parseFloat(prev.buyingPrice) || 0;
-                const adminProfitPercentage =
-                    name === "adminProfitPercentage"
-                        ? parseFloat(newValue) || 0
-                        : parseFloat(prev.adminProfitPercentage) || 0;
+                const buyingPrice = parseFloat(updatedData.buyingPrice) || 0;
+                const sellingPrice = parseFloat(updatedData.sellingPrice) || 0;
                 const userCommissionPercentage =
-                    name === "userCommissionPercentage"
-                        ? parseFloat(newValue) || 0
-                        : parseFloat(prev.userCommissionPercentage) || 0;
+                    parseFloat(updatedData.userCommissionPercentage) || 0;
                 const govTaxPercentage =
-                    name === "govTaxPercentage"
-                        ? parseFloat(newValue) || 0
-                        : parseFloat(prev.govTaxPercentage) || 0;
-
-                // Calculate Admin Profit Amount
-                const adminProfitAmount =
-                    Math.round(
-                        (adminProfitPercentage / 100) * buyingPrice * 100
-                    ) / 100;
-                updatedData.adminProfitAmount = adminProfitAmount;
-
-                // Calculate Selling Price
-                const sellingPrice =
-                    Math.round((buyingPrice + adminProfitAmount) * 100) / 100;
-                updatedData.sellingPrice = sellingPrice;
+                    parseFloat(updatedData.govTaxPercentage) || 0;
 
                 // Calculate User Commission Amount
                 const userCommissionAmount =
@@ -162,20 +184,14 @@ export default function EditMenuComponents({
             newErrors.sellingPrice = "Selling price cannot be negative";
         }
 
-        if (
-            formData.adminProfitPercentage < 0 ||
-            formData.adminProfitPercentage > 100
-        ) {
+        if (formData.adminProfitPercentage < 0) {
             newErrors.adminProfitPercentage =
-                "Admin profit percentage must be between 0 and 100";
+                "Admin profit percentage must be 0 or greater";
         }
 
-        if (
-            formData.userCommissionPercentage < 0 ||
-            formData.userCommissionPercentage > 100
-        ) {
+        if (formData.userCommissionPercentage < 0) {
             newErrors.userCommissionPercentage =
-                "User commission percentage must be between 0 and 100";
+                "User commission percentage must be 0 or greater";
         }
 
         setErrors(newErrors);
@@ -443,8 +459,10 @@ export default function EditMenuComponents({
                                     type="number"
                                     name="sellingPrice"
                                     value={formData.sellingPrice}
-                                    readOnly
-                                    className="input input-bordered w-full bg-gray-100"
+                                    onChange={handleInputChange}
+                                    className={`input input-bordered w-full ${
+                                        errors.sellingPrice ? "input-error" : ""
+                                    }`}
                                     placeholder="0.00"
                                     step="0.01"
                                     min="0"
@@ -475,21 +493,16 @@ export default function EditMenuComponents({
                                     type="number"
                                     name="adminProfitPercentage"
                                     value={formData.adminProfitPercentage}
-                                    onChange={handleInputChange}
-                                    className={`input input-bordered w-full ${
-                                        errors.adminProfitPercentage
-                                            ? "input-error"
-                                            : ""
-                                    }`}
-                                    placeholder="0"
+                                    readOnly
+                                    className="input input-bordered w-full bg-gray-100"
+                                    placeholder="0.00"
+                                    step="0.01"
                                     min="0"
-                                    max="100"
                                 />
-                                {errors.adminProfitPercentage && (
-                                    <p className="text-red-500 text-sm mt-1">
-                                        {errors.adminProfitPercentage}
-                                    </p>
-                                )}
+                                <p className="text-xs text-gray-500 mt-1">
+                                    Auto-calculated from Buying Price and
+                                    Selling Price
+                                </p>
                             </div>
 
                             <div>
@@ -508,6 +521,10 @@ export default function EditMenuComponents({
                                     step="0.01"
                                     min="0"
                                 />
+                                <p className="text-xs text-gray-500 mt-1">
+                                    Auto-calculated from Buying Price and
+                                    Selling Price
+                                </p>
                             </div>
                         </div>
 
@@ -530,7 +547,6 @@ export default function EditMenuComponents({
                                     }`}
                                     placeholder="0"
                                     min="0"
-                                    max="100"
                                 />
                                 {errors.userCommissionPercentage && (
                                     <p className="text-red-500 text-sm mt-1">
@@ -580,7 +596,6 @@ export default function EditMenuComponents({
                                     className="input input-bordered w-full"
                                     placeholder="0"
                                     min="0"
-                                    max="100"
                                     step="0.01"
                                 />
                             </div>

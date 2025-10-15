@@ -30,9 +30,9 @@ class MenuItem extends Model
     protected $casts = [
         'drinkAmount' => 'decimal:2',
         'buyingPrice' => 'decimal:2',
-        'adminProfitPercentage' => 'integer',
+        'adminProfitPercentage' => 'decimal:2',
         'adminProfitAmount' => 'decimal:2',
-        'userCommissionPercentage' => 'integer',
+        'userCommissionPercentage' => 'decimal:2',
         'userCommissionAmount' => 'decimal:2',
         'sellingPrice' => 'decimal:2',
         'govTaxPercentage' => 'decimal:2',
