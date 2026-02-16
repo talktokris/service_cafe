@@ -1,4 +1,6 @@
 import axios from "axios";
+import './csrf-handler.js';
+
 window.axios = axios;
 
 window.axios.defaults.headers.common["X-Requested-With"] = "XMLHttpRequest";
@@ -14,57 +16,52 @@ if (token) {
     );
 }
 
-// Temporarily disabled axios interceptor to prevent logout issues
-// window.axios.interceptors.response.use(
-//     response => response,
-//     error => {
-//         if (error.response && error.response.status === 419) {
-//             // Skip auto-retry for login and authentication routes
-//             const url = error.config?.url || '';
-//             const skipRoutes = ['/login', '/register', '/forgot-password', '/reset-password'];
-//
-//             if (skipRoutes.some(route => url.includes(route))) {
-//                 console.log('CSRF error on auth route, not auto-retrying');
-//                 return Promise.reject(error);
-//             }
-//
-//             console.log('CSRF token mismatch detected, refreshing token...');
-//
-//             // Try to refresh CSRF token
-//             return fetch('/refresh-csrf')
-//                 .then(response => response.json())
-//                 .then(data => {
-//                     if (data.success) {
-//                         // Update axios default header
-//                         window.axios.defaults.headers.common["X-CSRF-TOKEN"] = data.csrf_token;
-//
-//                         // Update meta tag
-//                         const metaToken = document.querySelector('meta[name="csrf-token"]');
-//                         if (metaToken) {
-//                             metaToken.setAttribute('content', data.csrf_token);
-//                         }
-//
-//                         // Retry the original request
-//                         return window.axios(error.config);
-//                     } else {
-//                         throw error;
-//                     }
-//                 })
-//                 .catch(refreshError => {
-//                     console.error('Failed to refresh CSRF token:', refreshError);
-//                     // Only show popup for non-auth routes
-//                     if (!skipRoutes.some(route => url.includes(route))) {
-//                         if (confirm('Your session has expired. Would you like to refresh the page?')) {
-//                             window.location.reload();
-//                         }
-//                     }
-//                     throw error;
-//                 });
-//         }
-//
-//         return Promise.reject(error);
-//     }
-// );
+window.axios.interceptors.response.use(
+    response => response,
+    error => {
+        if (error.response && error.response.status === 419) {
+            // Skip auto-retry for login and authentication routes
+            const url = error.config?.url || '';
+            const skipRoutes = ['/login', '/register', '/forgot-password', '/reset-password'];
 
-// Temporarily disabled CSRF handler to prevent logout popup issues
-// import './csrf-handler.js';
+            if (skipRoutes.some(route => url.includes(route))) {
+                console.log('CSRF error on auth route, not auto-retrying');
+                return Promise.reject(error);
+            }
+
+            console.log('CSRF token mismatch detected, refreshing token...');
+
+            // Try to refresh CSRF token (one retry)
+            return fetch('/refresh-csrf', { credentials: 'same-origin' })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        // Update axios default header
+                        window.axios.defaults.headers.common["X-CSRF-TOKEN"] = data.csrf_token;
+
+                        // Update meta tag
+                        const metaToken = document.querySelector('meta[name="csrf-token"]');
+                        if (metaToken) {
+                            metaToken.setAttribute('content', data.csrf_token);
+                        }
+
+                        // Retry the original request
+                        return window.axios(error.config);
+                    } else {
+                        throw error;
+                    }
+                })
+                .catch(refreshError => {
+                    console.error('Failed to refresh CSRF token:', refreshError);
+                    if (!skipRoutes.some(route => url.includes(route))) {
+                        if (confirm('Your session has expired. Would you like to refresh the page?')) {
+                            window.location.reload();
+                        }
+                    }
+                    throw error;
+                });
+        }
+
+        return Promise.reject(error);
+    }
+);

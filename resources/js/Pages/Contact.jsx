@@ -102,6 +102,7 @@ export default function Contact() {
                         .querySelector('meta[name="csrf-token"]')
                         .getAttribute("content"),
                 },
+                credentials: "same-origin",
                 body: JSON.stringify(formData),
             });
 

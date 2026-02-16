@@ -53,6 +53,7 @@ export default function TableUserConfirmComponent({
                     "X-CSRF-TOKEN": csrfToken || "",
                     Accept: "application/json",
                 },
+                credentials: "same-origin",
                 body: JSON.stringify(orderData),
             });
 

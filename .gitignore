@@ -25,6 +25,7 @@ yarn-error.log
 
 # Deployment & CI/CD
 /backups/
+deploy-config.env
 *.log
 /logs/
 .deploy-lock

@@ -5,6 +5,7 @@ namespace App\Exceptions;
 use Illuminate\Foundation\Exceptions\Handler as ExceptionHandler;
 use Illuminate\Session\TokenMismatchException;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Session;
 use Symfony\Component\HttpKernel\Exception\HttpException;
 
 class Handler extends ExceptionHandler
@@ -25,35 +26,52 @@ class Handler extends ExceptionHandler
      */
     public function register(): void
     {
-        // Simple CSRF error handling - just redirect instead of showing error page
+        // 419 is rendered after Laravel converts TokenMismatchException to HttpException(419),
+        // so we must handle HttpException(419) here for our custom logic to run.
+        $this->renderable(function (HttpException $e, Request $request) {
+            if ($e->getStatusCode() !== 419) {
+                return null;
+            }
+
+            // For login (and register/forgot-password): give a fresh session and redirect so user can try again
+            if ($request->is('login') || $request->routeIs('login') ||
+                $request->is('register') || $request->routeIs('register') ||
+                $request->is('forgot-password') || $request->is('password/email')) {
+                Session::regenerate();
+                Session::regenerateToken();
+                return redirect()->route('login')->with('error', 'Your session has expired. Please try again.');
+            }
+
+            // For AJAX/Inertia requests, return JSON so client can handle (e.g. retry or show message)
+            if ($request->ajax() || $request->wantsJson() || $request->header('X-Inertia')) {
+                return response()->json([
+                    'error' => 'CSRF token mismatch',
+                    'message' => 'Your session has expired. Please refresh the page.',
+                    'code' => 419,
+                ], 419);
+            }
+
+            // For regular requests, redirect back with message
+            return redirect()->back()->with('error', 'Your session has expired. Please try again.');
+        });
+
+        // Keep TokenMismatchException handler for any path that might run before conversion (e.g. custom flows)
         $this->renderable(function (TokenMismatchException $e, Request $request) {
-            // For AJAX requests, return JSON
+            if ($request->is('login') || $request->routeIs('login') ||
+                $request->is('register') || $request->routeIs('register') ||
+                $request->is('forgot-password') || $request->is('password/email')) {
+                Session::regenerate();
+                Session::regenerateToken();
+                return redirect()->route('login')->with('error', 'Your session has expired. Please try again.');
+            }
             if ($request->ajax() || $request->wantsJson()) {
                 return response()->json([
                     'error' => 'CSRF token mismatch',
                     'message' => 'Your session has expired. Please refresh the page.',
-                    'code' => 419
+                    'code' => 419,
                 ], 419);
             }
-
-            // For regular requests, just redirect back with a simple message
             return redirect()->back()->with('error', 'Your session has expired. Please try again.');
         });
-
-        // Disabled custom 419 error handling to prevent duplicate pages
-        // $this->renderable(function (HttpException $e, Request $request) {
-        //     if ($e->getStatusCode() === 419) {
-        //         if ($request->ajax() || $request->wantsJson()) {
-        //             return response()->json([
-        //                 'error' => 'Page expired',
-        //                 'message' => 'Your session has expired. Please refresh the page.',
-        //                 'code' => 419,
-        //                 'refresh_required' => true
-        //             ], 419);
-        //         }
-
-        //         return response()->view('errors.419', [], 419);
-        //     }
-        // });
     }
 }

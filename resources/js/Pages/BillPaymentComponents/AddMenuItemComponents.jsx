@@ -91,6 +91,7 @@ export default function AddMenuItemComponents({
                             ?.getAttribute("content") || "",
                     Accept: "application/json",
                 },
+                credentials: "same-origin",
                 body: JSON.stringify(orderItemData),
             });
 

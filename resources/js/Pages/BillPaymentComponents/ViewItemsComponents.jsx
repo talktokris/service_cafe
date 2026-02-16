@@ -61,6 +61,7 @@ export default function ViewItemsComponents({
                                 .querySelector('meta[name="csrf-token"]')
                                 ?.getAttribute("content") || "",
                     },
+                    credentials: "same-origin",
                 }
             );
 

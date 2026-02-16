@@ -71,3 +71,14 @@ A PHP script is available at `public/clear-cache.php` that can be accessed via b
 - If you're in production and using cached config/routes, clear them first (as shown above), then optionally rebuild with `php artisan config:cache` and `php artisan route:cache` after clearing.
 - Make sure you're in the correct project directory before running these commands.
 
+## 419 / CSRF Session Errors After Deploy
+
+If users see **419 Session Expired** or **CSRF token mismatch** after a deploy:
+
+1. Run `php artisan config:clear` (and optionally the full cache-clear one-liner above). Cached config can hold wrong session settings and cause these errors.
+2. When using `php artisan config:cache`, ensure your `.env` has correct session and app settings before caching:
+   - `APP_URL` – must match the site URL (e.g. `https://servecafe.com`).
+   - `SESSION_DOMAIN` – leave empty or `null` for a single domain; use e.g. `.servecafe.com` only if you use subdomains.
+   - `SESSION_SECURE_COOKIE` – set to `true` when the site is served over HTTPS.
+   - `SESSION_SAME_SITE` – default `lax` is fine; only change if you have a specific need.
+

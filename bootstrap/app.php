@@ -17,14 +17,19 @@ return Application::configure(basePath: dirname(__DIR__))
 
         $middleware->web(append: [
             \App\Http\Middleware\HandleInertiaRequests::class,
+            \App\Http\Middleware\PreventPageCache::class,
             // Temporarily disabled to fix session issues
             // \App\Http\Middleware\RefreshCsrfToken::class,
             // \App\Http\Middleware\Handle419Error::class,
         ]);
 
-        // Keep test-login route exempt for debugging
+        // Exempt login, logout, and password-reset from CSRF so expired/stale sessions don't block sign-in or sign-out.
         $middleware->validateCsrfTokens(except: [
-            'test-login'
+            'test-login',
+            'login',
+            'logout',
+            'forgot-password',
+            'reset-password',
         ]);
 
         // Register custom middleware

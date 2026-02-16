@@ -37,6 +37,7 @@ class HandleInertiaRequests extends Middleware
                 'user' => $user,
             ],
             'walletBalance' => $user ? $user->getCurrentWalletBalance() : 0,
+            'csrf_token' => csrf_token(),
         ];
     }
 }

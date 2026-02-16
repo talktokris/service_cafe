@@ -193,11 +193,29 @@ export default function PayBillComponents({
         setIsSubmitting(true);
 
         try {
-            // Get CSRF token
-            const csrfToken =
+            // Get a fresh CSRF token right before submit to avoid mismatch from long-open modals
+            let csrfToken =
                 document
                     .querySelector('meta[name="csrf-token"]')
                     ?.getAttribute("content") || "";
+            try {
+                const refreshRes = await fetch("/refresh-csrf", {
+                    method: "GET",
+                    headers: { Accept: "application/json" },
+                    credentials: "same-origin",
+                });
+                if (refreshRes.ok) {
+                    const data = await refreshRes.json();
+                    if (data.csrf_token) {
+                        csrfToken = data.csrf_token;
+                        const meta = document.querySelector('meta[name="csrf-token"]');
+                        if (meta) meta.setAttribute("content", data.csrf_token);
+                        if (window.axios) window.axios.defaults.headers.common["X-CSRF-TOKEN"] = data.csrf_token;
+                    }
+                }
+            } catch (_) {
+                // Keep existing token from meta if refresh fails
+            }
 
             // Prepare payment data
             const paymentData = {
@@ -225,7 +243,14 @@ export default function PayBillComponents({
                 body: JSON.stringify(paymentData),
             });
 
-            const result = await response.json();
+            if (response.status === 419) {
+                showError(
+                    "Your session expired. Please refresh the page and try the payment again."
+                );
+                return;
+            }
+
+            const result = await response.json().catch(() => ({}));
 
             if (result.success) {
                 // Store payment result and show success modal

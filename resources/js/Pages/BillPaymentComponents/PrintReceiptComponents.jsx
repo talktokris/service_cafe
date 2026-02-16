@@ -30,6 +30,7 @@ export default function PrintReceiptComponents({ table, order, onClose }) {
                                 .querySelector('meta[name="csrf-token"]')
                                 ?.getAttribute("content") || "",
                     },
+                    credentials: "same-origin",
                 }
             );
 

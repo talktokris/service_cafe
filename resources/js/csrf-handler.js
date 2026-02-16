@@ -5,7 +5,7 @@
 
 class CSRFHandler {
     constructor() {
-        this.maxRetries = 3;
+        this.maxRetries = 1;
         this.retryDelay = 1000; // 1 second
         this.setupInterceptors();
     }
@@ -50,23 +50,27 @@ class CSRFHandler {
 
         let retryCount = 0;
 
-        while (retryCount < this.maxRetries) {
+        while (retryCount <= this.maxRetries) {
             try {
-                const response = await originalFetch(url, options);
-                
+                const requestOptions = retryCount === 0 ? options : this.mergeNewCsrfIntoOptions(options);
+                const response = await originalFetch(url, requestOptions);
+
                 if (response.status === 419) {
                     retryCount++;
-                    if (retryCount < this.maxRetries) {
+                    if (retryCount <= this.maxRetries) {
                         console.log(`CSRF error detected, retrying... (${retryCount}/${this.maxRetries})`);
-                        await this.refreshCSRFToken();
+                        const newToken = await this.refreshCSRFToken();
+                        if (!newToken) {
+                            this.show419Error();
+                            return response;
+                        }
                         await this.delay(this.retryDelay * retryCount);
                         continue;
-                    } else {
-                        this.show419Error();
-                        return response;
                     }
+                    this.show419Error();
+                    return response;
                 }
-                
+
                 return response;
             } catch (error) {
                 console.error('Request failed:', error);
@@ -82,7 +86,8 @@ class CSRFHandler {
                 headers: {
                     'Accept': 'application/json',
                     'Content-Type': 'application/json',
-                }
+                },
+                credentials: 'same-origin',
             });
 
             if (response.ok) {
@@ -136,6 +141,17 @@ class CSRFHandler {
         return new Promise(resolve => setTimeout(resolve, ms));
     }
 
+    /**
+     * Clone request options and set X-CSRF-TOKEN from current meta tag (used after refresh for retry).
+     */
+    mergeNewCsrfIntoOptions(options) {
+        const newToken = document.querySelector('meta[name="csrf-token"]')?.getAttribute('content') || '';
+        const updated = { ...options };
+        updated.headers = new Headers(options.headers || {});
+        updated.headers.set('X-CSRF-TOKEN', newToken);
+        return updated;
+    }
+
     static handle419Error(method, url, data) {
         console.log(`419 error for ${method} ${url}`);
         // This will be handled by the global error handler
@@ -150,7 +166,7 @@ document.addEventListener('DOMContentLoaded', function() {
     new CSRFHandler();
     
     // Also refresh CSRF token on page load
-    fetch('/refresh-csrf')
+    fetch('/refresh-csrf', { credentials: 'same-origin' })
         .then(response => response.json())
         .then(data => {
             if (data.success) {

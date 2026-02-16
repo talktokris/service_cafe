@@ -63,6 +63,7 @@ export default function EditMenuItemComponents({
                     "X-CSRF-TOKEN": csrfToken,
                     Accept: "application/json",
                 },
+                credentials: "same-origin",
                 body: JSON.stringify(updateData),
             });
 
