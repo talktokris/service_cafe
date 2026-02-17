@@ -1,0 +1,12 @@
+# cPanel Git deployment config. Required for "Deploy HEAD Commit" in cPanel.
+# Runs from repository root: /home4/servi5ne/repositories/service_cafe
+---
+deployment:
+  tasks:
+    - composer install --no-dev --optimize-autoloader --no-interaction
+    - npm install --silent
+    - npm run build
+    - rm -f public/hot
+    - php artisan config:clear
+    - php artisan cache:clear
+    - php artisan view:clear
