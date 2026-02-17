@@ -210,19 +210,19 @@ export default function MemberHeader({
                                             Dashboard
                                         </Link>
                                         <Link
-                                            href="/change-password"
+                                            href="/profile/password"
                                             className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
                                         >
                                             Change Password
                                         </Link>
                                         <Link
-                                            href="/profile-settings"
+                                            href="/profile"
                                             className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
                                         >
                                             Profile Settings
                                         </Link>
                                         <Link
-                                            href="/change-referral"
+                                            href="/profile/referral"
                                             className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
                                         >
                                             Change Referral
@@ -421,19 +421,19 @@ export default function MemberHeader({
                                             Dashboard
                                         </Link>
                                         <Link
-                                            href="/change-password"
+                                            href="/profile/password"
                                             className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
                                         >
                                             Change Password
                                         </Link>
                                         <Link
-                                            href="/profile-settings"
+                                            href="/profile"
                                             className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
                                         >
                                             Profile Settings
                                         </Link>
                                         <Link
-                                            href="/change-referral"
+                                            href="/profile/referral"
                                             className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
                                         >
                                             Change Referral

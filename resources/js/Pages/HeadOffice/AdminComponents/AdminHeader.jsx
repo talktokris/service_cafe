@@ -262,6 +262,24 @@ export default function AdminHeader({
                                     </li>
                                     <li>
                                         <Link
+                                            href="/profile/password"
+                                            className="text-sm hover:bg-gray-50 rounded-lg transition-colors duration-200"
+                                            style={{ color: "#531414" }}
+                                        >
+                                            Change Password
+                                        </Link>
+                                    </li>
+                                    <li>
+                                        <Link
+                                            href="/profile/referral"
+                                            className="text-sm hover:bg-gray-50 rounded-lg transition-colors duration-200"
+                                            style={{ color: "#531414" }}
+                                        >
+                                            Change Referral
+                                        </Link>
+                                    </li>
+                                    <li>
+                                        <Link
                                             href="/settings"
                                             className="text-sm hover:bg-gray-50 rounded-lg transition-colors duration-200"
                                             style={{ color: "#531414" }}

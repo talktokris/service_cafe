@@ -1029,10 +1029,6 @@ Route::middleware(['auth', 'verified', 'user.type:headoffice', 'role:super_user,
 });
 
 Route::middleware('auth')->group(function () {
-    Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
-    Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
-    Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
-    
     // API route to fetch members for bill payment
     Route::get('/api/members', function (\Illuminate\Http\Request $request) {
         try {
@@ -1522,17 +1518,20 @@ Route::get('/debug-middleware', function () {
 
 // Profile Routes (Common for all members)
 Route::middleware(['auth'])->group(function () {
-    // Change Password
-    Route::get('/change-password', [ProfileController::class, 'changePassword'])->name('profile.change-password');
-    Route::post('/change-password', [ProfileController::class, 'updatePassword'])->name('profile.update-password');
-    
-    // Profile Settings
-    Route::get('/profile-settings', [ProfileController::class, 'profileSettings'])->name('profile.settings');
+    // Profile hub and sub-pages (with Profile Categories sidebar)
+    Route::get('/profile', [ProfileController::class, 'profileIndex'])->name('profile.index');
+    Route::get('/profile/password', [ProfileController::class, 'changePassword'])->name('profile.password');
+    Route::get('/profile/referral', [ProfileController::class, 'changeReferral'])->name('profile.referral');
+
+    // POST handlers (keep existing URLs for form actions)
     Route::post('/profile-settings', [ProfileController::class, 'updateProfile'])->name('profile.update-settings');
-    
-    // Change Referral Code
-    Route::get('/change-referral', [ProfileController::class, 'changeReferral'])->name('profile.change-referral');
+    Route::post('/change-password', [ProfileController::class, 'updatePassword'])->name('profile.update-password');
     Route::post('/change-referral', [ProfileController::class, 'updateReferral'])->name('profile.update-referral');
+
+    // Redirects for old profile URLs
+    Route::get('/profile-settings', fn () => redirect()->route('profile.index'))->name('profile.settings');
+    Route::get('/change-password', fn () => redirect()->route('profile.password'))->name('profile.change-password');
+    Route::get('/change-referral', fn () => redirect()->route('profile.referral'));
 });
 
 // Registration with referral code support

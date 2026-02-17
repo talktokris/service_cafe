@@ -197,7 +197,7 @@ export default function PaidMemberSidebar({ isOpen, onClose, user }) {
     const settingsItems = [
         {
             title: "Change Password",
-            href: "/change-password",
+            href: "/profile/password",
             icon: (
                 <svg
                     xmlns="http://www.w3.org/2000/svg"
@@ -217,7 +217,7 @@ export default function PaidMemberSidebar({ isOpen, onClose, user }) {
         },
         {
             title: "Profile Settings",
-            href: "/profile-settings",
+            href: "/profile",
             icon: (
                 <svg
                     xmlns="http://www.w3.org/2000/svg"
@@ -237,7 +237,7 @@ export default function PaidMemberSidebar({ isOpen, onClose, user }) {
         },
         {
             title: "Change Referral",
-            href: "/change-referral",
+            href: "/profile/referral",
             icon: (
                 <svg
                     xmlns="http://www.w3.org/2000/svg"

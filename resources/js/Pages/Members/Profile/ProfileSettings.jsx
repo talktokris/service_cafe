@@ -55,7 +55,7 @@ export default function ProfileSettings({ auth, user, flash }) {
 
     const submit = (e) => {
         e.preventDefault();
-        post(route("profile.update"), {
+        post(route("profile.update-settings"), {
             onSuccess: () => {
                 // Keep the updated values in the form
                 // Don't reset the form

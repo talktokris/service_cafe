@@ -10,11 +10,21 @@ export default function ChangePassword({ auth, flash }) {
         password_confirmation: "",
     });
 
-    const submit = (e) => {
+    const submit = async (e) => {
         e.preventDefault();
+        try {
+            const refreshRes = await fetch("/refresh-csrf", { method: "GET", headers: { Accept: "application/json" }, credentials: "same-origin" });
+            if (refreshRes.ok) {
+                const data = await refreshRes.json();
+                if (data.csrf_token) {
+                    const meta = document.querySelector('meta[name="csrf-token"]');
+                    if (meta) meta.setAttribute("content", data.csrf_token);
+                    if (window.axios) window.axios.defaults.headers.common["X-CSRF-TOKEN"] = data.csrf_token;
+                }
+            }
+        } catch (_) {}
         post(route("profile.update-password"), {
             onSuccess: () => {
-                // Clear only password fields, keep current_password for potential retry
                 setData("password", "");
                 setData("password_confirmation", "");
             },
@@ -78,11 +88,15 @@ export default function ChangePassword({ auth, flash }) {
                 )}
 
                 {/* Main Content */}
-                <div className="py-12">
-                    <div className="max-w-2xl mx-auto sm:px-6 lg:px-8">
-                        <div className="bg-white overflow-hidden shadow-sm sm:rounded-lg">
-                            <div className="p-8 text-gray-900">
-                                <form
+                <div>
+                        <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
+                            <h3 className="text-lg font-semibold text-gray-900 mb-4">
+                                Update Password
+                            </h3>
+                            <p className="text-sm text-gray-500 mb-6">
+                                Ensure your account is using a long, random password to stay secure.
+                            </p>
+                            <form
                                     onSubmit={submit}
                                     className="space-y-6 border border-gray-200 rounded-lg bg-gray-50 p-6"
                                 >
@@ -188,9 +202,7 @@ export default function ChangePassword({ auth, flash }) {
                                         </button>
                                     </div>
                                 </form>
-                            </div>
                         </div>
-                    </div>
                 </div>
             </div>
         </MemberDashboardLayout>

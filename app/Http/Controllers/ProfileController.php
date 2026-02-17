@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Validation\Rule;
@@ -11,12 +12,56 @@ use Inertia\Inertia;
 class ProfileController extends Controller
 {
     /**
+     * Profile index (hub): profile information form with Profile Categories sidebar.
+     */
+    public function profileIndex()
+    {
+        /** @var \App\Models\User $user */
+        $user = Auth::user();
+
+        $isAdmin = in_array($user->user_type ?? '', ['headoffice', 'brandoffice', 'branchOffice']);
+
+        if ($isAdmin) {
+            return Inertia::render('HeadOffice/Profile/Index', [
+                'auth' => ['user' => $user],
+                'user' => $user,
+                'flash' => [
+                    'success' => session('success'),
+                    'error' => session('error'),
+                ],
+            ]);
+        }
+
+        return Inertia::render('Members/Profile/Index', [
+            'auth' => ['user' => $user],
+            'user' => $user,
+            'flash' => [
+                'success' => session('success'),
+                'error' => session('error'),
+            ],
+        ]);
+    }
+
+    /**
      * Show change password page
      */
     public function changePassword()
     {
+        $user = Auth::user();
+        $isAdmin = in_array($user->user_type ?? '', ['headoffice', 'brandoffice', 'branchOffice']);
+
+        if ($isAdmin) {
+            return Inertia::render('HeadOffice/Profile/ChangePassword', [
+                'auth' => ['user' => $user],
+                'flash' => [
+                    'success' => session('success'),
+                    'error' => session('error'),
+                ],
+            ]);
+        }
+
         return Inertia::render('Members/Profile/ChangePassword', [
-            'auth' => ['user' => auth()->user()],
+            'auth' => ['user' => Auth::user()],
             'flash' => [
                 'success' => session('success'),
                 'error' => session('error')
@@ -29,7 +74,8 @@ class ProfileController extends Controller
      */
     public function updatePassword(Request $request)
     {
-        $user = auth()->user();
+        /** @var \App\Models\User $user */
+        $user = Auth::user();
 
         $validator = Validator::make($request->all(), [
             'current_password' => ['required', 'string'],
@@ -63,7 +109,8 @@ class ProfileController extends Controller
      */
     public function profileSettings()
     {
-        $user = auth()->user();
+        /** @var \App\Models\User $user */
+        $user = Auth::user();
         
         return Inertia::render('Members/Profile/ProfileSettings', [
             'auth' => ['user' => $user],
@@ -80,7 +127,8 @@ class ProfileController extends Controller
      */
     public function updateProfile(Request $request)
     {
-        $user = auth()->user();
+        /** @var \App\Models\User $user */
+        $user = Auth::user();
 
         $validator = Validator::make($request->all(), [
             'first_name' => ['nullable', 'string', 'max:255'],
@@ -130,8 +178,21 @@ class ProfileController extends Controller
      */
     public function changeReferral()
     {
-        $user = auth()->user();
-        
+        /** @var \App\Models\User $user */
+        $user = Auth::user();
+        $isAdmin = in_array($user->user_type ?? '', ['headoffice', 'brandoffice', 'branchOffice']);
+
+        if ($isAdmin) {
+            return Inertia::render('HeadOffice/Profile/ChangeReferral', [
+                'auth' => ['user' => $user],
+                'user' => $user,
+                'flash' => [
+                    'success' => session('success'),
+                    'error' => session('error'),
+                ],
+            ]);
+        }
+
         return Inertia::render('Members/Profile/ChangeReferral', [
             'auth' => ['user' => $user],
             'user' => $user,
@@ -147,7 +208,8 @@ class ProfileController extends Controller
      */
     public function updateReferral(Request $request)
     {
-        $user = auth()->user();
+        /** @var \App\Models\User $user */
+        $user = Auth::user();
 
         $validator = Validator::make($request->all(), [
             'referral_code' => [

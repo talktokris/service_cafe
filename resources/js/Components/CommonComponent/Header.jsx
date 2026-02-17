@@ -177,17 +177,17 @@ export default function Header({ user = null }) {
                                         </Link>
                                     </li>
                                     <li>
-                                        <Link href="/change-password">
+                                        <Link href="/profile/password">
                                             Change Password
                                         </Link>
                                     </li>
                                     <li>
-                                        <Link href="/profile-settings">
+                                        <Link href="/profile">
                                             Profile Setting
                                         </Link>
                                     </li>
                                     <li>
-                                        <Link href="/change-referral">
+                                        <Link href="/profile/referral">
                                             Change Referral
                                         </Link>
                                     </li>
