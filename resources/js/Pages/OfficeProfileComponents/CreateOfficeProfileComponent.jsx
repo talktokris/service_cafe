@@ -81,6 +81,25 @@ export default function CreateOfficeProfileComponent({ onClose, onSuccess }) {
         setIsSubmitting(true);
 
         try {
+            // Refresh CSRF token before submit to avoid 419 when modal has been open a while
+            try {
+                const refreshRes = await fetch("/refresh-csrf", {
+                    method: "GET",
+                    headers: { Accept: "application/json" },
+                    credentials: "same-origin",
+                });
+                if (refreshRes.ok) {
+                    const data = await refreshRes.json();
+                    if (data.csrf_token) {
+                        const meta = document.querySelector('meta[name="csrf-token"]');
+                        if (meta) meta.setAttribute("content", data.csrf_token);
+                        if (window.axios) window.axios.defaults.headers.common["X-CSRF-TOKEN"] = data.csrf_token;
+                    }
+                }
+            } catch (_) {
+                // Continue with existing token if refresh fails
+            }
+
             router.post("/office-profiles", formData, {
                 onSuccess: (page) => {
                     // Show success message

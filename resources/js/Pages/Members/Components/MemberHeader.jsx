@@ -12,6 +12,23 @@ export default function MemberHeader({
     const walletRef = useRef(null);
     const accountRef = useRef(null);
 
+    // Submit POST form to /logout (Laravel expects POST)
+    function submitLogoutForm() {
+        const form = document.createElement("form");
+        form.method = "POST";
+        form.action = "/logout";
+        const token = document.querySelector('meta[name="csrf-token"]');
+        if (token) {
+            const csrfInput = document.createElement("input");
+            csrfInput.type = "hidden";
+            csrfInput.name = "_token";
+            csrfInput.value = token.getAttribute("content");
+            form.appendChild(csrfInput);
+        }
+        document.body.appendChild(form);
+        form.submit();
+    }
+
     // Close dropdowns when clicking outside
     useEffect(() => {
         function handleClickOutside(event) {
@@ -213,83 +230,21 @@ export default function MemberHeader({
                                         <div className="border-t border-gray-100"></div>
                                         <button
                                             type="button"
-                                            className="block w-full text-left px-4 py-2 text-sm text-red-600 hover:bg-red-50"
-                                            onMouseDown={() =>
-                                                console.log(
-                                                    "Mouse down on logout - mobile"
-                                                )
-                                            }
-                                            onTouchStart={() =>
-                                                console.log(
-                                                    "Touch start on logout - mobile"
-                                                )
-                                            }
-                                            onClick={(e) => {
-                                                console.log(
-                                                    "=== LOGOUT BUTTON CLICKED - MOBILE ==="
-                                                );
+                                            className="block w-full text-left px-4 py-2 text-sm text-red-600 hover:bg-red-50 min-h-[44px] touch-manipulation"
+                                            onMouseDown={(e) => {
                                                 e.preventDefault();
                                                 e.stopPropagation();
-                                                console.log(
-                                                    "Logout clicked - mobile"
-                                                );
                                                 setAccountDropdownOpen(false);
-
-                                                // Try window.location first
-                                                try {
-                                                    console.log(
-                                                        "Trying window.location..."
-                                                    );
-                                                    window.location.href =
-                                                        "/logout";
-                                                } catch (error) {
-                                                    console.log(
-                                                        "Window location failed:",
-                                                        error
-                                                    );
-
-                                                    // Fallback to form submission
-                                                    console.log(
-                                                        "Trying form submission..."
-                                                    );
-                                                    const form =
-                                                        document.createElement(
-                                                            "form"
-                                                        );
-                                                    form.method = "POST";
-                                                    form.action = "/logout";
-
-                                                    // Add CSRF token
-                                                    const token =
-                                                        document.querySelector(
-                                                            'meta[name="csrf-token"]'
-                                                        );
-                                                    if (token) {
-                                                        const csrfInput =
-                                                            document.createElement(
-                                                                "input"
-                                                            );
-                                                        csrfInput.type =
-                                                            "hidden";
-                                                        csrfInput.name =
-                                                            "_token";
-                                                        csrfInput.value =
-                                                            token.getAttribute(
-                                                                "content"
-                                                            );
-                                                        form.appendChild(
-                                                            csrfInput
-                                                        );
-                                                    }
-
-                                                    document.body.appendChild(
-                                                        form
-                                                    );
-                                                    console.log(
-                                                        "Submitting logout form..."
-                                                    );
-                                                    form.submit();
-                                                }
+                                                submitLogoutForm();
+                                            }}
+                                            onTouchEnd={(e) => {
+                                                e.preventDefault();
+                                                setAccountDropdownOpen(false);
+                                                submitLogoutForm();
+                                            }}
+                                            onClick={(e) => {
+                                                e.preventDefault();
+                                                e.stopPropagation();
                                             }}
                                         >
                                             Logout
@@ -489,43 +444,8 @@ export default function MemberHeader({
                                             className="block w-full text-left px-4 py-2 text-sm text-red-600 hover:bg-red-50"
                                             onClick={(e) => {
                                                 e.preventDefault();
-                                                console.log(
-                                                    "Logout clicked - desktop"
-                                                );
                                                 setAccountDropdownOpen(false);
-
-                                                // Use direct URL instead of route helper
-                                                const form =
-                                                    document.createElement(
-                                                        "form"
-                                                    );
-                                                form.method = "POST";
-                                                form.action = "/logout";
-
-                                                // Add CSRF token
-                                                const token =
-                                                    document.querySelector(
-                                                        'meta[name="csrf-token"]'
-                                                    );
-                                                if (token) {
-                                                    const csrfInput =
-                                                        document.createElement(
-                                                            "input"
-                                                        );
-                                                    csrfInput.type = "hidden";
-                                                    csrfInput.name = "_token";
-                                                    csrfInput.value =
-                                                        token.getAttribute(
-                                                            "content"
-                                                        );
-                                                    form.appendChild(csrfInput);
-                                                }
-
-                                                document.body.appendChild(form);
-                                                console.log(
-                                                    "Submitting logout form..."
-                                                );
-                                                form.submit();
+                                                submitLogoutForm();
                                             }}
                                         >
                                             Logout
