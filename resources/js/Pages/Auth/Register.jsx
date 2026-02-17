@@ -11,8 +11,26 @@ export default function Register({ referral_code, referrer_name, flash }) {
         password_confirmation: "",
     });
 
-    const submit = (e) => {
+    const submit = async (e) => {
         e.preventDefault();
+        // Refresh CSRF token before submit to avoid session expired when form was open a while
+        try {
+            const refreshRes = await fetch("/refresh-csrf", {
+                method: "GET",
+                headers: { Accept: "application/json" },
+                credentials: "same-origin",
+            });
+            if (refreshRes.ok) {
+                const resData = await refreshRes.json();
+                if (resData.csrf_token) {
+                    const meta = document.querySelector('meta[name="csrf-token"]');
+                    if (meta) meta.setAttribute("content", resData.csrf_token);
+                    if (window.axios) window.axios.defaults.headers.common["X-CSRF-TOKEN"] = resData.csrf_token;
+                }
+            }
+        } catch (_) {
+            // Continue with existing token if refresh fails
+        }
         post(route("register.submit", { referral_code: referral_code }), {
             onSuccess: () => {
                 // Clear password fields after successful registration
