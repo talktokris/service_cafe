@@ -670,69 +670,48 @@ Route::middleware(['auth', 'verified', 'user.type:headoffice', 'role:super_user,
     // Users Tracking
     Route::get('/users-tracking', [UserController::class, 'index'])->name('users-tracking');
     
-    // OTP Orders - Past 3 Days (Simplified)
+    // Today OTP - Table view (active unpaid orders by table, no date filter)
     Route::get('/today-otp', function (Request $request) {
         try {
-            \Illuminate\Support\Facades\Log::info('OTP Orders Request - Past 3 Days', [
-                'timestamp' => now()
-            ]);
-            
-            // Get all OTP orders from the past 3 days
-            $threeDaysAgo = \Carbon\Carbon::now()->subDays(3)->startOfDay();
-            
+            $restaurantTables = \App\Models\RestaurantTable::where('deleteStatus', 0)
+                ->with(['headOffice', 'branch'])
+                ->orderBy('created_at', 'desc')
+                ->get();
+
             $orders = \App\Models\Order::where('deleteStatus', 0)
-                ->whereNotNull('txn_otp')
-                ->where('txn_otp', '!=', '')
-                ->where('created_at', '>=', $threeDaysAgo)
+                ->where('tableOccupiedStatus', 1)
+                ->where('paymentStatus', 0)
                 ->with([
                     'memberUser:id,first_name,last_name,email,phone,referral_code,user_type,member_type',
-                    'table', 
-                    'headOffice', 
+                    'table',
+                    'headOffice',
                     'branch'
                 ])
                 ->orderBy('created_at', 'desc')
                 ->get();
-            
-            \Illuminate\Support\Facades\Log::info('OTP Orders Query Results - Past 3 Days', [
-                'total_orders' => $orders->count(),
-                'three_days_ago' => $threeDaysAgo->format('Y-m-d H:i:s'),
-                'current_time' => now()->format('Y-m-d H:i:s')
-            ]);
-        
-            // Generate available dates for the past 3 days
-            $availableDates = [];
-            for ($i = 0; $i < 3; $i++) {
-                $date = \Carbon\Carbon::now()->subDays($i);
-                $availableDates[] = [
-                    'value' => $date->format('Y-m-d'),
-                    'label' => $i === 0 ? 'Today' : $date->format('jS M'),
-                    'is_today' => $i === 0,
-                    'full_date' => $date->format('Y-m-d H:i:s'),
-                    'day_name' => $date->format('l')
-                ];
+
+            $orderIds = $orders->pluck('id')->toArray();
+            $orderItems = [];
+            if (!empty($orderIds)) {
+                $orderItems = \App\Models\OrderItem::whereIn('orderId', $orderIds)
+                    ->where('deleteStatus', 0)
+                    ->with(['headOffice', 'branch', 'table', 'order', 'menuItem'])
+                    ->get();
             }
-            
+
             return Inertia::render('HeadOffice/Super/TodayOTPView', [
-                'todayOrders' => $orders,
-                'filters' => [
-                    'date_filter' => 'past_3_days',
-                    'search' => '',
-                ],
-                'availableDates' => $availableDates
+                'restaurantTables' => $restaurantTables,
+                'orders' => $orders,
+                'orderItems' => $orderItems,
             ]);
-            
         } catch (\Exception $e) {
-            \Illuminate\Support\Facades\Log::error('OTP Orders Error: ' . $e->getMessage(), [
+            \Illuminate\Support\Facades\Log::error('Today OTP Error: ' . $e->getMessage(), [
                 'trace' => $e->getTraceAsString()
             ]);
-            
             return Inertia::render('HeadOffice/Super/TodayOTPView', [
-                'todayOrders' => collect([]),
-                'filters' => [
-                    'date_filter' => 'past_3_days',
-                    'search' => '',
-                ],
-                'availableDates' => []
+                'restaurantTables' => collect([]),
+                'orders' => collect([]),
+                'orderItems' => collect([]),
             ]);
         }
     })->name('today-otp');
