@@ -23,6 +23,15 @@ if [[ -z "$SSH_USER" || -z "$SSH_HOST" || -z "$REMOTE_PATH" ]]; then
   exit 1
 fi
 
+if [[ "$SSH_HOST" == *your-server* || "$SSH_USER" == *your_cpanel* ]]; then
+  echo "ERROR: deploy-config.env still has placeholder values."
+  echo "Edit deploy-config.env and set your real cPanel details, e.g.:"
+  echo "  SSH_HOST=servecafe.com"
+  echo "  SSH_USER=servi5ne"
+  echo "  REMOTE_PATH=repositories/service_cafe"
+  exit 1
+fi
+
 SSH_PORT="${SSH_PORT:-22}"
 REMOTE="${SSH_USER}@${SSH_HOST}:${REMOTE_PATH}/"
 
