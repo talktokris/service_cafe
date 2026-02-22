@@ -90,3 +90,12 @@ On the server, the workflow:
 - **Blank page after deploy:** On the server, remove `public/hot` and set `APP_ENV=production`, `APP_DEBUG=false` in `.env`, then run `php artisan config:clear` and `php artisan cache:clear`. The CI/CD workflow does this automatically.
 - **Deploy script: “Missing deploy-config.env”:** Copy `deploy-config.env.example` to `deploy-config.env` and fill in your SSH details.
 - **GitHub Action fails on SSH:** Check that `CPANEL_SSH_KEY` is the full private key and that the matching public key is added in cPanel → SSH Access.
+- **cPanel “Update from Remote” fails (local changes / untracked files would be overwritten):** The server repo has local changes that conflict with GitHub. To make the server match GitHub exactly, SSH in and run:
+  ```bash
+  ssh servi5ne@servecafe.com
+  cd /home4/servi5ne/repositories/service_cafe
+  git fetch origin main
+  git reset --hard origin/main
+  git clean -fd
+  ```
+  Then run your usual post-deploy steps (e.g. `composer install`, `npm run build`, `php artisan config:clear`). Any server-only edits will be lost; the repo will match GitHub.
