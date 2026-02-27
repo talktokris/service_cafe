@@ -166,4 +166,7 @@ npm run dev
 ## 📄 License
 
 This project is open-sourced software licensed under the [MIT license](https://opensource.org/licenses/MIT).
-# Test deployment
+
+## Deploy to cPanel
+
+See **[DEPLOY.md](DEPLOY.md)** for the only deploy instructions: one-command local deploy (`npm run deploy`) or CI/CD on push.

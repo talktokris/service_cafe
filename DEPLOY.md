@@ -88,6 +88,7 @@ On the server, the workflow:
 ## Troubleshooting
 
 - **Blank page after deploy:** On the server, remove `public/hot` and set `APP_ENV=production`, `APP_DEBUG=false` in `.env`, then run `php artisan config:clear` and `php artisan cache:clear`. The CI/CD workflow does this automatically.
+- **419 Session Expired / CSRF errors:** Run `php artisan config:clear` and `php artisan cache:clear` on the server. In `.env`, set `APP_URL` to your site URL (e.g. `https://servecafe.com`), and use `SESSION_SECURE_COOKIE=true` for HTTPS.
 - **Deploy script: “Missing deploy-config.env”:** Copy `deploy-config.env.example` to `deploy-config.env` and fill in your SSH details.
 - **GitHub Action fails on SSH:** Check that `CPANEL_SSH_KEY` is the full private key and that the matching public key is added in cPanel → SSH Access.
 - **cPanel “Update from Remote” fails (local changes / untracked files would be overwritten):** The server repo has local changes that conflict with GitHub. To make the server match GitHub exactly, SSH in and run:
